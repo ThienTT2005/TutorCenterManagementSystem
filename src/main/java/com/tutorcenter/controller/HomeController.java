@@ -12,4 +12,14 @@ public class HomeController {
         model.addAttribute("message", "Welcome to Tutor Center Management System!");
         return "index";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
 }

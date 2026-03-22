@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Đăng nhập | Academic Atelier</title>
+    <title>Đăng ký | Academic Atelier</title>
     <link href="assets/css/style.css" rel="stylesheet" />
 </head>
 
@@ -28,87 +28,91 @@
         </div>
     </header>
 
-    <!-- Main Content: Login Section -->
+    <!-- Main Content: Register Section -->
     <main class="login-main">
         <!-- Background Decoration -->
-        <div class="login-bg-shapes">
-            <div class="shape-1"></div>
-            <div class="shape-2"></div>
+        <div class="register-bg-shapes">
+            <div class="register-shape-1"></div>
+            <div class="register-shape-2"></div>
         </div>
         
         <div class="login-grid">
-            <!-- Left Side: Illustration & Branding -->
-            <div class="login-illustration">
-                <div class="login-img-container">
-                    <div class="login-img-bg"></div>
-                    <img alt="Academic Environment" class="login-img"
-                        src="https://images2.thanhnien.vn/528068263637045248/2023/2/16/base64-16765074445291947452228.png">
-                    <!-- Glass Floating Card -->
-                    <div class="login-glass-card">
-                        <span class="material-symbols-outlined">auto_awesome</span>
-                        <p class="login-glass-title">Môi trường học thuật tinh hoa</p>
-                        <p class="login-glass-desc">Nơi kết nối tri thức và tương lai bền vững.</p>
+            <!-- Left Side: Editorial Content -->
+            <div class="register-editorial">
+                <span class="section-subtitle">Chào mừng bạn</span>
+                <h1 class="register-title">Tham gia cộng đồng Academic Atelier</h1>
+                <p class="register-desc">
+                    Nơi tri thức được vun đắp và tương lai được kiến tạo. Hãy chọn vai trò của bạn để bắt đầu hành trình.
+                </p>
+                <div class="register-info-box">
+                    <div class="register-info-icon">
+                        <span class="material-symbols-outlined">verified</span>
+                    </div>
+                    <div>
+                        <p class="register-info-title">Chứng nhận uy tín</p>
+                        <p class="register-info-desc">Hơn 5000+ gia sư được kiểm định.</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Right Side: Login Form -->
-            <div class="login-form-wrapper">
-                <div class="login-header">
-                    <h1 class="login-title">Đăng nhập vào Academic Atelier</h1>
-                    <p class="login-subtitle">Chào mừng bạn trở lại với cộng đồng học tập của chúng tôi.</p>
-                </div>
+            <!-- Right Side: Registration Form -->
+            <div class="register-form-box">
+                <div class="register-ribbon"></div>
+                
                 <form class="login-form">
                     <!-- Role Selection -->
                     <div class="form-group">
-                        <label class="form-label">Tôi là:</label>
-                        <div class="role-grid">
+                        <label class="form-label" style="text-transform: uppercase;">Tôi là...</label>
+                        <div class="role-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 0.5rem;">
                             <button class="role-btn active" type="button">
-                                <span class="material-symbols-outlined">person</span>
-                                <span>Phụ huynh</span>
+                                <span class="material-symbols-outlined">family_restroom</span>
+                                <span>Phụ huynh/Học sinh</span>
                             </button>
                             <button class="role-btn" type="button">
                                 <span class="material-symbols-outlined">school</span>
                                 <span>Gia sư</span>
                             </button>
-                            <button class="role-btn" type="button">
-                                <span class="material-symbols-outlined">badge</span>
-                                <span>Nhân viên</span>
-                            </button>
                         </div>
                     </div>
                     
-                    <!-- Inputs -->
+                    <!-- Fields -->
                     <div class="form-group">
-                        <label class="form-label" for="email">Tên đăng nhập / Email</label>
-                        <div class="input-with-icon">
-                            <input class="input-field" id="email" placeholder="example@academic.com" type="text" />
-                            <span class="material-symbols-outlined input-icon">alternate_email</span>
-                        </div>
+                        <label class="form-label">Họ tên</label>
+                        <input class="input-field" placeholder="Nguyễn Văn A" type="text" />
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="password">Mật khẩu</label>
-                        <div class="input-with-icon">
-                            <input class="input-field" id="password" placeholder="••••••••" type="password" />
-                            <span class="material-symbols-outlined input-icon cursor-pointer">visibility</span>
+                    
+                    <div class="grid-2-cols" style="margin-bottom: 1.5rem;">
+                        <div>
+                            <label class="form-label">Email</label>
+                            <input class="input-field" placeholder="example@gmail.com" type="email" />
+                        </div>
+                        <div>
+                            <label class="form-label">Số điện thoại</label>
+                            <input class="input-field" placeholder="0901 234 567" type="tel" />
                         </div>
                     </div>
                     
-                    <!-- Options -->
-                    <div class="login-options">
-                        <label class="remember-me">
-                            <input type="checkbox" />
-                            <span>Ghi nhớ đăng nhập</span>
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu</label>
+                        <input class="input-field" placeholder="••••••••" type="password" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Xác nhận mật khẩu</label>
+                        <input class="input-field" placeholder="••••••••" type="password" />
+                    </div>
+                    
+                    <div class="form-checkbox-row">
+                        <input type="checkbox" id="terms" />
+                        <label class="form-checkbox-text" for="terms">
+                            Bằng cách đăng ký, tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> của Academic Atelier.
                         </label>
-                        <a class="forgot-pass" href="#">Quên mật khẩu?</a>
                     </div>
                     
-                    <!-- Login Button -->
-                    <button class="btn-login" type="submit">Đăng nhập</button>
+                    <button class="btn-login" style="margin-top: 1rem;" type="submit">Đăng ký thành viên</button>
                     
                     <div class="login-footer-text">
-                        Chưa có tài khoản?
-                        <a href="${pageContext.request.contextPath}/register">Đăng ký ngay</a>
+                        Đã có tài khoản? <a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
                     </div>
                 </form>
             </div>

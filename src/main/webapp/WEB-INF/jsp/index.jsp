@@ -11,17 +11,17 @@
         <!-- Section 1: TopAppBar -->
         <header class="header">
             <div class="header-container">
-                <a href="#" class="logo">Academic Atelier</a>
+                <a href="${pageContext.request.contextPath}/" class="logo">Academic Atelier</a>
                 <nav class="nav-menu">
-                    <a class="nav-link active" href="#">Trang chủ</a>
+                    <a class="nav-link active" href="${pageContext.request.contextPath}/">Trang chủ</a>
                     <a class="nav-link" href="#">Phụ huynh</a>
                     <a class="nav-link" href="#">Gia sư</a>
                     <a class="nav-link" href="#">Khóa học</a>
                     <a class="nav-link" href="#">Tin tức</a>
                 </nav>
                 <div class="header-actions">
-                    <a href="#" class="btn btn-text">Đăng nhập</a>
-                    <a href="#" class="btn btn-primary">Đăng ký</a>
+                    <a href="${pageContext.request.contextPath}/login" class="btn btn-text">Đăng nhập</a>
+                    <a href="${pageContext.request.contextPath}/register" class="btn btn-primary">Đăng ký</a>
                 </div>
             </div>
         </header>
