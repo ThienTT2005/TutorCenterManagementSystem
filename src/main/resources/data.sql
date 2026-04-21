@@ -365,6 +365,19 @@ CREATE TABLE session_validity_log (
     INDEX idx_validity_paid (is_paid)
 );
 
+-- 24. REFRESH_TOKENS
+CREATE TABLE refresh_tokens (
+    token_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    token VARCHAR(500) NOT NULL,
+    expired_at DATETIME NOT NULL,
+    revoked BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_refresh_tokens_user (user_id),
+    INDEX idx_refresh_tokens_token (token(255))
+);
+
 -- Dữ liệu cho bảng roles
 INSERT INTO roles (role_name) VALUES 
 ('ADMIN'),
