@@ -64,7 +64,7 @@ public class ClassServiceImpl implements ClassService {
         classEntity.setGrade(request.getGrade());
         classEntity.setTutor(tutor);
         classEntity.setTuitionFeePerSession(request.getTuitionFeePerSession());
-        classEntity.setRequiredSessions(request.getRequiredSessions());
+        classEntity.setRequiredSessions(request.getRequiredSessionsPerMonth());
         classEntity.setDescription(request.getDescription());
         classEntity.setStatus(true);
 
@@ -108,8 +108,8 @@ public class ClassServiceImpl implements ClassService {
             throw new BadRequestException("Học phí phải lớn hơn 0");
         }
 
-        if (request.getRequiredSessions() == null || request.getRequiredSessions() <= 0) {
-            throw new BadRequestException("Số buổi yêu cầu phải lớn hơn 0");
+        if (request.getRequiredSessionsPerMonth() == null || request.getRequiredSessionsPerMonth() <= 0) {
+            throw new BadRequestException("Số buổi yêu cầu trong 1 tháng phải lớn hơn 0");
         }
 
         if (request.getStudentIds() == null || request.getStudentIds().isEmpty()) {

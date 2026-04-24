@@ -1,6 +1,8 @@
 package com.tcms.clazz.controller;
 import com.tcms.clazz.dto.request.CreateClassRequest;
 import com.tcms.clazz.service.ClassService;
+import com.tcms.schedule.service.ScheduleService;
+import com.tcms.session.service.SessionService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/classes")
 public class ClassController {
     private final ClassService classService;
+    private final ScheduleService scheduleService;
+    private final SessionService sessionService;
 
     private boolean isAdmin(HttpSession session){
         if(session.getAttribute("currentUser") == null) return false;
@@ -60,6 +64,8 @@ public class ClassController {
         if(!isAdmin(session)) return "redirect:/login";
         model.addAttribute("classItem", classService.getClassById(classId));
         model.addAttribute("enrollments", classService.getEnrollmentsByClassId(classId));
+        model.addAttribute("schedules", scheduleService.getSchedulesByClassId(classId));
+        model.addAttribute("sessions", sessionService.getSessionsByClassId(classId));
         return "admin/classes/detail";
     }
 }

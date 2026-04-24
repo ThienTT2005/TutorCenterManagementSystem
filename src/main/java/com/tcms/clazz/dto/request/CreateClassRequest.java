@@ -18,7 +18,7 @@ public class CreateClassRequest {
 
     private BigDecimal tuitionFeePerSession;
 
-    private Integer requiredSessions;
+    private Integer requiredSessionsPerMonth;
 
     private String description;
 
