@@ -31,7 +31,7 @@ public class Student {
     private String fullName;
 
     private LocalDate dob;
-
+    private String avatar;
     private String gender;
     private String address;
     private String school;
