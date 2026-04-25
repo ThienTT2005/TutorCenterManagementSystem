@@ -86,6 +86,7 @@ CREATE TABLE parents (
     dob DATE,
     gender VARCHAR(10),
     address VARCHAR(255),
+    avatar VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX idx_parents_phone (phone),
     INDEX idx_parents_email (email)
@@ -100,6 +101,7 @@ CREATE TABLE students (
     dob DATE,
     gender VARCHAR(10),
     address VARCHAR(255),
+    avatar VARCHAR(255),
     school VARCHAR(255),
     grade VARCHAR(20),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
@@ -161,12 +163,12 @@ CREATE TABLE teaching_sessions (
     end_time TIME,
     topic VARCHAR(255),
     status ENUM('PLANNED', 'ONGOING', 'COMPLETED', 'CANCELLED') DEFAULT 'PLANNED',
-    qr_code VARCHAR(255) UNIQUE,
+    attendance_code VARCHAR(20) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE,
     INDEX idx_sessions_class_date (class_id, session_date),
     INDEX idx_sessions_status (status),
-    INDEX idx_sessions_qr (qr_code),
+    INDEX idx_sessions_code (attendance_code),
     INDEX idx_sessions_date (session_date)
 );
 
@@ -389,7 +391,7 @@ INSERT INTO permissions (permission_name) VALUES
 ('GRADE_HOMEWORK'),
 ('REQUEST_ABSENCE'),
 ('VIEW_ATTENDANCE'),
-('QR_CHECKINOUT');
+('CODE_CHECKINOUT');
 
 -- Phân quyền cho ADMIN (tất cả quyền)
 INSERT INTO role_permissions (role_id, permission_id)
@@ -404,7 +406,7 @@ FROM roles r, permissions p
 WHERE r.role_name = 'TUTOR'
 AND p.permission_name IN ('VIEW_CLASS', 'UPDATE_PROGRESS', 'VIEW_PROGRESS', 
                           'SUBMIT_PAYMENT', 'CREATE_HOMEWORK', 'GRADE_HOMEWORK',
-                          'QR_CHECKINOUT', 'VIEW_ATTENDANCE');
+                          'CODE_CHECKINOUT', 'VIEW_ATTENDANCE');
 
 -- Phân quyền cho PARENT
 INSERT INTO role_permissions (role_id, permission_id)
@@ -427,14 +429,13 @@ INSERT INTO users (username, password, role_id, status) VALUES
 
 DELIMITER //
 
--- TRIGGER 1: Tạo QR code tự động khi tạo buổi học mới
-CREATE TRIGGER trg_generate_qr_code
+-- TRIGGER 1: Tạo code tự động khi tạo buổi học mới
+CREATE TRIGGER trg_generate_attendance_code
 BEFORE INSERT ON teaching_sessions
 FOR EACH ROW
 BEGIN
-    IF NEW.qr_code IS NULL OR NEW.qr_code = '' THEN
-        SET NEW.qr_code = CONCAT('TCMS_', NEW.class_id, '_', NEW.session_date, '_', 
-                                 LPAD(FLOOR(RAND() * 1000000), 6, '0'));
+    IF NEW.attendance_code IS NULL OR NEW.attendance_code = '' THEN
+        SET NEW.attendance_code = LPAD(FLOOR(RAND() * 1000000), 6, '0');
     END IF;
 END//
 
