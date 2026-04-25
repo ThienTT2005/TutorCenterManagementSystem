@@ -10,7 +10,7 @@ public interface TeachingSessionRepository extends JpaRepository<TeachingSession
 
     List<TeachingSession> findByClassEntityClassIdOrderBySessionDateAscStartTimeAsc(Integer classId);
 
-    List<TeachingSession> findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeASC(
+    List<TeachingSession> findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
             Integer classId,
             LocalDate startDate,
             LocalDate endDate

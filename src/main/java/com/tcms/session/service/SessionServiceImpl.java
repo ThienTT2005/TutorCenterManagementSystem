@@ -69,7 +69,7 @@ public class SessionServiceImpl implements SessionService {
 
         List<TeachingSession> sessions =
                 teachingSessionRepository
-                        .findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeASC(
+                        .findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
                                 classId,
                                 startDate,
                                 endDate
