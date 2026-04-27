@@ -476,10 +476,50 @@
                         Thông tin cá nhân
                     </h3>
                     <div class="info-grid">
-                      <!-- STUDENT -->
-                      <div>
+                        <c:if test="${user.roleName != 'STUDENT'}">
+                            <div>
+                                <span class="field-label">Email</span>
+                                <p class="field-value">${empty user.email ? '---' : user.email}</p>
+                            </div>
+                            <div>
+                                <span class="field-label">Số điện thoại</span>
+                                <p class="field-value">${empty user.phone ? '---' : user.phone}</p>
+                            </div>
+                        </c:if>
+
+                        <div>
+                            <span class="field-label">Ngày sinh</span>
+                            <p class="field-value">${empty user.dob ? '---' : user.dob}</p>
+                        </div>
+                        <div>
+                            <span class="field-label">Giới tính</span>
+                            <p class="field-value">${empty user.gender ? '---' : user.gender}</p>
+                        </div>
                         
-                      </div>
+                        <c:if test="${user.roleName == 'STUDENT'}">
+                            <div>
+                                <span class="field-label">Trường học</span>
+                                <p class="field-value">${empty user.school ? '---' : user.school}</p>
+                            </div>
+                            <div>
+                                <span class="field-label">Lớp</span>
+                                <p class="field-value">${empty user.grade ? '---' : user.grade}</p>
+                            </div>
+                        </c:if>
+
+                        <c:if test="${user.roleName == 'TUTOR'}">
+                            <div class="full-row">
+                                <span class="field-label">Chuyên môn</span>
+                                <p class="field-value">${empty user.major ? '---' : user.major}</p>
+                            </div>
+                        </c:if>
+
+                        <c:if test="${user.roleName != 'STUDENT'}">
+                            <div class="full-row">
+                                <span class="field-label">Địa chỉ</span>
+                                <p class="field-value">${empty user.address ? '---' : user.address}</p>
+                            </div>
+                        </c:if>
                     </div>
 
                 
@@ -612,9 +652,16 @@
                                                 <td>${child.grade}</td>
                                                 <td>${child.school}</td>
                                                 <td>
-                                                    <a href="${pageContext.request.contextPath}/admin/accounts/${child.userId}/detail">
-                                                        Xem hồ sơ
-                                                    </a>
+                                                    <c:choose>
+                                                        <c:when test="${not empty child.user}">
+                                                            <a href="${pageContext.request.contextPath}/admin/accounts/${child.user.id}/detail">
+                                                                Xem hồ sơ
+                                                            </a>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span style="color: #94a3b8; font-size: 12px;">Chưa liên kết tài khoản</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </td>
                                             </tr>
                                         </c:forEach>
