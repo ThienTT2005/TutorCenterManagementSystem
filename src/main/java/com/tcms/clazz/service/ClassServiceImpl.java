@@ -6,6 +6,8 @@ import com.tcms.clazz.entity.Enrollment;
 import com.tcms.clazz.repository.ClassRepository;
 import com.tcms.clazz.repository.EnrollmentRepository;
 import com.tcms.exception.BadRequestException;
+import com.tcms.notification.entity.NotificationType;
+import com.tcms.notification.service.NotificationService;
 import com.tcms.student.entity.Student;
 import com.tcms.student.repository.StudentRepository;
 import com.tcms.tutor.entity.Tutor;
@@ -24,6 +26,7 @@ public class ClassServiceImpl implements ClassService {
     private final EnrollmentRepository enrollmentRepository;
     private final TutorRepository tutorRepository;
     private final StudentRepository studentRepository;
+    private final NotificationService notificationService;
 
     @Override
     public List<ClassEntity> getAllClasses() {
@@ -70,6 +73,8 @@ public class ClassServiceImpl implements ClassService {
 
         ClassEntity savedClass = classRepository.save(classEntity);
 
+        notifyTutorAddedToClass(savedClass, tutor);
+
         if (request.getStudentIds() != null) {
             for (Integer studentId : request.getStudentIds()) {
                 Student student = studentRepository.findById(studentId)
@@ -80,9 +85,63 @@ public class ClassServiceImpl implements ClassService {
                     enrollment.setClassEntity(savedClass);
                     enrollment.setStudent(student);
                     enrollment.setStatus(true);
+
                     enrollmentRepository.save(enrollment);
+
+                    notifyStudentAndParentAddedToClass(savedClass, student);
+                    notifyTutorStudentJoinedClass(savedClass, tutor, student);
                 }
             }
+        }
+    }
+
+    private void notifyTutorAddedToClass(ClassEntity classEntity, Tutor tutor) {
+        if (tutor.getUser() == null) return;
+
+        notificationService.createNotification(
+                tutor.getUser().getUserId(),
+                "Bạn được phân công lớp mới",
+                "Bạn đã được phân công dạy lớp: " + classEntity.getClassName(),
+                NotificationType.SYSTEM,
+                classEntity.getClassId(),
+                "classes"
+        );
+    }
+
+    private void notifyTutorStudentJoinedClass(ClassEntity classEntity, Tutor tutor, Student student) {
+        if (tutor.getUser() == null) return;
+
+        notificationService.createNotification(
+                tutor.getUser().getUserId(),
+                "Có học sinh tham gia lớp",
+                "Học sinh " + student.getFullName() + " đã được thêm vào lớp " + classEntity.getClassName(),
+                NotificationType.SYSTEM,
+                classEntity.getClassId(),
+                "classes"
+        );
+    }
+
+    private void notifyStudentAndParentAddedToClass(ClassEntity classEntity, Student student) {
+        if (student.getUser() != null) {
+            notificationService.createNotification(
+                    student.getUser().getUserId(),
+                    "Bạn được thêm vào lớp mới",
+                    "Bạn đã được thêm vào lớp: " + classEntity.getClassName(),
+                    NotificationType.SYSTEM,
+                    classEntity.getClassId(),
+                    "classes"
+            );
+        }
+
+        if (student.getParent() != null && student.getParent().getUser() != null) {
+            notificationService.createNotification(
+                    student.getParent().getUser().getUserId(),
+                    "Con được thêm vào lớp mới",
+                    "Học sinh " + student.getFullName() + " đã được thêm vào lớp: " + classEntity.getClassName(),
+                    NotificationType.SYSTEM,
+                    classEntity.getClassId(),
+                    "classes"
+            );
         }
     }
 

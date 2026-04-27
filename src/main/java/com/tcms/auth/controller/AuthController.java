@@ -28,6 +28,7 @@ public class AuthController {
             User user = authService.login(request);
 
             session.setAttribute("currentUser", user);
+            session.setAttribute("userId", user.getUserId());
             session.setAttribute("role", user.getRole().getRoleName());
 
             String role = user.getRole().getRoleName();
