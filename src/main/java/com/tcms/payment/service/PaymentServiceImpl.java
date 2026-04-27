@@ -2,6 +2,8 @@ package com.tcms.payment.service;
 
 import com.tcms.clazz.entity.ClassEntity;
 import com.tcms.clazz.repository.ClassRepository;
+import com.tcms.notification.entity.NotificationType;
+import com.tcms.notification.service.NotificationService;
 import com.tcms.parent.entity.Parent;
 import com.tcms.parent.repository.ParentRepository;
 import com.tcms.payment.dto.request.CreatePaymentRequest;
@@ -17,6 +19,8 @@ import com.tcms.student.entity.Student;
 import com.tcms.student.repository.StudentRepository;
 import com.tcms.tutor.entity.Tutor;
 import com.tcms.tutor.repository.TutorRepository;
+import com.tcms.user.entity.User;
+import com.tcms.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +41,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final ClassRepository classRepository;
     private final StudentRepository studentRepository;
     private final ParentRepository parentRepository;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     @Override
     public void createPayment(Integer tutorUserId, CreatePaymentRequest request) {
@@ -96,8 +102,17 @@ public class PaymentServiceImpl implements PaymentService {
                 .status(PaymentStatus.PENDING)
                 .requestDate(LocalDateTime.now())
                 .build();
-
-        paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+        if (student.getParent() != null && student.getParent().getUser() != null) {
+            notificationService.createNotification(
+                    student.getParent().getUser().getUserId(),
+                    "Yêu cầu thanh toán mới",
+                    "Gia sư đã tạo yêu cầu thanh toán cho học sinh " + student.getFullName(),
+                    NotificationType.PAYMENT,
+                    saved.getPaymentId(),
+                    "payments"
+            );
+        }
     }
 
     @Override
@@ -125,8 +140,17 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setProofUrl(request.getProofUrl());
         payment.setStatus(PaymentStatus.PROOF_UPLOADED);
-
-        paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+        if (saved.getTutor() != null && saved.getTutor().getUser() != null) {
+            notificationService.createNotification(
+                    saved.getTutor().getUser().getUserId(),
+                    "Phụ huynh đã upload minh chứng",
+                    "Phụ huynh đã gửi minh chứng thanh toán, cần gia sư xác nhận.",
+                    NotificationType.PAYMENT,
+                    saved.getPaymentId(),
+                    "payments"
+            );
+        }
     }
 
     @Override
@@ -154,7 +178,20 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(PaymentStatus.TUTOR_CONFIRMED);
         payment.setTutorConfirmedAt(LocalDateTime.now());
 
-        paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+
+        List<User> admins = userRepository.findByRoleRoleName("ADMIN");
+
+        for (User admin : admins) {
+            notificationService.createNotification(
+                    admin.getUserId(),
+                    "Thanh toán chờ admin duyệt",
+                    "Gia sư đã xác nhận nhận tiền, cần admin duyệt thanh toán.",
+                    NotificationType.PAYMENT,
+                    saved.getPaymentId(),
+                    "payments"
+            );
+        }
     }
 
     @Override
@@ -210,7 +247,31 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(PaymentStatus.REJECTED);
         payment.setRejectionReason(request.getReason());
 
-        paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+
+        if (saved.getTutor() != null && saved.getTutor().getUser() != null) {
+            notificationService.createNotification(
+                    saved.getTutor().getUser().getUserId(),
+                    "Thanh toán bị từ chối",
+                    "Admin đã từ chối thanh toán. Lý do: " + request.getReason(),
+                    NotificationType.PAYMENT,
+                    saved.getPaymentId(),
+                    "payments"
+            );
+        }
+
+        if (saved.getStudent() != null &&
+                saved.getStudent().getParent() != null &&
+                saved.getStudent().getParent().getUser() != null) {
+            notificationService.createNotification(
+                    saved.getStudent().getParent().getUser().getUserId(),
+                    "Thanh toán bị từ chối",
+                    "Admin đã từ chối thanh toán. Lý do: " + request.getReason(),
+                    NotificationType.PAYMENT,
+                    saved.getPaymentId(),
+                    "payments"
+            );
+        }
     }
 
     @Override
