@@ -475,144 +475,31 @@
                         <span class="material-symbols-rounded">person</span>
                         Thông tin cá nhân
                     </h3>
-
                     <div class="info-grid">
-
-                        <!-- STUDENT -->
-                        <c:if test="${user.roleName == 'STUDENT'}">
-                            <div>
-                                <span class="field-label">Trường</span>
-                                <p class="field-value">${empty user.school ? '---' : user.school}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Lớp</span>
-                                <p class="field-value">${empty user.grade ? '---' : user.grade}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Ngày sinh</span>
-                                <p class="field-value">${empty user.dob ? '---' : user.dob}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Giới tính</span>
-                                <p class="field-value">${empty user.gender ? '---' : user.gender}</p>
-                            </div>
-
-                            <div class="full-row">
-                                <span class="field-label">Thông tin phụ huynh</span>
-
-                                <div class="parent-box" style="margin-top: 8px;">
-                                    <div class="parent-content">
-                                        <div>
-                                            <p class="field-value">
-                                                    ${empty user.parentName ? 'Chưa gán phụ huynh' : user.parentName}
-                                            </p>
-                                            <p class="timeline-desc">
-                                                ID phụ huynh: ${empty user.parentUserId ? '---' : user.parentUserId}
-                                            </p>
-                                        </div>
-
-                                        <c:if test="${not empty user.parentUserId}">
-                                            <a href="${pageContext.request.contextPath}/admin/accounts/${user.parentUserId}/detail">
-                                                Xem hồ sơ
-                                            </a>
-                                        </c:if>
-                                    </div>
-                                </div>
-                            </div>
-                        </c:if>
-
-
-                        <!-- TUTOR -->
-                        <c:if test="${user.roleName == 'TUTOR'}">
-                            <div>
-                                <span class="field-label">Số điện thoại</span>
-                                <p class="field-value">${empty user.phone ? '---' : user.phone}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Email</span>
-                                <p class="field-value">${empty user.email ? '---' : user.email}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Ngày sinh</span>
-                                <p class="field-value">${empty user.dob ? '---' : user.dob}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Giới tính</span>
-                                <p class="field-value">${empty user.gender ? '---' : user.gender}</p>
-                            </div>
-
-                            <div class="full-row">
-                                <span class="field-label">Địa chỉ</span>
-                                <p class="field-value">${empty user.address ? '---' : user.address}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Trường</span>
-                                <p class="field-value">${empty user.school ? '---' : user.school}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Chuyên ngành</span>
-                                <p class="field-value">${empty user.major ? '---' : user.major}</p>
-                            </div>
-
-                            <div class="full-row">
-                                <span class="field-label">Mô tả</span>
-                                <p class="field-value">${empty user.description ? '---' : user.description}</p>
-                            </div>
-                        </c:if>
-
-
-                        <!-- PARENT -->
-                        <c:if test="${user.roleName == 'PARENT'}">
-                            <div>
-                                <span class="field-label">Số điện thoại</span>
-                                <p class="field-value">${empty user.phone ? '---' : user.phone}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Email</span>
-                                <p class="field-value">${empty user.email ? '---' : user.email}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Ngày sinh</span>
-                                <p class="field-value">${empty user.dob ? '---' : user.dob}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Giới tính</span>
-                                <p class="field-value">${empty user.gender ? '---' : user.gender}</p>
-                            </div>
-
-                            <div class="full-row">
-                                <span class="field-label">Địa chỉ</span>
-                                <p class="field-value">${empty user.address ? '---' : user.address}</p>
-                            </div>
-                        </c:if>
-
-
-                        <!-- ADMIN -->
-                        <c:if test="${user.roleName == 'ADMIN'}">
-                            <div>
-                                <span class="field-label">Username</span>
-                                <p class="field-value">${user.username}</p>
-                            </div>
-
-                            <div>
-                                <span class="field-label">Trạng thái</span>
-                                <p class="field-value">${user.status ? 'Đang hoạt động' : 'Đã khóa'}</p>
-                            </div>
-                        </c:if>
-
+                      <!-- STUDENT -->
+                      <div>
+                        
+                      </div>
                     </div>
-                    
+
+                
+                    <c:if test="${user.roleName == 'STUDENT'}">
+                        <div class="parent-box">
+                            <span class="field-label">Thông tin phụ huynh</span>
+                            <div class="parent-content">
+                                <div>
+                                    <p class="field-value">${empty user.parentName ? 'Chưa gán phụ huynh' : user.parentName}</p>
+                                    <p class="timeline-desc">ID phụ huynh: ${empty user.parentUserId ? '---' : user.parentUserId}</p>
+                                </div>
+
+                                <c:if test="${not empty user.parentUserId}">
+                                    <a href="${pageContext.request.contextPath}/admin/accounts/${user.parentUserId}/detail">
+                                        Xem hồ sơ
+                                    </a>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:if>
                 </div>
 
                 <!-- ROLE SPECIFIC -->
@@ -725,7 +612,7 @@
                                                 <td>${child.grade}</td>
                                                 <td>${child.school}</td>
                                                 <td>
-                                                    <a href="${pageContext.request.contextPath}/admin/accounts/${child.user.id}/detail">
+                                                    <a href="${pageContext.request.contextPath}/admin/accounts/${child.userId}/detail">
                                                         Xem hồ sơ
                                                     </a>
                                                 </td>
