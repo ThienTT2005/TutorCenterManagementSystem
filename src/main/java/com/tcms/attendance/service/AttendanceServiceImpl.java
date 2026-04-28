@@ -74,8 +74,13 @@ public class AttendanceServiceImpl implements AttendanceService{
                         newAttendance.setIsValid(false);
                         return newAttendance;
                     });
-            if(attendance.getCheckinTime() == null) attendance.setCheckinTime(now);
-            attendance.setStatus(AttendanceStatus.ATTENDED);
+            if (attendance.getCheckinTime() == null) {
+                attendance.setCheckinTime(now);
+            }
+            if (!AttendanceStatus.ABSENT_EXCUSED.equals(attendance.getStatus())) {
+                attendance.setStatus(AttendanceStatus.ATTENDED);
+            }
+            attendance.setIsValid(true);
             attendanceRepository.save(attendance);
         }
     }
