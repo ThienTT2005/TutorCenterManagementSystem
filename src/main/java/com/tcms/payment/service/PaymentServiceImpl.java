@@ -66,15 +66,15 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         List<SessionValidityLog> validLogs =
-                validityLogRepository.findByStudentStudentId(student.getStudentId())
+                validityLogRepository.findByStudentStudentIdAndIsPaidFalse(student.getStudentId())
                         .stream()
-                        .filter(log -> !Boolean.TRUE.equals(log.getIsPaid()))
                         .filter(log -> log.getSession() != null)
                         .filter(log -> log.getSession().getClassEntity() != null)
                         .filter(log -> log.getSession().getClassEntity().getClassId().equals(classEntity.getClassId()))
                         .filter(log -> log.getSession().getStatus() == SessionStatus.COMPLETED)
                         .filter(log -> !log.getSession().getSessionDate().isAfter(LocalDate.now()))
                         .filter(log -> Boolean.TRUE.equals(log.getAttendanceValid()))
+                        .filter(log -> "APPROVED".equals(log.getFeedbackStatus()))
                         .filter(log -> log.getCalculatedAmount() != null)
                         .filter(log -> log.getCalculatedAmount().compareTo(BigDecimal.ZERO) > 0)
                         .collect(Collectors.toList());
@@ -84,6 +84,8 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         String sessionIds = validLogs.stream()
+                .sorted((a, b) -> a.getSession().getSessionDate()
+                        .compareTo(b.getSession().getSessionDate()))
                 .map(log -> log.getSession().getSessionId().toString())
                 .collect(Collectors.joining(","));
 
@@ -217,9 +219,11 @@ public class PaymentServiceImpl implements PaymentService {
                 );
 
         for (SessionValidityLog log : logs) {
-            log.setIsPaid(true);
-            log.setPayment(payment);
-            validityLogRepository.save(log);
+            if (!Boolean.TRUE.equals(log.getIsPaid())) {
+                log.setIsPaid(true);
+                log.setPayment(payment);
+                validityLogRepository.save(log);
+            }
         }
 
         payment.setStatus(PaymentStatus.COMPLETED);
