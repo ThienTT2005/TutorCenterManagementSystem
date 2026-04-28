@@ -17,6 +17,19 @@ public class StudentHomeworkController {
     private final HomeworkService homeworkService;
     private final HomeworkSubmissionService submissionService;
 
+    @GetMapping
+    public String listMyHomework(HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("homeworks", homeworkService.getMyHomework(userId));
+
+        return "student/homework/list";
+    }
+
     @GetMapping("/session/{sessionId}")
     public String listHomeworkBySession(@PathVariable Integer sessionId, Model model) {
         model.addAttribute("homeworks", homeworkService.getHomeworkBySession(sessionId));

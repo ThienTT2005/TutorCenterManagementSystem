@@ -12,4 +12,6 @@ public interface HomeworkService {
     List<Homework> getHomeworkBySession(Integer sessionId);
 
     Homework getHomeworkById(Integer homeworkId);
+
+    List<Homework> getMyHomework(Integer studentUserId);
 }

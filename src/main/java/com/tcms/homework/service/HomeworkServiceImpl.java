@@ -15,6 +15,7 @@ import com.tcms.notification.service.NotificationService;
 import com.tcms.session.entity.TeachingSession;
 import com.tcms.session.repository.TeachingSessionRepository;
 import com.tcms.student.entity.Student;
+import com.tcms.student.repository.StudentRepository;
 import com.tcms.tutor.entity.Tutor;
 import com.tcms.tutor.repository.TutorRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     private final TutorRepository tutorRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final NotificationService notificationService;
+    private final StudentRepository studentRepository;
 
     @Override
     public void createHomework(Integer tutorUserId, CreateHomeworkRequest request) {
@@ -143,5 +145,20 @@ public class HomeworkServiceImpl implements HomeworkService {
                 );
             }
         }
+    }
+
+    @Override
+    public List<Homework> getMyHomework(Integer studentUserId) {
+        Student student = studentRepository.findByUserUserId(studentUserId)
+                .orElseThrow(() -> new BadRequestException("Không tìm thấy học sinh"));
+        List<Enrollment> enrollments =
+                enrollmentRepository.findByStudentStudentIdAndStatusTrue(student.getStudentId());
+        if (enrollments.isEmpty()) {
+            return List.of();
+        }
+        List<Integer> classIds = enrollments.stream()
+                .map(e -> e.getClassEntity().getClassId())
+                .toList();
+        return homeworkRepository.findBySessionClassEntityClassIdIn(classIds);
     }
 }
