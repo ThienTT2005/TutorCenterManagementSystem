@@ -206,7 +206,7 @@
                                 <div class="action-icon"><span class="material-symbols-rounded">add_box</span></div>
                                 Create Class
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin/accounts/create" class="action-btn">
+                            <a href="${pageContext.request.contextPath}/admin/users/create" class="action-btn">
                                 <div class="action-icon"><span class="material-symbols-rounded">person_add</span></div>
                                 Create Account
                             </a>

@@ -3,30 +3,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const passwordInput = document.querySelector('#password');
     const eyeIcon = document.querySelector('#eyeIcon');
 
-    const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const btnLoader = document.getElementById('btnLoader');
-
     const errorAlert = document.getElementById('errorAlert');
     const errorText = errorAlert ? errorAlert.querySelector('p') : null;
 
     const forgotLink = document.querySelector('.forgot-link');
     const contactBtn = document.getElementById('contactBtn');
 
-    function showError(message) {
+    window.showLoginError = function (message) {
         if (!errorAlert || !errorText) return;
         errorText.textContent = message;
         errorAlert.classList.remove('hidden');
-    }
+    };
 
-    function hideError() {
+    window.hideLoginError = function () {
         if (!errorAlert) return;
         errorAlert.classList.add('hidden');
-    }
+    };
 
-    // Hiện / ẩn mật khẩu
     if (togglePassword && passwordInput && eyeIcon) {
         togglePassword.addEventListener('click', function () {
             const type = passwordInput.getAttribute('type') === 'password'
@@ -45,43 +39,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Kiểm tra form trước khi gửi backend
-    if (loginForm && submitBtn && btnText && btnLoader) {
-        loginForm.addEventListener('submit', function (event) {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
-
-            hideError();
-
-            if (username === '' || password === '') {
-                event.preventDefault();
-                showError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            btnText.classList.add('hidden');
-            btnLoader.classList.remove('hidden');
-        });
-    }
-
-    // Bấm quên mật khẩu
     if (forgotLink) {
         forgotLink.addEventListener('click', function (event) {
             event.preventDefault();
-
-            showError(
-                'Liên hệ hotline 0123.456.789 để được hỗ trợ.'
-            );
+            window.showLoginError('Liên hệ hotline 0123.456.789 để được hỗ trợ.');
         });
     }
 
-    // Bấm nút liên hệ
     if (contactBtn) {
         contactBtn.addEventListener('click', function () {
             const hotline = '0123.456.789';
 
-            showError('Liên hệ hotline ' + hotline + ' để được hỗ trợ.');
+            window.showLoginError('Liên hệ hotline ' + hotline + ' để được hỗ trợ.');
 
             this.textContent = 'Hotline: ' + hotline;
             this.classList.add('active');
@@ -92,12 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Khi nhập lại thì ẩn lỗi
     if (usernameInput) {
-        usernameInput.addEventListener('input', hideError);
+        usernameInput.addEventListener('input', window.hideLoginError);
     }
 
     if (passwordInput) {
-        passwordInput.addEventListener('input', hideError);
+        passwordInput.addEventListener('input', window.hideLoginError);
     }
 });

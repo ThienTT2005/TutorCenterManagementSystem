@@ -20,5 +20,5 @@ public interface AdminUserService {
 
     void createStudentProfile(CreateStudentProfileRequest request);
 
-    List<Parent> getAllParents();
+     List<Parent> getAllParents();
 }

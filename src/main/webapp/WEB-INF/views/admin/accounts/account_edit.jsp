@@ -271,7 +271,7 @@
             </div>
 
             <a class="btn-back"
-               href="${pageContext.request.contextPath}/admin/accounts/${user.id}/detail">
+               href="${pageContext.request.contextPath}/admin/users/${user.id}/detail">
                 ← Quay lại chi tiết
             </a>
         </div>
@@ -494,7 +494,7 @@
 
                     <div class="footer-actions">
                         <a class="btn-back"
-                           href="${pageContext.request.contextPath}/admin/accounts/${user.id}/detail">
+                           href="${pageContext.request.contextPath}/admin/users/${user.id}/detail">
                             Hủy
                         </a>
 
@@ -713,7 +713,7 @@
                     showStatus('<i class="fa-solid fa-check-circle"></i> Cập nhật thành công! Đang chuyển hướng...', 'success');
 
                     setTimeout(() => {
-                        window.location.href = contextPath + '/admin/accounts/' + userId + '/detail';
+                        window.location.href = contextPath + '/admin/users/' + userId + '/detail';
                     }, 1200);
                 } else {
                     showStatus('<i class="fa-solid fa-circle-exclamation"></i> ' + (res.json.message || 'Cập nhật thất bại'), 'error');

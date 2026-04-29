@@ -222,7 +222,7 @@
                                     Xuất báo cáo
                                 </a>
 
-                                <a href="${pageContext.request.contextPath}/admin/accounts/create?role=TUTOR"
+                                <a href="${pageContext.request.contextPath}/admin/users/create?role=TUTOR"
                                     class="btn-primary" style="text-decoration:none;">
                                     <span class="material-symbols-rounded">person_add</span>
                                     Thêm gia sư
@@ -548,12 +548,12 @@
 
                     function goDetail(event, userId) {
                         event.stopPropagation();
-                        window.location.href = contextPath + '/admin/accounts/' + userId + '/detail';
+                        window.location.href = contextPath + '/admin/users/' + userId + '/detail';
                     }
 
                     function goEdit(event, userId) {
                         event.stopPropagation();
-                        window.location.href = contextPath + '/admin/accounts/' + userId + '/edit';
+                        window.location.href = contextPath + '/admin/users/' + userId + '/edit';
                     }
 
                     async function lockUser(event, userId) {

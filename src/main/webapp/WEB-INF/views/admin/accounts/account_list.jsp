@@ -231,7 +231,7 @@
                 <h2>Danh sách tài khoản</h2>
                 <p>Quản lý và giám sát các nhóm người dùng trong hệ thống trung tâm.</p>
             </div>
-            <a href="${pageContext.request.contextPath}/admin/accounts/create" class="btn-primary" style="text-decoration: none;">
+            <a href="${pageContext.request.contextPath}/admin/users/create" class="btn-primary" style="text-decoration: none;">
                 <span class="material-symbols-rounded">person_add</span>
                 Tạo tài khoản
             </a>
@@ -307,7 +307,7 @@
             </div>
         </section>
 
-        <form action="${pageContext.request.contextPath}/admin/accounts" method="GET" class="filters-toolbar">
+        <form action="${pageContext.request.contextPath}/admin/users" method="GET" class="filters-toolbar">
             <div class="filter-group" style="flex: 1.5;">
                 <div class="filter-input">
                     <span class="material-symbols-rounded" style="color: var(--text-muted);">search</span>
@@ -342,7 +342,7 @@
                         style="background: var(--bg-page); border: 1px solid var(--border-color); width: 44px; height: 44px;">
                     <span class="material-symbols-rounded">filter_list</span>
                 </button>
-                <a href="${pageContext.request.contextPath}/admin/accounts"
+                <a href="${pageContext.request.contextPath}/admin/users"
                    style="color: var(--primary); font-size: 13px; font-weight: 600; text-decoration: none;">
                     Xóa lọc
                 </a>
@@ -418,7 +418,7 @@
                                             <c:when test="${user.roleName == 'STUDENT'}">
                                                 <c:choose>
                                                     <c:when test="${not empty user.parentName}">
-                                                        <a href="<c:url value='/admin/accounts?keyword=${user.parentUserId}' />" 
+                                                        <a href="<c:url value='/admin/users?keyword=${user.parentUserId}' />" 
                                                            style="color: var(--primary); font-weight: 700; font-size: 13px; text-decoration: none;">
                                                             PH: ${user.parentName}
                                                         </a>
@@ -452,13 +452,13 @@
 
                                     <div class="actions-cell">
                                         <a class="action-btn"
-                                           href="${pageContext.request.contextPath}/admin/accounts/${user.id}/detail"
+                                           href="${pageContext.request.contextPath}/admin/users/${user.id}/detail"
                                            title="Xem chi tiết">
                                             <span class="material-symbols-rounded">visibility</span>
                                         </a>
 
                                         <a class="action-btn"
-                                           href="${pageContext.request.contextPath}/admin/accounts/${user.id}/edit"
+                                           href="${pageContext.request.contextPath}/admin/users/${user.id}/edit"
                                            title="Sửa">
                                             <span class="material-symbols-rounded">edit</span>
                                         </a>
@@ -505,7 +505,7 @@
                         <%-- Nút Trước --%>
                         <c:choose>
                             <c:when test="${userPage.number > 0}">
-                                <a href="<c:url value='/admin/accounts?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${userPage.number - 1}' />" 
+                                <a href="<c:url value='/admin/users?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${userPage.number - 1}' />" 
                                    class="btn-page">
                                     <span class="material-symbols-rounded">chevron_left</span>
                                 </a>
@@ -525,7 +525,7 @@
                         <c:choose>
                             <c:when test="${total <= 7}">
                                 <c:forEach begin="0" end="${total - 1}" var="p">
-                                    <a href="<c:url value='/admin/accounts?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${p}' />" 
+                                    <a href="<c:url value='/admin/users?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${p}' />" 
                                        class="btn-page ${p == current ? 'active' : ''}">
                                         ${p + 1}
                                     </a>
@@ -533,7 +533,7 @@
                             </c:when>
                             <c:otherwise>
                                 <%-- Luôn hiện trang 1 --%>
-                                <a href="<c:url value='/admin/accounts?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=0' />" 
+                                <a href="<c:url value='/admin/users?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=0' />" 
                                    class="btn-page ${0 == current ? 'active' : ''}">1</a>
 
                                 <%-- Dấu ... đầu --%>
@@ -551,7 +551,7 @@
                                 <c:if test="${current >= total - 4}"><c:set var="start" value="${total - 5}" /></c:if>
 
                                 <c:forEach begin="${start}" end="${end}" var="p">
-                                    <a href="<c:url value='/admin/accounts?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${p}' />" 
+                                    <a href="<c:url value='/admin/users?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${p}' />" 
                                        class="btn-page ${p == current ? 'active' : ''}">
                                         ${p + 1}
                                     </a>
@@ -563,7 +563,7 @@
                                 </c:if>
 
                                 <%-- Luôn hiện trang cuối --%>
-                                <a href="<c:url value='/admin/accounts?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${total - 1}' />" 
+                                <a href="<c:url value='/admin/users?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${total - 1}' />" 
                                    class="btn-page ${total - 1 == current ? 'active' : ''}">${total}</a>
                             </c:otherwise>
                         </c:choose>
@@ -572,7 +572,7 @@
                         <%-- Nút Tiếp --%>
                         <c:choose>
                             <c:when test="${userPage.number < userPage.totalPages - 1}">
-                                <a href="<c:url value='/admin/accounts?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${userPage.number + 1}' />" 
+                                <a href="<c:url value='/admin/users?keyword=${param.keyword}&role=${param.role}&status=${param.status}&page=${userPage.number + 1}' />" 
                                    class="btn-page">
                                     <span class="material-symbols-rounded">chevron_right</span>
                                 </a>

@@ -38,18 +38,7 @@
     }
 
     function logout() {
-        $.ajax({
-            url: contextPath + "/api/auth/logout",
-            type: "POST",
-            contentType: "application/json",
-            headers: authHeaders(),
-            data: JSON.stringify({
-                refreshToken: getRefreshToken()
-            }),
-            complete: function () {
-                clearAuthData();
-                window.location.href = contextPath + "/auth/login";
-            }
-        });
+        clearAuthData();
+        window.location.href = contextPath + "/logout";
     }
 </script>

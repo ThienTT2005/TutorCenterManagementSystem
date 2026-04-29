@@ -19,7 +19,7 @@
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/admin/accounts" class="nav-link ${activePage == 'accounts' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/admin/users" class="nav-link ${activePage == 'accounts' ? 'active' : ''}">
                 <span class="material-symbols-rounded">manage_accounts</span>
                 Tài khoản
             </a>

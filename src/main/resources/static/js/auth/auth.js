@@ -5,7 +5,24 @@ $(document).ready(function () {
         const username = $("#username").val().trim();
         const password = $("#password").val().trim();
 
-        $("#loginError").addClass("d-none").text("");
+        const submitBtn = $("#submitBtn");
+        const btnText = $("#btnText");
+        const btnLoader = $("#btnLoader");
+
+        if (window.hideLoginError) {
+            window.hideLoginError();
+        }
+
+        if (username === "" || password === "") {
+            if (window.showLoginError) {
+                window.showLoginError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+            }
+            return;
+        }
+
+        submitBtn.prop("disabled", true);
+        btnText.addClass("hidden");
+        btnLoader.removeClass("hidden");
 
         $.ajax({
             url: contextPath + "/api/auth/login",
@@ -25,10 +42,18 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 let message = "Đăng nhập thất bại";
+
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     message = xhr.responseJSON.message;
                 }
-                $("#loginError").removeClass("d-none").text(message);
+
+                if (window.showLoginError) {
+                    window.showLoginError(message);
+                }
+
+                submitBtn.prop("disabled", false);
+                btnText.removeClass("hidden");
+                btnLoader.addClass("hidden");
             }
         });
     });

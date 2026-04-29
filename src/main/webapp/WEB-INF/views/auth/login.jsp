@@ -158,6 +158,24 @@
             </div>
         </footer>
     </main>
+</div>
+
+    <script>
+
+        const contextPath = "${pageContext.request.contextPath}";
+        loginForm.addEventListener('submit', function (event) {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            hideError();
+
+            if (username === '' || password === '') {
+                event.preventDefault();
+                showError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.');
+                return; // ✅ OK
+            }
+        });
+    </script>
 
     <script src="${pageContext.request.contextPath}/js/auth/login.js"></script>
 </body>

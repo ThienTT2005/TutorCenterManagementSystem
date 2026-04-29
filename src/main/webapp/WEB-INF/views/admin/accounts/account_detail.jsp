@@ -397,7 +397,7 @@
             </h1>
 
             <a class="edit-btn"
-               href="${pageContext.request.contextPath}/admin/accounts/${user.id}/edit">
+               href="${pageContext.request.contextPath}/admin/users/${user.id}/edit">
                 <span class="material-symbols-rounded">edit</span>
                 Sửa hồ sơ
             </a>
@@ -533,7 +533,7 @@
                                 </div>
 
                                 <c:if test="${not empty user.parentUserId}">
-                                    <a href="${pageContext.request.contextPath}/admin/accounts/${user.parentUserId}/detail">
+                                    <a href="${pageContext.request.contextPath}/admin/users/${user.parentUserId}/detail">
                                         Xem hồ sơ
                                     </a>
                                 </c:if>
@@ -654,7 +654,7 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty child.user}">
-                                                            <a href="${pageContext.request.contextPath}/admin/accounts/${child.user.id}/detail">
+                                                            <a href="${pageContext.request.contextPath}/admin/users/${child.user.id}/detail">
                                                                 Xem hồ sơ
                                                             </a>
                                                         </c:when>

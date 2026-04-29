@@ -120,14 +120,28 @@ public class AdminUserController {
         }
     }
 
+//    @GetMapping("/{userId}/profile/student")
+//    public String showStudentProfileForm(@PathVariable Integer userId, HttpSession session, Model model) {
+//        if (!isAdmin(session)) return "redirect:/login";
+//
+//        CreateStudentProfileRequest request = new CreateStudentProfileRequest();
+//        request.setUserId(userId);
+//        model.addAttribute("request", request);
+//        model.addAttribute("parents", adminUserService.getAllParents());
+//        return "admin/users/create-student-profile";
+//    }
     @GetMapping("/{userId}/profile/student")
-    public String showStudentProfileForm(@PathVariable Integer userId, HttpSession session, Model model) {
+    public String showCreateStudentProfile(
+            @PathVariable Integer userId,
+            Model model,
+            HttpSession session) {
+
         if (!isAdmin(session)) return "redirect:/login";
 
-        CreateStudentProfileRequest request = new CreateStudentProfileRequest();
-        request.setUserId(userId);
-        model.addAttribute("request", request);
+        model.addAttribute("request", new CreateStudentProfileRequest());
         model.addAttribute("parents", adminUserService.getAllParents());
+        model.addAttribute("userId", userId);
+
         return "admin/users/create-student-profile";
     }
 
