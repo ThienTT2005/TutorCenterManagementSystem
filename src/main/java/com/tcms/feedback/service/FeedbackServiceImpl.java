@@ -12,6 +12,7 @@ import com.tcms.notification.service.NotificationService;
 import com.tcms.session.entity.SessionStatus;
 import com.tcms.session.entity.TeachingSession;
 import com.tcms.session.repository.TeachingSessionRepository;
+import com.tcms.session_validity.service.SessionValidityService;
 import com.tcms.student.entity.Student;
 import com.tcms.tutor.entity.Tutor;
 import com.tcms.tutor.repository.TutorRepository;
@@ -34,6 +35,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final EnrollmentRepository enrollmentRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
+    private final SessionValidityService sessionValidityService;
 
     @Override
     public List<Feedback> getFeedbackBySession(Integer sessionId) {
@@ -47,6 +49,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public void createFeedback(Integer tutorUserId, CreateFeedbackRequest request) {
+
         if (request.getSessionId() == null) {
             throw new BadRequestException("Thiếu buổi học");
         }
@@ -65,6 +68,21 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new BadRequestException("Chỉ được feedback sau khi buổi học đã hoàn thành");
         }
 
+        LocalDateTime sessionEnd = LocalDateTime.of(
+                session.getSessionDate(),
+                session.getEndTime()
+        );
+
+        LocalDateTime deadline = sessionEnd.plusHours(4);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        boolean isLate = now.isAfter(deadline);
+
+        BigDecimal penaltyRate = isLate
+                ? new BigDecimal("0.25")
+                : BigDecimal.ZERO;
+
         List<Enrollment> enrollments =
                 enrollmentRepository.findByClassEntityClassIdAndStatusTrue(
                         session.getClassEntity().getClassId()
@@ -73,6 +91,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         int savedCount = 0;
 
         for (Enrollment enrollment : enrollments) {
+
             Student student = enrollment.getStudent();
 
             String comment = request.getComments() == null
@@ -100,9 +119,11 @@ public class FeedbackServiceImpl implements FeedbackService {
             feedback.setStudent(student);
             feedback.setRating(rating);
             feedback.setComment(comment);
-            feedback.setSubmittedAt(LocalDateTime.now());
-            feedback.setIsLate(false);
-            feedback.setPenaltyRate(BigDecimal.ZERO);
+            feedback.setSubmittedAt(now);
+
+            feedback.setIsLate(isLate);
+            feedback.setPenaltyRate(penaltyRate);
+
             feedback.setStatus(FeedbackStatus.PENDING);
             feedback.setRejectedReason(null);
 
@@ -126,7 +147,10 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedback.setRejectedReason(null);
 
         Feedback saved = feedbackRepository.save(feedback);
-
+        sessionValidityService.calculateForStudentInSession(
+                saved.getSession().getSessionId(),
+                saved.getStudent().getStudentId()
+        );
         notifyStudentAndParentFeedbackApproved(saved);
     }
 

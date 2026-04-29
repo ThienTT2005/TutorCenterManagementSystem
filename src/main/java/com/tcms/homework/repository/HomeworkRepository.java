@@ -11,4 +11,5 @@ public interface HomeworkRepository extends JpaRepository<Homework, Integer> {
     List<Homework> findBySessionSessionId(Integer sessionId);
     @Query("SELECT q FROM HomeworkQuestion q WHERE q.homework.homeworkId = :homeworkId")
     List<HomeworkQuestion> findQuestions(Integer homeworkId);
+    List<Homework> findBySessionClassEntityClassIdIn(List<Integer> classIds);
 }
