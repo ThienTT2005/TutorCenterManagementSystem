@@ -40,6 +40,7 @@ public class LearningPlanController {
         }
         model.addAttribute("sessionItem", teachingSession);
         model.addAttribute("request", request);
+
         return "tutor/learningplans/form";
     }
 

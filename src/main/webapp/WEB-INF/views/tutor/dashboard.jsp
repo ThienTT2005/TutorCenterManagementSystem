@@ -1,251 +1,254 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutor Dashboard | TCMS</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/core-dashboard.css">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>Dashboard - Gia sư | TCMS</title>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/tutor-dashboard.css">
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon">
-                <span class="material-symbols-rounded">person_celebrate</span>
+<c:set var="activePage" value="dashboard" scope="request" />
+
+<!-- Sidebar -->
+<jsp:include page="common/sidebar.jsp" />
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Header -->
+    <jsp:include page="common/header.jsp"/>
+
+    <!-- Dashboard Body -->
+    <div class="dashboard-body">
+        
+        <!-- Greeting Row -->
+        <div class="dashboard-title-row">
+            <div>
+                <h1>Xin chào, ${empty loggedInUser.fullName ? 'Gia sư' : loggedInUser.fullName}</h1>
+                <p>Hôm nay là ${not empty now ? now : '28/04/2026'}</p>
             </div>
-            <div class="brand-text">
-                <span class="brand-title">TCMS</span>
-                <span class="brand-subtitle">TUTOR PORTAL</span>
+            <a href="${pageContext.request.contextPath}/tutor/schedule" class="btn-view-schedule">
+                <i class="fa-solid fa-calendar-days"></i>
+                Xem lịch dạy
+            </a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-blue">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="stat-value">${empty stats.totalClasses ? 0 : stats.totalClasses}</div>
+                <div class="stat-label">Tổng lớp</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-green">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="stat-value">${empty stats.todayClasses ? 0 : stats.todayClasses}</div>
+                <div class="stat-label">Lớp hôm nay</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-orange">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <div class="stat-value">${empty stats.pendingFeedbacks ? 0 : stats.pendingFeedbacks}</div>
+                <div class="stat-label">Feedback chờ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-purple">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <div class="stat-value">${empty stats.homeworkToGrade ? 0 : stats.homeworkToGrade}</div>
+                <div class="stat-label">Bài tập cần chấm</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-red">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="stat-value">${empty stats.pendingPayments ? 0 : stats.pendingPayments}</div>
+                <div class="stat-label">Thanh toán chờ</div>
             </div>
         </div>
 
-        <ul class="nav-menu">
-            <li>
-                <a href="#" class="nav-link active">
-                    <span class="material-symbols-rounded">dashboard</span>
-                    Tổng quan
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link">
-                    <span class="material-symbols-rounded">calendar_month</span>
-                    Lịch dạy
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" onclick="openScanner()" class="nav-link" style="background: var(--primary-light); color: var(--primary); font-weight: 700;">
-                    <span class="material-symbols-rounded" style="font-weight: 700;">qr_code_scanner</span>
-                    Điểm danh học sinh
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link">
-                    <span class="material-symbols-rounded">description</span>
-                    Bài tập & Tài liệu
-                </a>
-            </li>
-        </ul>
-
-        <div class="sidebar-footer">
-            <a href="#" class="nav-link">
-                <span class="material-symbols-rounded">settings</span>
-                Cài đặt
-            </a>
-            <a href="${pageContext.request.contextPath}/logout" class="nav-link" style="color: var(--danger);">
-                <span class="material-symbols-rounded">logout</span>
-                Đăng xuất
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Top Header -->
-        <header class="top-header">
-            <div class="search-bar">
-                <span class="material-symbols-rounded">search</span>
-                <input type="text" placeholder="Tìm kiếm lớp học, học sinh...">
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn">
-                    <span class="material-symbols-rounded">notifications</span>
-                </button>
-                <div class="user-profile">
-                    <div class="user-info">
-                        <div class="user-name">Hồ Văn A</div>
-                        <div class="user-role">Gia sư hạng xuất sắc</div>
-                    </div>
-                    <div class="avatar" style="background-color: #10b981; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">G</div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Dashboard Body -->
-        <div class="dashboard-body">
-            
-            <!-- Greeting -->
-            <section class="greeting-section">
-                <div>
-                    <h1>Chào buổi tối, Gia sư!</h1>
-                    <p>Bạn có 3 lớp học sẽ diễn ra vào tối nay.</p>
-                </div>
-                <button onclick="openScanner()" class="btn-primary">
-                    <span class="material-symbols-rounded">qr_code_scanner</span>
-                    Bật máy quét điểm danh
-                </button>
-            </section>
-
-            <!-- Stats Grid -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue">
-                            <span class="material-symbols-rounded">meeting_room</span>
-                        </div>
-                    </div>
-                    <div class="stat-title">LỚP HÔM NAY</div>
-                    <div class="stat-value">3</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon cyan">
-                            <span class="material-symbols-rounded">account_balance_wallet</span>
-                        </div>
-                    </div>
-                    <div class="stat-title">HỌC PHÍ TẠM TÍNH</div>
-                    <div class="stat-value">12.5M VNĐ</div>
-                </div>
-            </section>
-
-            <!-- Layout Grid -->
-            <section class="layout-grid" style="grid-template-columns: 1fr;">
+        <div class="dashboard-grid">
+            <!-- LEFT COLUMN -->
+            <div class="section-group">
                 
-                <!-- Full Width Table -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Buổi học hôm nay</h3>
-                        <a href="#" class="card-action">Mở xem toàn lịch</a>
+                <!-- Today Sessions -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Lịch dạy hôm nay</h2>
                     </div>
-                    <div class="table-container">
-                        <div class="table-header" style="grid-template-columns: 2fr 1.5fr 1.5fr 1fr;">
-                            <div class="th">LỚP MÔN HỌC</div>
-                            <div class="th">THỜI GIAN</div>
-                            <div class="th">TRẠNG THÁI</div>
-                            <div class="th right">HÀNH ĐỘNG</div>
-                        </div>
-                        
-                        <!-- Row 1 -->
-                        <div class="table-row" style="grid-template-columns: 2fr 1.5fr 1.5fr 1fr;">
-                            <div class="user-cell">
-                                <div class="user-initials initials-blue" style="font-size: 16px;"><span class="material-symbols-rounded" style="font-size: 20px;">calculate</span></div>
-                                <div class="user-detail">
-                                    <h4>Toán 12 - A1</h4>
-                                    <p>Ôn luyện thi Đại học</p>
+                    
+                    <c:choose>
+                        <c:when test="${not empty todaySessions}">
+                            <c:forEach var="s" items="${todaySessions}">
+                                <div class="session-card">
+                                    <div class="session-info">
+                                        <div class="session-icon">
+                                            <i class="fa-solid fa-book"></i>
+                                        </div>
+                                        <div class="session-details">
+                                            <h3>${s.classEntity.className}</h3>
+                                            <div class="session-time">
+                                                <i class="fa-regular fa-clock"></i>
+                                                ${s.startTime} - ${s.endTime}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="session-meta">
+                                        <span class="badge-status badge-upcoming">Sắp diễn ra</span>
+                                        <a href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}" class="btn-detail">Xem chi tiết</a>
+                                    </div>
                                 </div>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="empty-card">
+                                Hôm nay chưa có lịch dạy.
                             </div>
-                            <div class="subject-cell" style="display: flex; flex-direction: column; gap: 2px;">
-                                <span style="font-weight: 700; color: var(--text-dark);">19:00 - 21:00</span>
-                                <span style="font-size: 11px; color: var(--text-muted);">Phòng ảo 01</span>
-                            </div>
-                            <div>
-                                <span class="status-badge status-approved" style="background: var(--success-light); color: var(--success);">ĐANG DIỄN RA</span>
-                            </div>
-                            <div class="date-cell">
-                                <button onclick="openScanner(101)" class="btn-primary" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; margin-left: auto;">Điểm danh</button>
-                            </div>
-                        </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
+                <!-- Feedback Section -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Feedback cần cập nhật</h2>
+                    </div>
+                    <div class="card-row">
+                        <c:choose>
+                            <c:when test="${not empty pendingFeedbacks}">
+                                <c:forEach var="f" items="${pendingFeedbacks}">
+                                    <div class="info-card">
+                                        <div class="card-top">
+                                            <h3>${f.session.classEntity.className}</h3>
+                                            <span class="badge-card badge-orange">CHƯA CẬP NHẬT</span>
+                                        </div>
+                                        <p class="card-desc">${empty f.comment ? 'Cần cập nhật feedback sau buổi học.' : f.comment}</p>
+                                        <a class="btn-action" href="${pageContext.request.contextPath}/tutor/feedback">
+                                            <i class="fa-solid fa-pen-to-square"></i> Cập nhật ngay
+                                        </a>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-card" style="grid-column: span 2;">Không có feedback cần cập nhật.</div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </div>
 
-            </section>
-        </div>
-    </main>
-
-    <!-- Scanner Modal directly embedded using Figma style overlay -->
-    <div id="scannerModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Quét mã học sinh</h3>
-                <button class="close-btn" onclick="closeScanner()">
-                    <span class="material-symbols-rounded">close</span>
-                </button>
+                <!-- Progress Section -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Tiến độ học tập chưa cập nhật</h2>
+                    </div>
+                    <div class="card-row">
+                        <c:choose>
+                            <c:when test="${not empty pendingProgress}">
+                                <c:forEach var="s" items="${pendingProgress}">
+                                    <div class="info-card purple">
+                                        <div class="card-top">
+                                            <h3>${s.classEntity.className}</h3>
+                                            <span class="badge-card badge-purple">CHƯA CẬP NHẬT</span>
+                                        </div>
+                                        <p class="card-desc">Buổi học ngày ${s.sessionDate} chưa có báo cáo tiến độ học tập.</p>
+                                        <a class="btn-action btn-purple" href="${pageContext.request.contextPath}/tutor/progress">
+                                            <i class="fa-solid fa-chart-line"></i> Cập nhật ngay
+                                        </a>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-card" style="grid-column: span 2;">Không có tiến độ cần cập nhật.</div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
             </div>
-            
-            <div id="reader"></div>
-            
-            <div id="scanResult" style="margin-top: 1.5rem; color: var(--primary); font-weight: 700; text-align: center; padding: 1rem; background: var(--primary-light); border-radius: var(--radius-sm); border: 1px dashed rgba(0,87,191,0.3); display: none;">
-                Chưa quét thấy mã
+
+            <!-- RIGHT COLUMN -->
+            <div class="section-group">
+                
+                <!-- Homework Widget -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Bài tập cần chấm</h2>
+                    </div>
+                    <div class="widget-card">
+                        <c:choose>
+                            <c:when test="${not empty pendingHomeworkSubmissions}">
+                                <c:forEach var="sub" items="${pendingHomeworkSubmissions}">
+                                    <div class="widget-item">
+                                        <div class="widget-item-top">
+                                            <h4>${sub.homework.title}</h4>
+                                            <span class="widget-badge" style="background: var(--primary-light); color: var(--primary);">
+                                                ${sub.student.fullName}
+                                            </span>
+                                        </div>
+                                        <a href="${pageContext.request.contextPath}/tutor/homework/submissions/${sub.submissionId}" class="btn-widget btn-blue">
+                                            Chấm bài
+                                        </a>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-card">Không có bài tập cần chấm.</div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+
+                <!-- Payment Widget -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Thanh toán</h2>
+                    </div>
+                    <div class="widget-card">
+                        <c:choose>
+                            <c:when test="${not empty dashboardPayments}">
+                                <c:forEach var="p" items="${dashboardPayments}">
+                                    <div class="payment-item">
+                                        <div class="payment-row">
+                                            <div>
+                                                <h4>${p.classEntity.className}</h4>
+                                                <small>Số buổi: ${p.totalSessions} buổi</small>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <span class="widget-badge ${p.status == 'ADMIN_APPROVED' || p.status == 'COMPLETED' ? 'badge-green' : 'badge-yellow'}">
+                                                    <c:choose>
+                                                        <c:when test="${p.status == 'ADMIN_APPROVED' || p.status == 'COMPLETED'}">ĐÃ DUYỆT</c:when>
+                                                        <c:otherwise>CHỜ DUYỆT</c:otherwise>
+                                                    </c:choose>
+                                                </span>
+                                                <div class="payment-amount">
+                                                    <fmt:formatNumber value="${empty p.amount ? 0 : p.amount}" pattern="#,###"/>đ
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="${pageContext.request.contextPath}/tutor/payment/${p.paymentId}" class="btn-outline-widget">Xem chi tiết</a>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-card">Không có thanh toán.</div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        let html5QrCode;
-        let currentSessionId;
-
-        function openScanner(sessionId) {
-            currentSessionId = sessionId;
-            document.getElementById('scannerModal').style.display = 'flex';
-            
-            document.getElementById('scanResult').style.display = 'none';
-            document.getElementById('scanResult').innerText = "Đang chờ...";
-
-            html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
-            .catch(err => {
-                console.error("Camera error:", err);
-                // Fallback debug logic
-                document.getElementById('scanResult').style.display = 'block';
-                document.getElementById('scanResult').innerText = "Lỗi Camera: Tính năng giả lập điểm danh thành công.";
-                setTimeout(() => closeScanner(), 2000);
-            });
-        }
-
-        function closeScanner() {
-            document.getElementById('scannerModal').style.display = 'none';
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    console.log("Scanner stopped.");
-                }).catch((err) => {
-                    console.warn("Unable to stop scanner.", err);
-                });
-            }
-        }
-
-        function onScanSuccess(decodedText, decodedResult) {
-            console.log(`Scan matched: ${decodedText}`);
-            document.getElementById('scanResult').style.display = 'block';
-            document.getElementById('scanResult').innerText = "Đang xử lý: " + decodedText;
-            
-            // Stop scanning after success
-            html5QrCode.stop().then(() => {
-                // Call API to record attendance
-                fetch('${pageContext.request.contextPath}/api/tutor/attendance/scan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        sessionId: currentSessionId,
-                        qrCode: decodedText
-                    })
-                })
-                .then(response => response.text())
-                .then(data => {
-                    alert("Thành công: " + data);
-                    closeScanner();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Lỗi khi điểm danh!");
-                });
-            });
-        }
-    </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>

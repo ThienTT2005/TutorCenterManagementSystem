@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <aside class="sidebar">
     <div class="brand">
         <div class="brand-icon">
@@ -58,6 +58,18 @@
             <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link ${activePage == 'reports' ? 'active' : ''}">
                 <span class="material-symbols-rounded">bar_chart</span>
                 Báo cáo
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/curriculum" class="nav-link ${activePage == 'curriculum' ? 'active' : ''}">
+                <span class="material-symbols-rounded">calendar_month</span>
+                Kế hoạch giảng dạy
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/feedback/pending" class="nav-link ${activePage == 'feedback' ? 'active' : ''}">
+                <span class="material-symbols-rounded">chat</span>
+                Feedback chờ duyệt
             </a>
         </li>
     </ul>

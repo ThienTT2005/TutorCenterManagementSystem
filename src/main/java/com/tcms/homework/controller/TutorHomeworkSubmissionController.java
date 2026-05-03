@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.*;
 public class TutorHomeworkSubmissionController {
 
     private final HomeworkSubmissionService submissionService;
+    private final com.tcms.homework.service.HomeworkService homeworkService;
 
     @GetMapping("/homework/{homeworkId}")
     public String list(@PathVariable Integer homeworkId, Model model) {
 
         model.addAttribute("submissions",
                 submissionService.getSubmissionsByHomework(homeworkId));
-
+        
+        model.addAttribute("homework", homeworkService.getHomeworkById(homeworkId));
         model.addAttribute("homeworkId", homeworkId);
 
         return "tutor/homework/submissions";

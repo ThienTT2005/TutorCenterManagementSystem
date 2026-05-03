@@ -16,4 +16,5 @@ public class CreateTutorProfileRequest {
     private String school;
     private String major;
     private String description;
+    private org.springframework.web.multipart.MultipartFile avatarFile;
 }

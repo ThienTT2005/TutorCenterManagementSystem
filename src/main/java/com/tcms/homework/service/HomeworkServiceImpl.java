@@ -161,4 +161,8 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .toList();
         return homeworkRepository.findBySessionClassEntityClassIdIn(classIds);
     }
+    @Override
+    public List<HomeworkQuestion> getQuestionsByHomeworkId(Integer homeworkId) {
+        return homeworkQuestionRepository.findByHomeworkHomeworkId(homeworkId);
+    }
 }

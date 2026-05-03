@@ -1,179 +1,223 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+
+<c:set var="activePage" value="dashboard" scope="request" />
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <title>Dashboard Phụ huynh | TCMS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Dashboard | TCMS</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/core-dashboard.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/student-dashboard.css">
 </head>
+
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-icon">
-                <span class="material-symbols-rounded">family_restroom</span>
-            </div>
-            <div class="brand-text">
-                <span class="brand-title">TCMS</span>
-                <span class="brand-subtitle">PARENT PORTAL</span>
-            </div>
-        </div>
+<jsp:include page="common/sidebar.jsp" />
 
-        <ul class="nav-menu">
-            <li>
-                <a href="#" class="nav-link active">
-                    <span class="material-symbols-rounded">dashboard</span>
-                    Tổng quan
+<main class="main-content">
+    <jsp:include page="common/header.jsp" />
+
+    <div class="dashboard-body">
+
+        <!-- TITLE -->
+        <section class="dashboard-title-row">
+            <div>
+                <c:choose>
+                    <c:when test="${not empty loggedInUser and not empty loggedInUser.fullName}">
+                        <c:set var="displayTitle" value="${loggedInUser.fullName}" />
+                    </c:when>
+                    <c:when test="${not empty currentUser and not empty currentUser.username}">
+                        <c:set var="displayTitle" value="${currentUser.username}" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="displayTitle" value="phụ huynh" />
+                    </c:otherwise>
+                </c:choose>
+                <h1>Xin chào, <c:out value="${displayTitle}" /></h1>
+                <p>Theo dõi lớp học, lịch học, bài tập, feedback và thanh toán của con.</p>
+            </div>
+
+            <div class="quick-actions">
+                <a href="${pageContext.request.contextPath}/parent/classes" class="btn-view-schedule">
+                    <span class="material-symbols-rounded">menu_book</span>
+                    Xem lớp của con
                 </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link">
+
+                <a href="${pageContext.request.contextPath}/parent/absence/create" class="btn-primary-action">
+                    <span class="material-symbols-rounded">event_busy</span>
+                    Tạo đơn xin nghỉ
+                </a>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="parent-stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-blue">
+                    <span class="material-symbols-rounded">menu_book</span>
+                </div>
+                <div class="stat-value">${empty stats.totalClasses ? 0 : stats.totalClasses}</div>
+                <div class="stat-label">Tổng lớp đang theo dõi</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-green">
+                    <span class="material-symbols-rounded">today</span>
+                </div>
+                <div class="stat-value">${empty stats.todaySessions ? 0 : stats.todaySessions}</div>
+                <div class="stat-label">Buổi học hôm nay</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-orange">
+                    <span class="material-symbols-rounded">assignment</span>
+                </div>
+                <div class="stat-value">${empty stats.pendingHomework ? 0 : stats.pendingHomework}</div>
+                <div class="stat-label">Bài tập cần theo dõi</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-purple">
+                    <span class="material-symbols-rounded">rate_review</span>
+                </div>
+                <div class="stat-value">${empty stats.latestFeedback ? 0 : stats.latestFeedback}</div>
+                <div class="stat-label">Feedback gần đây</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-red">
                     <span class="material-symbols-rounded">payments</span>
-                    Học phí
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-link">
-                    <span class="material-symbols-rounded">notifications</span>
-                    Thông báo
-                    <span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 50%; font-size: 10px; margin-left: auto;">3</span>
-                </a>
-            </li>
-        </ul>
-
-        <div class="sidebar-footer">
-            <a href="#" class="nav-link">
-                <span class="material-symbols-rounded">settings</span>
-                Cài đặt
-            </a>
-            <a href="${pageContext.request.contextPath}/logout" class="nav-link" style="color: var(--danger);">
-                <span class="material-symbols-rounded">logout</span>
-                Đăng xuất
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Top Header -->
-        <header class="top-header">
-            <div class="search-bar">
-                <span class="material-symbols-rounded">search</span>
-                <input type="text" placeholder="Tìm kiếm thông tin...">
+                </div>
+                <div class="stat-value">${empty stats.pendingPayments ? 0 : stats.pendingPayments}</div>
+                <div class="stat-label">Thanh toán chờ xử lý</div>
             </div>
-            <div class="header-actions">
-                <button class="icon-btn">
-                    <span class="material-symbols-rounded">notifications</span>
-                </button>
-                <div class="user-profile">
-                    <div class="user-info">
-                        <div class="user-name">Ông Nguyễn Văn C</div>
-                        <div class="user-role">Phụ huynh</div>
+
+            <div class="stat-card">
+                <div class="stat-icon-box bg-light-yellow">
+                    <span class="material-symbols-rounded">event_busy</span>
+                </div>
+                <div class="stat-value">${empty stats.absenceRequests ? 0 : stats.absenceRequests}</div>
+                <div class="stat-label">Yêu cầu xin nghỉ</div>
+            </div>
+
+        </section>
+
+        <!-- MAIN GRID -->
+        <section class="parent-dashboard-grid">
+
+            <!-- LEFT COLUMN -->
+            <div class="dashboard-left">
+
+                <!-- TODAY SESSIONS -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Lịch học hôm nay</h2>
+                        <a href="${pageContext.request.contextPath}/parent/classes">Xem tất cả</a>
                     </div>
-                    <div class="avatar" style="background-color: var(--text-dark); display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">P</div>
-                </div>
-            </div>
-        </header>
 
-        <!-- Dashboard Body -->
-        <div class="dashboard-body">
-            
-            <!-- Greeting -->
-            <section class="greeting-section">
-                <div>
-                    <h1>Xin chào, Phụ huynh!</h1>
-                    <p>Chào mừng quay trở lại cổng thông tin phụ huynh.</p>
-                </div>
-            </section>
+                    <div class="content-card">
+                        <c:choose>
+                            <c:when test="${not empty todaySessions}">
+                                <c:forEach var="s" items="${todaySessions}">
+                                    <div class="session-row">
+                                        <div class="session-icon">
+                                            <span class="material-symbols-rounded">schedule</span>
+                                        </div>
 
-            <!-- Stats Grid -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon blue">
-                            <span class="material-symbols-rounded">face</span>
+                                        <div class="session-info">
+                                            <h3><c:out value="${empty s.classEntity.className ? 'Lớp học' : s.classEntity.className}" /></h3>
+                                            <p><c:out value="${empty s.classEntity.subject ? 'Môn học' : s.classEntity.subject}" /></p>
+                                        </div>
+
+                                        <div class="session-time">
+                                            <c:out value="${s.startTime}"/> - <c:out value="${s.endTime}"/>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </c:when>
+
+                            <c:otherwise>
+                                <div class="empty-card">
+                                    <span class="material-symbols-rounded">event_available</span>
+                                    <p>Chưa có dữ liệu lịch học hôm nay.</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+
+                <!-- QUICK ACCESS -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Các lớp của con</h2>
+                        <a href="${pageContext.request.contextPath}/parent/classes">Xem chi tiết</a>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="empty-card">
+                            <span class="material-symbols-rounded">school</span>
+                            <p>
+                                Hiện tại có <strong>${empty stats.totalClasses ? 0 : stats.totalClasses}</strong> lớp đang theo dõi.
+                            </p>
                         </div>
                     </div>
-                    <div class="stat-title">HỌC SINH ĐANG HỌC</div>
-                    <div class="stat-value">2</div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon red">
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <aside class="dashboard-right">
+
+                <!-- QUICK LINKS -->
+                <div class="side-card">
+                    <div class="side-card-header">
+                        <h2>Truy cập nhanh</h2>
+                    </div>
+
+                    <div class="quick-link-list">
+                        <a href="${pageContext.request.contextPath}/parent/classes">
+                            <span class="material-symbols-rounded">menu_book</span>
+                            Lớp của con
+                        </a>
+
+                        <a href="${pageContext.request.contextPath}/parent/absence/create">
+                            <span class="material-symbols-rounded">event_busy</span>
+                            Tạo đơn xin nghỉ
+                        </a>
+
+                        <a href="${pageContext.request.contextPath}/payment/parent">
                             <span class="material-symbols-rounded">payments</span>
-                        </div>
-                        <span class="stat-badge warning">Chưa thanh toán</span>
-                    </div>
-                    <div class="stat-title" style="color: var(--danger);">HỌC PHÍ CẦN ĐÓNG</div>
-                    <div class="stat-value" style="color: var(--danger);">4.2M VNĐ</div>
-                </div>
-            </section>
-
-            <!-- Layout Grid -->
-            <section class="layout-grid">
-                
-                <!-- Left Column -->
-                <div class="left-column">
-                    <!-- Progress Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Kết quả học tập</h3>
-                            <a href="#" class="card-action">Xem chi tiết</a>
-                        </div>
-                        <div style="padding: 0 2rem 2rem;">
-                            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
-                                <div class="avatar" style="background: var(--primary-light); color: var(--primary); font-weight: bold; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; font-size: 20px;">B</div>
-                                <div>
-                                    <h3 style="font-size: 16px; font-weight: 700;">Nguyễn Văn B</h3>
-                                    <p style="color: var(--text-muted); font-size: 13px;">Lớp 12 - Toán, Lý</p>
-                                </div>
-                            </div>
-                            
-                            <div style="margin-bottom: 2rem;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span style="font-size: 14px; font-weight: 600;">Chuyên cần</span>
-                                    <span style="font-size: 14px; font-weight: 700; color: var(--success);">95%</span>
-                                </div>
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-fill" style="width: 95%;"></div>
-                                </div>
-                            </div>
-
-                            <button style="width: 100%; padding: 12px; border: 1px solid var(--primary); color: var(--primary); background: transparent; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 14px;">Xem bảng điểm chi tiết</button>
-                        </div>
+                            Thanh toán
+                        </a>
                     </div>
                 </div>
 
-                <!-- Right Column -->
-                <div class="right-column">
-                    <!-- Payment Card -->
-                    <div class="card" style="border-top: 4px solid var(--danger);">
-                        <div class="card-header">
-                            <h3 class="card-title">Thanh toán sắp tới</h3>
-                        </div>
-                        <div style="padding: 0 2rem 2rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                                <div>
-                                    <p style="font-weight: 700; font-size: 14px;">Học phí tháng 04/2026</p>
-                                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">Hạn nộp: 25/04/2026</p>
-                                </div>
-                                <span style="font-weight: 800; color: var(--danger); font-size: 18px;">4.200.000đ</span>
-                            </div>
-                            <button onclick="alert('Chức năng tải minh chứng đang được thực hiện')" class="btn-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 14px;">
-                                <span class="material-symbols-rounded">account_balance_wallet</span>
-                                Đóng học phí ngay
-                            </button>
-                        </div>
+                <!-- HELP CENTER -->
+                <div class="side-card help-card">
+                    <div class="side-card-body">
+                        <span class="material-symbols-rounded">support_agent</span>
+                        <h3>Trung tâm hỗ trợ</h3>
+                        <p>Cần hỗ trợ về kỹ thuật hoặc học tập?</p>
+                        <a href="#" class="btn-help">Liên hệ ngay</a>
                     </div>
                 </div>
 
-            </section>
-        </div>
-    </main>
+            </aside>
+        </section>
+
+    </div>
+</main>
 
 </body>
 </html>

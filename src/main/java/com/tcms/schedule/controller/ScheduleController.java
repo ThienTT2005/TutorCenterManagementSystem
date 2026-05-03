@@ -1,6 +1,7 @@
 package com.tcms.schedule.controller;
 
 import com.tcms.clazz.service.ClassService;
+import com.tcms.schedule.dto.request.CreateScheduleBatchRequest;
 import com.tcms.schedule.dto.request.CreateScheduleRequest;
 import com.tcms.schedule.service.ScheduleService;
 import jakarta.servlet.http.HttpSession;
@@ -34,24 +35,35 @@ public class ScheduleController {
 
         model.addAttribute("request", request);
         model.addAttribute("classItem", classService.getClassById(classId));
+        model.addAttribute("schedules", scheduleService.getSchedulesByClassId(classId));
 
         return "admin/schedules/create";
     }
 
     @PostMapping("/create")
     public String createSchedule(@PathVariable Integer classId,
-                                 @ModelAttribute("request") CreateScheduleRequest request,
+                                 @ModelAttribute CreateScheduleBatchRequest batchRequest,
                                  HttpSession session,
                                  Model model) {
         if (!isAdmin(session)) return "redirect:/login";
 
         try {
-            request.setClassId(classId);
-            scheduleService.createSchedule(request);
+            if (batchRequest.getSchedules() == null || batchRequest.getSchedules().isEmpty()) {
+                throw new RuntimeException("Vui lòng thêm ít nhất một lịch học");
+            }
+
+            for (CreateScheduleRequest item : batchRequest.getSchedules()) {
+                item.setClassId(classId);
+                scheduleService.createSchedule(item);
+            }
+
             return "redirect:/admin/classes/" + classId;
+
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("classItem", classService.getClassById(classId));
+            model.addAttribute("schedules", scheduleService.getSchedulesByClassId(classId));
+            model.addAttribute("request", new CreateScheduleRequest());
             return "admin/schedules/create";
         }
     }

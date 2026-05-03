@@ -13,4 +13,5 @@ public class CreateParentProfileRequest {
     private String dob;
     private String gender;
     private String address;
+    private org.springframework.web.multipart.MultipartFile avatarFile;
 }

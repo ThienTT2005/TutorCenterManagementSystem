@@ -1,52 +1,85 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+
+<c:set var="adminUser" value="${sessionScope.currentUser}" />
+<c:set var="displayName" value="${not empty adminUser and not empty adminUser.username ? adminUser.username : 'Admin'}" />
+<c:set var="avatarUrl" value="${pageContext.request.contextPath}/images/default-avatar.png" />
+
 <header class="top-header">
     <div class="search-bar">
         <span class="material-symbols-rounded">search</span>
         <input type="text" placeholder="Tìm kiếm nhanh...">
     </div>
-    
-    <div class="header-actions">
-        <button class="icon-btn">
-            <span class="material-symbols-rounded">notifications</span>
-            <span class="badge"></span>
-        </button>
 
-        <!-- User Dropdown Integration -->
-        <div class="user-dropdown" id="adminUserDropdown">
-            <button type="button" class="user-toggle" id="adminUserToggle">
-                <img class="header-avatar" 
-                     src="${pageContext.request.contextPath}/${empty loggedInUser.avatar || loggedInUser.avatar == 'avatar-default.png' || loggedInUser.avatar == 'default-avatar.png' ? 'images/default-avatar.png' : (loggedInUser.avatar.startsWith('assets/') ? loggedInUser.avatar : 'uploads/'.concat(loggedInUser.avatar))}"
-                     alt="${empty loggedInUser.fullName ? 'Admin' : loggedInUser.fullName}"
-                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/images/default-avatar.png'">
-                
-                <div class="user-meta">
-                    <strong>${empty loggedInUser.fullName ? 'Quản trị viên' : loggedInUser.fullName}</strong>
-                    <span>${empty loggedInUser.roleName ? 'ADMIN' : loggedInUser.roleName}</span>
-                </div>
-                <i class="fa-solid fa-chevron-down"></i>
+    <div class="header-tools">
+        <!-- Notification Dropdown -->
+        <div class="notification-dropdown">
+            <button type="button" class="tool-icon" id="bellToggle">
+                <span class="material-symbols-rounded">notifications</span>
+                <c:if test="${not empty unreadCount and unreadCount > 0}">
+                    <span class="badge">${unreadCount}</span>
+                </c:if>
             </button>
 
-            <div class="user-menu" id="adminUserMenu">
-                <div class="user-menu-header">
-                    <strong>${empty loggedInUser.fullName ? 'Quản trị viên' : loggedInUser.fullName}</strong>
-                    <span>${empty loggedInUser.roleName ? 'ADMIN' : loggedInUser.roleName}</span>
+            <div class="notification-menu" id="notificationMenu">
+                <div class="noti-header">
+                    <strong>Thông báo</strong>
+                    <a href="${pageContext.request.contextPath}/notifications">Xem tất cả</a>
                 </div>
 
-                <a href="${pageContext.request.contextPath}/admin/profile">
-                    <i class="fa-solid fa-user"></i>
-                    <span>Thông tin cá nhân</span>
-                </a>
+                <div class="noti-list">
+                    <c:choose>
+                        <c:when test="${not empty notifications}">
+                            <c:forEach var="noti" items="${notifications}">
+                                <div class="noti-item ${!noti.isRead ? 'unread' : ''}">
+                                    <h4><c:out value="${empty noti.title ? 'Thông báo' : noti.title}" /></h4>
+                                    <p><c:out value="${empty noti.content ? '' : noti.content}" /></p>
+                                    <span class="noti-time"><c:out value="${noti.createdAt}" /></span>
+                                </div>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="noti-empty">
+                                <span class="material-symbols-rounded">notifications_off</span>
+                                <p>Không có thông báo mới</p>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
 
-                <a href="${pageContext.request.contextPath}/profile/change-password">
-                    <i class="fa-solid fa-key"></i>
+        <!-- User Dropdown -->
+        <div class="user-dropdown">
+            <button type="button" class="user-toggle" id="userToggle">
+                <img class="header-avatar"
+                     src="${avatarUrl}"
+                     alt="Admin"
+                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/images/default-avatar.png'">
+
+                <div class="user-meta">
+                    <strong><c:out value="${displayName}"/></strong>
+                    <span>ADMIN</span>
+                </div>
+                <span class="material-symbols-rounded">expand_more</span>
+            </button>
+
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <strong><c:out value="${displayName}"/></strong>
+                    <span>Hệ thống quản trị</span>
+                </div>
+
+                <a href="${pageContext.request.contextPath}/change-password">
+                    <span class="material-symbols-rounded">key</span>
                     <span>Đổi mật khẩu</span>
                 </a>
 
                 <div class="menu-divider"></div>
 
                 <a href="${pageContext.request.contextPath}/logout" class="logout-link">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="material-symbols-rounded">logout</span>
                     <span>Đăng xuất</span>
                 </a>
             </div>
@@ -54,27 +87,50 @@
     </div>
 </header>
 
-<!-- FontAwesome for the dropdown icons as requested -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('adminUserToggle');
-        const menu = document.getElementById('adminUserMenu');
-        
-        if (toggle && menu) {
-            toggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                menu.classList.toggle('active');
-                toggle.classList.toggle('active');
-            });
+    (function () {
+        const userToggle = document.getElementById('userToggle');
+        const userMenu = document.getElementById('userMenu');
+        const bellToggle = document.getElementById('bellToggle');
+        const notificationMenu = document.getElementById('notificationMenu');
 
-            document.addEventListener('click', function(e) {
-                if (!menu.contains(e.target) && !toggle.contains(e.target)) {
-                    menu.classList.remove('active');
-                    toggle.classList.remove('active');
+        function closeAllMenus() {
+            if (notificationMenu) notificationMenu.classList.remove('active');
+            if (userMenu) userMenu.classList.remove('active');
+            if (userToggle) userToggle.classList.remove('active');
+        }
+
+        if (bellToggle && notificationMenu) {
+            bellToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const isActive = notificationMenu.classList.contains('active');
+                closeAllMenus();
+                if (!isActive) {
+                    notificationMenu.classList.add('active');
                 }
             });
         }
-    });
+
+        if (userToggle && userMenu) {
+            userToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const isActive = userMenu.classList.contains('active');
+                closeAllMenus();
+                if (!isActive) {
+                    userMenu.classList.add('active');
+                    userToggle.classList.add('active');
+                }
+            });
+        }
+
+        [notificationMenu, userMenu].forEach(menu => {
+            if (menu) {
+                menu.addEventListener('click', e => e.stopPropagation());
+            }
+        });
+
+        document.addEventListener('click', closeAllMenus);
+    })();
 </script>

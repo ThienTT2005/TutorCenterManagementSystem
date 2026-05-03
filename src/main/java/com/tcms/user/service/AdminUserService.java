@@ -20,5 +20,7 @@ public interface AdminUserService {
 
     void createStudentProfile(CreateStudentProfileRequest request);
 
-     List<Parent> getAllParents();
+    List<Parent> getAllParents();
+
+    List<User> searchUsers(String username, String role, Boolean status);
 }

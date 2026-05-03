@@ -16,8 +16,8 @@ public class ParentAbsenceController {
     private final AbsenceRequestService service;
 
     @GetMapping("/create")
-    public String form(@RequestParam Integer sessionId,
-                       @RequestParam Integer studentId,
+    public String form(@RequestParam(required = false) Integer sessionId,
+                       @RequestParam(required = false) Integer studentId,
                        Model model) {
 
         CreateAbsenceRequest req = new CreateAbsenceRequest();

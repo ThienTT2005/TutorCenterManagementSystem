@@ -18,18 +18,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TutorClassController {
     private final TutorClassService tutorClassService;
     private final LearningPlanService learningPlanService;
-    private User getCurrentUser(HttpSession session){
+
+    private User getCurrentUser(HttpSession session) {
         return (User) session.getAttribute("currentUser");
     }
-    private boolean isTutor(HttpSession session){
-        if(session.getAttribute("currentUser") == null) return false;
+
+    private boolean isTutor(HttpSession session) {
+        if (session.getAttribute("currentUser") == null)
+            return false;
         String role = (String) session.getAttribute("role");
         return "TUTOR".equalsIgnoreCase(role);
     }
 
     @GetMapping
-    public String myClasses(HttpSession session, Model model){
-        if(!isTutor(session)) return "redirect:/login";
+    public String myClasses(HttpSession session, Model model) {
+        if (!isTutor(session))
+            return "redirect:/login";
         User user = getCurrentUser(session);
         model.addAttribute("classes", tutorClassService.getMyClasses(user.getUserId()));
         return "tutor/classes/list";
@@ -37,9 +41,10 @@ public class TutorClassController {
 
     @GetMapping("/{classId}")
     public String classDetail(@PathVariable Integer classId,
-                              HttpSession session,
-                              Model model){
-        if(!isTutor(session)) return "redirect:/login";
+            HttpSession session,
+            Model model) {
+        if (!isTutor(session))
+            return "redirect:/login";
         User user = getCurrentUser(session);
         model.addAttribute("classItem", tutorClassService.getMyClassDetail(user.getUserId(), classId));
         model.addAttribute("enrollments", tutorClassService.getStudentsOfClass(user.getUserId(), classId));

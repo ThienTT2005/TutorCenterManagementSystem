@@ -8,11 +8,10 @@ import java.util.List;
 
 public interface TeachingSessionRepository extends JpaRepository<TeachingSession, Integer> {
 
-    List<TeachingSession> findByClassEntityClassIdOrderBySessionDateAscStartTimeAsc(Integer classId);
+        List<TeachingSession> findByClassEntityClassIdOrderBySessionDateAscStartTimeAsc(Integer classId);
 
-    List<TeachingSession> findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
-            Integer classId,
-            LocalDate startDate,
-            LocalDate endDate
-    );
+        List<TeachingSession> findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
+                        Integer classId,
+                        LocalDate startDate,
+                        LocalDate endDate);
 }

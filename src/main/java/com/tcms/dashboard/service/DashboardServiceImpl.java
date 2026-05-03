@@ -54,7 +54,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public AdminDashboardStats getAdminStats() {
-        LocalDate today = LocalDate.now();
         YearMonth currentMonth = YearMonth.now();
 
         BigDecimal monthlyRevenue = paymentRepository.findAll().stream()
@@ -65,6 +64,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Map<String, Long> monthlyGrowth = new LinkedHashMap<>();
+
         for (int i = 5; i >= 0; i--) {
             YearMonth ym = currentMonth.minusMonths(i);
 
@@ -73,7 +73,7 @@ public class DashboardServiceImpl implements DashboardService {
                     .filter(c -> YearMonth.from(c.getCreatedAt()).equals(ym))
                     .count();
 
-            monthlyGrowth.put(ym.toString(), count);
+            monthlyGrowth.put("Tháng " + ym.getMonthValue() + "/" + ym.getYear(), count);
         }
 
         return AdminDashboardStats.builder()
@@ -146,6 +146,61 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    public List<TeachingSession> getTodaySessions(Integer tutorUserId) {
+        Tutor tutor = tutorRepository.findByUserUserId(tutorUserId).orElse(null);
+        if (tutor == null) return List.of();
+        LocalDate today = LocalDate.now();
+        return teachingSessionRepository.findAll().stream()
+                .filter(s -> s.getClassEntity() != null && s.getClassEntity().getTutor() != null)
+                .filter(s -> s.getClassEntity().getTutor().getTutorId().equals(tutor.getTutorId()))
+                .filter(s -> today.equals(s.getSessionDate()))
+                .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
+                .toList();
+    }
+
+    @Override
+    public List<com.tcms.feedback.entity.Feedback> getPendingFeedbacks(Integer tutorUserId) {
+        Tutor tutor = tutorRepository.findByUserUserId(tutorUserId).orElse(null);
+        if (tutor == null) return List.of();
+        return feedbackRepository.findByStatus(FeedbackStatus.PENDING).stream()
+                .filter(f -> f.getSession() != null && f.getSession().getClassEntity() != null && f.getSession().getClassEntity().getTutor() != null)
+                .filter(f -> f.getSession().getClassEntity().getTutor().getTutorId().equals(tutor.getTutorId()))
+                .toList();
+    }
+
+    @Override
+    public List<TeachingSession> getPendingProgress(Integer tutorUserId) {
+        Tutor tutor = tutorRepository.findByUserUserId(tutorUserId).orElse(null);
+        if (tutor == null) return List.of();
+        // Placeholder logic for pending progress: sessions in the past without progress report
+        return teachingSessionRepository.findAll().stream()
+                .filter(s -> s.getClassEntity() != null && s.getClassEntity().getTutor() != null)
+                .filter(s -> s.getClassEntity().getTutor().getTutorId().equals(tutor.getTutorId()))
+                .filter(s -> s.getSessionDate().isBefore(LocalDate.now().plusDays(1)))
+                .filter(s -> s.getStatus() == SessionStatus.COMPLETED)
+                .filter(s -> s.getTopic() == null || s.getTopic().isEmpty())
+                .toList();
+    }
+
+    @Override
+    public List<com.tcms.payment.entity.Payment> getDashboardPayments(Integer tutorUserId) {
+        Tutor tutor = tutorRepository.findByUserUserId(tutorUserId).orElse(null);
+        if (tutor == null) return List.of();
+        return paymentRepository.findByTutorTutorIdOrderByRequestDateDesc(tutor.getTutorId());
+    }
+
+    @Override
+    public List<com.tcms.homework.entity.HomeworkSubmission> getPendingHomeworkSubmissions(Integer tutorUserId) {
+        Tutor tutor = tutorRepository.findByUserUserId(tutorUserId).orElse(null);
+        if (tutor == null) return List.of();
+        return homeworkSubmissionRepository.findAll().stream()
+                .filter(s -> s.getStatus() == com.tcms.homework.entity.SubmissionStatus.SUBMITTED)
+                .filter(s -> s.getHomework() != null && s.getHomework().getTutor() != null)
+                .filter(s -> s.getHomework().getTutor().getTutorId().equals(tutor.getTutorId()))
+                .toList();
+    }
+
+    @Override
     public ParentDashboardStats getParentStats(Integer parentUserId) {
         Parent parent = parentRepository.findByUserUserId(parentUserId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phụ huynh"));
@@ -168,6 +223,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .toList();
 
         long totalClasses = enrollments.stream()
+                .filter(e -> e.getClassEntity() != null)
                 .map(e -> e.getClassEntity().getClassId())
                 .distinct()
                 .count();
@@ -176,7 +232,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .filter(s -> today.equals(s.getSessionDate()))
                 .filter(s -> s.getClassEntity() != null)
                 .filter(s -> enrollments.stream().anyMatch(e ->
-                        e.getClassEntity().getClassId().equals(s.getClassEntity().getClassId())))
+                        e.getClassEntity() != null && e.getClassEntity().getClassId().equals(s.getClassEntity().getClassId())))
                 .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
                 .count();
 

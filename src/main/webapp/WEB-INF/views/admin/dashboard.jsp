@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -31,7 +31,7 @@
             <!-- Greeting -->
             <section class="greeting-section">
                 <div>
-                    <h1>Chào ${empty loggedInUser.fullName ? 'Admin' : loggedInUser.fullName}!</h1>
+                    <h1>Chào ${not empty loggedInUser.username ? loggedInUser.username : 'Admin'}!</h1>
                     <p>Chào mừng bạn quay trở lại hệ thống quản lý trung tâm gia sư.</p>
                 </div>
                 <a href="${pageContext.request.contextPath}/admin/classes/create" class="btn-primary">
@@ -51,7 +51,7 @@
                     </div>
                     <div class="stat-title">TỔNG HỌC SINH</div>
                     <div class="stat-value">
-                        <fmt:formatNumber value="${stats.totalStudents}" pattern="#,###" />
+                        <fmt:formatNumber value="${empty stats.totalStudents ? 0 : stats.totalStudents}" pattern="#,###" />
                     </div>
                 </div>
 
@@ -64,7 +64,7 @@
                     </div>
                     <div class="stat-title">GIA SƯ ĐANG DẠY</div>
                     <div class="stat-value">
-                        <fmt:formatNumber value="${stats.totalTutors}" pattern="#,###" />
+                        <fmt:formatNumber value="${empty stats.totalTutors ? 0 : stats.totalTutors}" pattern="#,###" />
                     </div>
                 </div>
 
@@ -77,8 +77,7 @@
                     </div>
                     <div class="stat-title">DOANH THU THÁNG</div>
                     <div class="stat-value">
-                        <fmt:formatNumber value="${stats.monthlyRevenue}" pattern="#,###" />
-                        <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">VNĐ</span>
+                        <fmt:formatNumber value="${empty stats.monthlyRevenue ? 0 : stats.monthlyRevenue}" pattern="#,###" />                        <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">VNĐ</span>
                     </div>
                 </div>
 
@@ -89,9 +88,9 @@
                         </div>
                         <span class="stat-badge warning">Chờ duyệt</span>
                     </div>
-                    <div class="stat-title">LỚP HỌC CHỜ</div>
+                    <div class="stat-title">THANH TOÁN</div>
                     <div class="stat-value">
-                        <fmt:formatNumber value="${stats.waitingClasses}" pattern="#,###" />
+                        <fmt:formatNumber value="${empty stats.pendingPayments? 0 : stats.pendingPayments}" pattern="#,###" />
                     </div>
                 </div>
             </section>
@@ -195,7 +194,9 @@
                             <span class="widget-badge">Active Now</span>
                         </div>
                         <div class="widget-title">Active Classes</div>
-                        <div class="widget-value">842</div>
+                        <div class="widget-value">
+                            <fmt:formatNumber value="${empty stats.activeClasses ? 0 : stats.activeClasses}" pattern="#,###" />
+                        </div>
                     </div>
 
                     <!-- Quick Actions -->
@@ -220,44 +221,6 @@
                             </a>
                         </div>
                     </div>
-
-                    <!-- System News -->
-                    <div class="card news-card">
-                        <div class="news-header">
-                            <h3>Tin vắn hệ thống</h3>
-                            <div class="dot"></div>
-                        </div>
-                        <div class="news-list">
-                            <!-- News 1 -->
-                            <div class="news-item finance">
-                                <div class="news-item-header">
-                                    <span class="material-symbols-rounded" style="font-size: 16px;">account_balance_wallet</span>
-                                    TÀI CHÍNH
-                                </div>
-                                <h4>3 thanh toán mới</h4>
-                                <p>Tổng cộng 12.5M VNĐ vừa được ghi nhận.</p>
-                            </div>
-                            <!-- News 2 -->
-                            <div class="news-item schedule">
-                                <div class="news-item-header">
-                                    <span class="material-symbols-rounded" style="font-size: 16px;">event_busy</span>
-                                    LỊCH HỌC
-                                </div>
-                                <h4>1 lịch trùng</h4>
-                                <p>Lớp Toán 12 (Gia sư Lam) trùng lịch thi.</p>
-                            </div>
-                            <!-- News 3 -->
-                            <div class="news-item hr">
-                                <div class="news-item-header">
-                                    <span class="material-symbols-rounded" style="font-size: 16px;">person_off</span>
-                                    NHÂN SỰ
-                                </div>
-                                <h4>2 yêu cầu nghỉ</h4>
-                                <p>Gia sư Minh và Gia sư Hoa xin nghỉ đột xuất.</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
             </section>
@@ -265,27 +228,51 @@
     </main>
 
     <script>
-        // Setup mock chart to perfectly match the blue bar chart in the image
         document.addEventListener('DOMContentLoaded', function() {
-            var ctx = document.getElementById('growthChart').getContext('2d');
-            
-            // Gradient fill for the highest bar
-            var gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientBlue.addColorStop(0, '#0057bf');
-            gradientBlue.addColorStop(1, '#003e8c');
+            var canvas = document.getElementById('growthChart');
+
+            if (!canvas) {
+                return;
+            }
+
+            var ctx = canvas.getContext('2d');
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['THÁNG 1', 'THÁNG 2', 'THÁNG 3', 'THÁNG 4', 'THÁNG 5', 'THÁNG 6', 'THÁNG 7', 'THÁNG 8', 'THÁNG 9', 'THÁNG 10', 'THÁNG 11', 'THÁNG 12'],
+                    labels: [
+                        <c:choose>
+                        <c:when test="${not empty stats and not empty stats.monthlyGrowth}">
+                        <c:forEach items="${stats.monthlyGrowth}" var="entry" varStatus="status">
+                        '${entry.key}'${not status.last ? ',' : ''}
+                        </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                        'Không có dữ liệu'
+                        </c:otherwise>
+                        </c:choose>
+                    ],
                     datasets: [{
-                        label: 'Học sinh mới',
-                        data: [<c:forEach items="${stats.growthData}" var="count" varStatus="status">${count}${not status.last ? ',' : ''}</c:forEach>],
+                        label: 'Lớp học mới',
+                        data: [
+                            <c:choose>
+                            <c:when test="${not empty stats and not empty stats.monthlyGrowth}">
+                            <c:forEach items="${stats.monthlyGrowth}" var="entry" varStatus="status">
+                            ${entry.value}${not status.last ? ',' : ''}
+                            </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                            0
+                            </c:otherwise>
+                            </c:choose>
+                        ],
                         backgroundColor: [
-                            'rgba(0, 87, 191, 0.1)', 'rgba(0, 87, 191, 0.2)', 'rgba(0, 87, 191, 0.15)',
-                            'rgba(0, 87, 191, 0.35)', 'rgba(0, 87, 191, 0.25)', 'rgba(0, 87, 191, 0.4)',
-                            'rgba(0, 87, 191, 0.3)', 'rgba(0, 87, 191, 0.45)', 'rgba(0, 87, 191, 0.5)',
-                            'rgba(0, 87, 191, 0.6)', 'rgba(0, 87, 191, 0.7)', '#0057bf'
+                            'rgba(0, 87, 191, 0.1)',
+                            'rgba(0, 87, 191, 0.2)',
+                            'rgba(0, 87, 191, 0.15)',
+                            'rgba(0, 87, 191, 0.35)',
+                            'rgba(0, 87, 191, 0.25)',
+                            'rgba(0, 87, 191, 0.4)'
                         ],
                         borderRadius: 6,
                         borderSkipped: false,
@@ -295,13 +282,27 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
-                        tooltip: { backgroundColor: '#1e293b', padding: 12, titleFont: {size: 11}, bodyFont: {size: 14, weight: 'bold'} }
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            titleFont: { size: 11 },
+                            bodyFont: { size: 14, weight: 'bold' }
+                        }
                     },
-                    scales: { 
-                        x: { grid: { display: false, drawBorder: false }, ticks: { font: {size: 10, weight: 'bold'}, color: '#64748b' } },
-                        y: { display: false, beginAtZero: true } // Hide Y axis per design
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 10, weight: 'bold' },
+                                color: '#64748b'
+                            }
+                        },
+                        y: {
+                            display: false,
+                            beginAtZero: true
+                        }
                     }
                 }
             });

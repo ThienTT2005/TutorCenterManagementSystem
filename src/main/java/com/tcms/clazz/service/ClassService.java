@@ -11,6 +11,7 @@ import java.util.List;
 public interface ClassService {
 
     List<ClassEntity> getAllClasses();
+    List<ClassEntity> searchClasses(String keyword, String subject, String grade, Boolean status);
 
     ClassEntity getClassById(Integer classId);
 

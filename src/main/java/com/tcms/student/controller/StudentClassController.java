@@ -54,13 +54,16 @@ public class StudentClassController {
 
         Student student = getCurrentStudent(session);
 
-        boolean joined = enrollmentRepository
-                .existsByClassEntityClassIdAndStudentStudentId(classId, student.getStudentId());
+        var enrollment = enrollmentRepository
+                .findByStudentStudentIdAndStatusTrue(student.getStudentId())
+                .stream()
+                .filter(e -> e.getClassEntity() != null
+                        && e.getClassEntity().getClassId().equals(classId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Bạn không thuộc lớp này"));
 
-        if (!joined) {
-            throw new RuntimeException("Bạn không thuộc lớp này");
-        }
-
+        model.addAttribute("student", student);
+        model.addAttribute("classItem", enrollment.getClassEntity());
         model.addAttribute("sessions",
                 teachingSessionRepository.findByClassEntityClassIdOrderBySessionDateAscStartTimeAsc(classId));
 

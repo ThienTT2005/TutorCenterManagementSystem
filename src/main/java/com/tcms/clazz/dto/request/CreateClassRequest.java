@@ -15,12 +15,13 @@ public class CreateClassRequest {
     private String grade;
 
     private Integer tutorId;
+    private List<Integer> studentIds;
 
     private BigDecimal tuitionFeePerSession;
 
     private Integer requiredSessionsPerMonth;
 
     private String description;
+    private Boolean status;
 
-    private List<Integer> studentIds;
 }

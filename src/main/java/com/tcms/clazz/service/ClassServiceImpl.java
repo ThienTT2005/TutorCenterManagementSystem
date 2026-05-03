@@ -34,6 +34,11 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public List<ClassEntity> searchClasses(String keyword, String subject, String grade, Boolean status) {
+        return classRepository.searchClasses(keyword, subject, grade, status);
+    }
+
+    @Override
     public ClassEntity getClassById(Integer classId) {
         return classRepository.findById(classId)
                 .orElseThrow(() -> new BadRequestException("Không tìm thấy lớp học"));

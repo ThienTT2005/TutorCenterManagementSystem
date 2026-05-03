@@ -14,4 +14,5 @@ public class CreateStudentProfileRequest {
     private String address;
     private String school;
     private String grade;
+    private org.springframework.web.multipart.MultipartFile avatarFile;
 }

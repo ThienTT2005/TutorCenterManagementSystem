@@ -65,12 +65,11 @@ public class SessionServiceImpl implements SessionService {
 
         limitSessionsByRequiredSessionsPerMonth(request.getClassId(), startDate, endDate);
 
-        List<TeachingSession> generatedSessions =
-                teachingSessionRepository.findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
+        List<TeachingSession> generatedSessions = teachingSessionRepository
+                .findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
                         request.getClassId(),
                         startDate,
-                        endDate
-                );
+                        endDate);
 
         notifyGeneratedSessions(classEntity, generatedSessions);
     }
@@ -81,27 +80,25 @@ public class SessionServiceImpl implements SessionService {
 
         Integer requiredSessions = classEntity.getRequiredSessions();
 
-        if (requiredSessions == null || requiredSessions <= 0) return;
+        if (requiredSessions == null || requiredSessions <= 0)
+            return;
 
-        List<TeachingSession> sessions =
-                teachingSessionRepository
-                        .findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
-                                classId,
-                                startDate,
-                                endDate
-                        );
+        List<TeachingSession> sessions = teachingSessionRepository
+                .findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
+                        classId,
+                        startDate,
+                        endDate);
 
         Map<YearMonth, List<TeachingSession>> sessionsByMonth = sessions.stream()
                 .collect(Collectors.groupingBy(
                         s -> YearMonth.from(s.getSessionDate()),
                         LinkedHashMap::new,
-                        Collectors.toList()
-                ));
+                        Collectors.toList()));
 
         for (List<TeachingSession> monthlySessions : sessionsByMonth.values()) {
             if (monthlySessions.size() > requiredSessions) {
-                List<TeachingSession> redundantSessions =
-                        monthlySessions.subList(requiredSessions, monthlySessions.size());
+                List<TeachingSession> redundantSessions = monthlySessions.subList(requiredSessions,
+                        monthlySessions.size());
 
                 teachingSessionRepository.deleteAll(redundantSessions);
             }
@@ -109,7 +106,8 @@ public class SessionServiceImpl implements SessionService {
     }
 
     private void notifyGeneratedSessions(ClassEntity classEntity, List<TeachingSession> sessions) {
-        if (sessions == null || sessions.isEmpty()) return;
+        if (sessions == null || sessions.isEmpty())
+            return;
 
         String content = "Lớp " + classEntity.getClassName()
                 + " đã được sinh " + sessions.size()
@@ -122,16 +120,16 @@ public class SessionServiceImpl implements SessionService {
                     content,
                     NotificationType.SCHEDULE,
                     classEntity.getClassId(),
-                    "teaching_sessions"
-            );
+                    "teaching_sessions");
         }
 
-        List<Enrollment> enrollments =
-                enrollmentRepository.findByClassEntityClassIdAndStatusTrue(classEntity.getClassId());
+        List<Enrollment> enrollments = enrollmentRepository
+                .findByClassEntityClassIdAndStatusTrue(classEntity.getClassId());
 
         for (Enrollment enrollment : enrollments) {
             Student student = enrollment.getStudent();
-            if (student == null) continue;
+            if (student == null)
+                continue;
 
             if (student.getUser() != null) {
                 notificationService.createNotification(
@@ -140,8 +138,7 @@ public class SessionServiceImpl implements SessionService {
                         content,
                         NotificationType.SCHEDULE,
                         classEntity.getClassId(),
-                        "teaching_sessions"
-                );
+                        "teaching_sessions");
             }
 
             if (student.getParent() != null && student.getParent().getUser() != null) {
@@ -151,8 +148,7 @@ public class SessionServiceImpl implements SessionService {
                         content,
                         NotificationType.SCHEDULE,
                         classEntity.getClassId(),
-                        "teaching_sessions"
-                );
+                        "teaching_sessions");
             }
         }
     }

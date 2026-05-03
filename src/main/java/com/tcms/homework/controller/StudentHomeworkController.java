@@ -1,9 +1,12 @@
 package com.tcms.homework.controller;
 
 import com.tcms.homework.dto.request.SubmitHomeworkRequest;
+import com.tcms.homework.entity.HomeworkSubmission;
 import com.tcms.homework.service.HomeworkService;
 import com.tcms.homework.service.HomeworkSubmissionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,10 +50,24 @@ public class StudentHomeworkController {
         Integer userId = (Integer) session.getAttribute("userId");
 
         if (userId != null) {
-            model.addAttribute("submission",
-                    submissionService.getMySubmission(userId, id));
+            HomeworkSubmission submission = submissionService.getMySubmission(userId, id);
+            model.addAttribute("submission", submission);
+
+            if (submission != null && submission.getAnswers() != null) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, String> answersMap = mapper.readValue(
+                            submission.getAnswers(),
+                            new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {}
+                    );
+                    model.addAttribute("studentAnswers", answersMap);
+                } catch (Exception e) {
+                    // Ignore parsing errors
+                }
+            }
         }
 
+        model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(id));
         model.addAttribute("request", new SubmitHomeworkRequest());
 
         return "student/homework/detail";
@@ -74,6 +91,7 @@ public class StudentHomeworkController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("homework", homeworkService.getHomeworkById(request.getHomeworkId()));
+            model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(request.getHomeworkId()));
             return "student/homework/detail";
         }
     }

@@ -17,9 +17,22 @@ public class GlobalModelAttribute {
     public void addNotificationData(Model model, HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
 
+        // Fallback to currentUser if userId is not directly in session
+        if (userId == null && session.getAttribute("currentUser") != null) {
+            com.tcms.user.entity.User currentUser = (com.tcms.user.entity.User) session.getAttribute("currentUser");
+            userId = currentUser.getUserId();
+        }
+
         if (userId != null) {
-            model.addAttribute("latestNotifications", notificationService.getLatestNotifications(userId));
-            model.addAttribute("unreadNotificationCount", notificationService.countUnread(userId));
+            var currentUser = session.getAttribute("currentUser");
+            model.addAttribute("loggedInUser", currentUser);
+
+            var latest = notificationService.getLatestNotifications(userId);
+            var unread = notificationService.countUnread(userId);
+
+            // Standard names used in header.jsp (Student, Tutor, Admin)
+            model.addAttribute("notifications", latest);
+            model.addAttribute("unreadCount", unread);
         }
     }
 }
