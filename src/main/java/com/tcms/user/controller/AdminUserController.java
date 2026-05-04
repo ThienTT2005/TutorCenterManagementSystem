@@ -2,6 +2,7 @@ package com.tcms.user.controller;
 
 import com.tcms.parent.dto.request.CreateParentProfileRequest;
 import com.tcms.student.dto.request.CreateStudentProfileRequest;
+import com.tcms.profile.dto.ProfileUpdateRequest;
 import com.tcms.tutor.dto.request.CreateTutorProfileRequest;
 import com.tcms.user.dto.request.CreateAccountRequest;
 import com.tcms.user.entity.User;
@@ -42,7 +43,7 @@ public class AdminUserController {
         model.addAttribute("selectedRole", role);
         model.addAttribute("selectedStatus", status);
 
-        return "admin/users/list";
+        return "admin/accounts/account_list";
     }
 
     @GetMapping("/create")
@@ -138,17 +139,6 @@ public class AdminUserController {
         }
     }
 
-    // @GetMapping("/{userId}/profile/student")
-    // public String showStudentProfileForm(@PathVariable Integer userId,
-    // HttpSession session, Model model) {
-    // if (!isAdmin(session)) return "redirect:/login";
-    //
-    // CreateStudentProfileRequest request = new CreateStudentProfileRequest();
-    // request.setUserId(userId);
-    // model.addAttribute("request", request);
-    // model.addAttribute("parents", adminUserService.getAllParents());
-    // return "admin/users/create-student-profile";
-    // }
     @GetMapping("/{userId}/profile/student")
     public String showCreateStudentProfile(
             @PathVariable Integer userId,
@@ -182,5 +172,94 @@ public class AdminUserController {
             model.addAttribute("parents", adminUserService.getAllParents());
             return "admin/users/create-student-profile";
         }
+    }
+
+    @GetMapping("/{userId}")
+    public String viewUserDetail(@PathVariable Integer userId,
+                                 HttpSession session,
+                                 Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", adminUserService.getUserById(userId));
+        model.addAttribute("profile", adminUserService.getProfileByUserId(userId));
+
+        return "admin/accounts/account_detail";
+    }
+
+    @GetMapping("/{userId}/edit-profile")
+    public String showEditProfileForm(@PathVariable Integer userId,
+                                      HttpSession session,
+                                      Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", adminUserService.getUserById(userId));
+        model.addAttribute("profile", adminUserService.getProfileByUserId(userId));
+        model.addAttribute("request", adminUserService.buildProfileUpdateRequest(userId));
+        model.addAttribute("parents", adminUserService.getAllParents());
+
+        return "admin/accounts/account_edit";
+    }
+
+    @PostMapping("/{userId}/edit-profile")
+    public String updateUserProfile(@PathVariable Integer userId,
+                                    @ModelAttribute("request") ProfileUpdateRequest request,
+                                    HttpSession session,
+                                    Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            adminUserService.updateProfileByAdmin(userId, request);
+            return "redirect:/admin/users/" + userId;
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("user", adminUserService.getUserById(userId));
+            model.addAttribute("profile", adminUserService.getProfileByUserId(userId));
+            model.addAttribute("request", request);
+            model.addAttribute("parents", adminUserService.getAllParents());
+
+            return "admin/users/edit-profile";
+        }
+    }
+
+    @GetMapping("/parents")
+    public String listParents(HttpSession session, Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("parents", adminUserService.getAllParents());
+        model.addAttribute("activePage", "parents");
+
+        return "admin/parents/parent_list";
+    }
+
+    @GetMapping("/students")
+    public String listStudents(HttpSession session, Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("students", adminUserService.getAllStudents());
+        model.addAttribute("activePage", "students");
+
+        return "admin/students/students_list";
+    }
+
+    @GetMapping("/tutors")
+    public String listTutors(HttpSession session, Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("tutors", adminUserService.getAllTutors());
+        model.addAttribute("activePage", "tutors");
+
+        return "admin/tutors/tutor_list";
     }
 }

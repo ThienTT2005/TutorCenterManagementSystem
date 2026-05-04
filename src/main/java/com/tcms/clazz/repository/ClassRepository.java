@@ -22,4 +22,6 @@ public interface ClassRepository extends JpaRepository<ClassEntity, Integer> {
             @Param("subject") String subject,
             @Param("grade") String grade,
             @Param("status") Boolean status);
+
+    List<ClassEntity> findTop5ByOrderByClassIdDesc();
 }

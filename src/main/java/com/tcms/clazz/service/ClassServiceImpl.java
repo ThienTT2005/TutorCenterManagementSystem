@@ -100,6 +100,64 @@ public class ClassServiceImpl implements ClassService {
         }
     }
 
+    @Override
+    public void updateClass(Integer classId, CreateClassRequest request) {
+        validateCreateClass(request);
+
+        ClassEntity classEntity = getClassById(classId);
+
+        Tutor oldTutor = classEntity.getTutor();
+
+        Tutor tutor = tutorRepository.findById(request.getTutorId())
+                .orElseThrow(() -> new BadRequestException("Gia sư không tồn tại"));
+
+        classEntity.setClassName(request.getClassName());
+        classEntity.setSubject(request.getSubject());
+        classEntity.setGrade(request.getGrade());
+        classEntity.setTuitionFeePerSession(request.getTuitionFeePerSession());
+
+        classEntity.setRequiredSessions(request.getRequiredSessionsPerMonth());
+
+        classEntity.setDescription(request.getDescription());
+        classEntity.setTutor(tutor);
+
+        if (request.getStatus() != null) {
+            classEntity.setStatus(request.getStatus());
+        }
+
+        ClassEntity savedClass = classRepository.save(classEntity);
+
+        if (oldTutor == null || !oldTutor.getTutorId().equals(tutor.getTutorId())) {
+            notifyTutorAddedToClass(savedClass, tutor);
+        }
+
+        List<Enrollment> oldEnrollments = enrollmentRepository.findByClassEntityClassId(classId);
+        enrollmentRepository.deleteAll(oldEnrollments);
+
+        if (request.getStudentIds() != null) {
+            for (Integer studentId : request.getStudentIds()) {
+                Student student = studentRepository.findById(studentId)
+                        .orElseThrow(() -> new BadRequestException("Học sinh không tồn tại: " + studentId));
+
+                Enrollment enrollment = new Enrollment();
+                enrollment.setClassEntity(savedClass);
+                enrollment.setStudent(student);
+                enrollment.setStatus(true);
+
+                enrollmentRepository.save(enrollment);
+
+                notifyStudentAndParentAddedToClass(savedClass, student);
+                notifyTutorStudentJoinedClass(savedClass, tutor, student);
+            }
+        }
+    }
+
+    @Override
+    public void deleteClass(Integer classId) {
+        ClassEntity classEntity = getClassById(classId);
+        classRepository.delete(classEntity);
+    }
+
     private void notifyTutorAddedToClass(ClassEntity classEntity, Tutor tutor) {
         if (tutor.getUser() == null) return;
 

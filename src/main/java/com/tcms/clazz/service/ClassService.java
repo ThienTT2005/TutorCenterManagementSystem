@@ -22,4 +22,8 @@ public interface ClassService {
     List<Enrollment> getEnrollmentsByClassId(Integer classId);
 
     void createClass(CreateClassRequest request);
+
+    void updateClass(Integer classId, CreateClassRequest request);
+
+    void deleteClass(Integer classId);
 }

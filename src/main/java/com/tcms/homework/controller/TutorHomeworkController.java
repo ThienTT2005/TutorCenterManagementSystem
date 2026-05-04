@@ -39,7 +39,6 @@ public class TutorHomeworkController {
 
         return null;
     }
-    // đã sửa GetMapping("/session/{sessionId}") và create
 
     @GetMapping("/session/{sessionId}")
     public String listHomeworkBySession(@PathVariable Integer sessionId,
@@ -52,7 +51,7 @@ public class TutorHomeworkController {
 
         TeachingSession sessionItem = teachingSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy buổi học"));
-    // sửa ở đây
+
         model.addAttribute("sessionItem", sessionItem);
         model.addAttribute("homeworks", homeworkService.getHomeworkBySession(sessionId));
 
@@ -113,6 +112,69 @@ public class TutorHomeworkController {
             model.addAttribute("sessionItem", sessionItem);
 
             return "tutor/homework/create";
+        }
+    }
+
+    @GetMapping("/{homeworkId}/edit")
+    public String showEditHomeworkForm(@PathVariable Integer homeworkId,
+                                       HttpSession session,
+                                       Model model) {
+
+        if (!isTutor(session)) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("homework", homeworkService.getHomeworkById(homeworkId));
+        model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(homeworkId));
+        model.addAttribute("request", new CreateHomeworkRequest());
+
+        return "tutor/homework/edit";
+    }
+
+    @PostMapping("/{homeworkId}/edit")
+    public String updateHomework(@PathVariable Integer homeworkId,
+                                 @ModelAttribute("request") CreateHomeworkRequest request,
+                                 HttpSession session,
+                                 Model model) {
+
+        if (!isTutor(session)) {
+            return "redirect:/login";
+        }
+
+        Integer tutorUserId = getCurrentUserId(session);
+
+        try {
+            homeworkService.updateHomework(tutorUserId, homeworkId, request);
+            return "redirect:/tutor/homework/session/" + request.getSessionId();
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("homework", homeworkService.getHomeworkById(homeworkId));
+            model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(homeworkId));
+            return "tutor/homework/edit";
+        }
+    }
+
+    @PostMapping("/{homeworkId}/delete")
+    public String deleteHomework(@PathVariable Integer homeworkId,
+                                 @RequestParam("sessionId") Integer sessionId,
+                                 HttpSession session,
+                                 Model model) {
+
+        if (!isTutor(session)) {
+            return "redirect:/login";
+        }
+
+        Integer tutorUserId = getCurrentUserId(session);
+
+        try {
+            homeworkService.deleteHomework(tutorUserId, homeworkId);
+            return "redirect:/tutor/homework/session/" + sessionId;
+        } catch (Exception e) {
+            TeachingSession sessionItem = teachingSessionRepository.findById(sessionId).orElse(null);
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("sessionItem", sessionItem);
+            model.addAttribute("homeworks", homeworkService.getHomeworkBySession(sessionId));
+            return "tutor/homework/list";
         }
     }
 }

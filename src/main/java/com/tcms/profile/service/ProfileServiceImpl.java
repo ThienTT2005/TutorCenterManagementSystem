@@ -70,6 +70,51 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public ProfileUpdateRequest buildProfileUpdateRequest(Integer userId) {
+        Object profile = getProfile(userId);
+
+        ProfileUpdateRequest request = new ProfileUpdateRequest();
+
+        if (profile instanceof Tutor tutor) {
+            request.setFullName(tutor.getFullName());
+            request.setPhone(tutor.getPhone());
+            request.setEmail(tutor.getEmail());
+            request.setDob(tutor.getDob());
+            request.setGender(tutor.getGender());
+            request.setAddress(tutor.getAddress());
+            request.setAvatar(tutor.getAvatar());
+            request.setSchool(tutor.getSchool());
+            request.setMajor(tutor.getMajor());
+            request.setDescription(tutor.getDescription());
+            return request;
+        }
+
+        if (profile instanceof Parent parent) {
+            request.setFullName(parent.getFullName());
+            request.setPhone(parent.getPhone());
+            request.setEmail(parent.getEmail());
+            request.setDob(parent.getDob());
+            request.setGender(parent.getGender());
+            request.setAddress(parent.getAddress());
+            request.setAvatar(parent.getAvatar());
+            return request;
+        }
+
+        if (profile instanceof Student student) {
+            request.setFullName(student.getFullName());
+            request.setDob(student.getDob());
+            request.setGender(student.getGender());
+            request.setAddress(student.getAddress());
+            request.setAvatar(student.getAvatar());
+            request.setSchool(student.getSchool());
+            request.setGrade(student.getGrade());
+            return request;
+        }
+
+        throw new BadRequestException("Không thể tạo dữ liệu sửa profile");
+    }
+
+    @Override
     public String uploadAvatar(Integer userId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("Vui lòng chọn ảnh");
@@ -135,6 +180,7 @@ public class ProfileServiceImpl implements ProfileService {
         tutor.setDob(request.getDob());
         tutor.setGender(request.getGender());
         tutor.setAddress(request.getAddress());
+        tutor.setAvatar(request.getAvatar());
         tutor.setSchool(request.getSchool());
         tutor.setMajor(request.getMajor());
         tutor.setDescription(request.getDescription());
@@ -147,6 +193,7 @@ public class ProfileServiceImpl implements ProfileService {
         parent.setDob(request.getDob());
         parent.setGender(request.getGender());
         parent.setAddress(request.getAddress());
+        parent.setAvatar(request.getAvatar());
     }
 
     private void updateStudent(Student student, ProfileUpdateRequest request) {
@@ -154,6 +201,7 @@ public class ProfileServiceImpl implements ProfileService {
         student.setDob(request.getDob());
         student.setGender(request.getGender());
         student.setAddress(request.getAddress());
+        student.setAvatar(request.getAvatar());
         student.setSchool(request.getSchool());
         student.setGrade(request.getGrade());
     }
