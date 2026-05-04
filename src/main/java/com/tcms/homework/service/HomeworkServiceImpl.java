@@ -10,6 +10,7 @@ import com.tcms.homework.entity.HomeworkQuestion;
 import com.tcms.homework.entity.HomeworkType;
 import com.tcms.homework.repository.HomeworkQuestionRepository;
 import com.tcms.homework.repository.HomeworkRepository;
+import com.tcms.homework.repository.HomeworkSubmissionRepository;
 import com.tcms.notification.entity.NotificationType;
 import com.tcms.notification.service.NotificationService;
 import com.tcms.session.entity.TeachingSession;
@@ -35,6 +36,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     private final EnrollmentRepository enrollmentRepository;
     private final NotificationService notificationService;
     private final StudentRepository studentRepository;
+    private final HomeworkSubmissionRepository homeworkSubmissionRepository;
 
     @Override
     public void createHomework(Integer tutorUserId, CreateHomeworkRequest request) {
@@ -164,5 +166,79 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public List<HomeworkQuestion> getQuestionsByHomeworkId(Integer homeworkId) {
         return homeworkQuestionRepository.findByHomeworkHomeworkId(homeworkId);
+    }
+
+    @Override
+    public void updateHomework(Integer tutorUserId, Integer homeworkId, CreateHomeworkRequest request) {
+        Homework homework = getHomeworkById(homeworkId);
+
+        if (!homework.getTutor().getUser().getUserId().equals(tutorUserId)) {
+            throw new BadRequestException("Bạn không có quyền sửa bài tập này");
+        }
+
+        if (homeworkSubmissionRepository.existsByHomeworkHomeworkId(homeworkId)) {
+            throw new BadRequestException("Bài tập đã có học sinh nộp bài, không thể sửa");
+        }
+
+        if (request.getTitle() == null || request.getTitle().trim().isEmpty()) {
+            throw new BadRequestException("Tên bài tập không được để trống");
+        }
+
+        HomeworkType type;
+        try {
+            type = HomeworkType.valueOf(request.getType());
+        } catch (Exception e) {
+            throw new BadRequestException("Loại bài tập không hợp lệ");
+        }
+
+        homework.setTitle(request.getTitle());
+        homework.setType(type);
+        homework.setContent(request.getContent());
+        homework.setAttachmentUrl(request.getAttachmentUrl());
+        homework.setDeadline(request.getDeadline());
+
+        homeworkRepository.save(homework);
+
+        List<HomeworkQuestion> oldQuestions =
+                homeworkQuestionRepository.findByHomeworkHomeworkId(homeworkId);
+        homeworkQuestionRepository.deleteAll(oldQuestions);
+
+        if (type == HomeworkType.MULTIPLE_CHOICE) {
+            if (request.getQuestions() == null || request.getQuestions().isEmpty()) {
+                throw new BadRequestException("Bài trắc nghiệm phải có ít nhất 1 câu hỏi");
+            }
+
+            for (CreateHomeworkQuestionRequest q : request.getQuestions()) {
+                if (q.getQuestionText() == null || q.getQuestionText().trim().isEmpty()) {
+                    continue;
+                }
+
+                HomeworkQuestion question = new HomeworkQuestion();
+                question.setHomework(homework);
+                question.setQuestionText(q.getQuestionText());
+                question.setOptionA(q.getOptionA());
+                question.setOptionB(q.getOptionB());
+                question.setOptionC(q.getOptionC());
+                question.setOptionD(q.getOptionD());
+                question.setCorrectAnswer(q.getCorrectAnswer());
+
+                homeworkQuestionRepository.save(question);
+            }
+        }
+    }
+
+    @Override
+    public void deleteHomework(Integer tutorUserId, Integer homeworkId) {
+        Homework homework = getHomeworkById(homeworkId);
+
+        if (!homework.getTutor().getUser().getUserId().equals(tutorUserId)) {
+            throw new BadRequestException("Bạn không có quyền xóa bài tập này");
+        }
+
+        if (homeworkSubmissionRepository.existsByHomeworkHomeworkId(homeworkId)) {
+            throw new BadRequestException("Bài tập đã có học sinh nộp bài, không thể xóa");
+        }
+
+        homeworkRepository.delete(homework);
     }
 }

@@ -109,6 +109,6 @@ public class PaymentController {
                 paymentService.getAllPayments()
         );
 
-        return "admin/payments";
+        return "admin/payments/payments_list";
     }
 }

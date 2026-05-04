@@ -12,4 +12,6 @@ public interface HomeworkSubmissionRepository extends JpaRepository<HomeworkSubm
             Integer studentId
     );
     List<HomeworkSubmission> findByHomeworkHomeworkId(Integer homeworkId);
+
+    boolean existsByHomeworkHomeworkId(Integer homeworkId);
 }

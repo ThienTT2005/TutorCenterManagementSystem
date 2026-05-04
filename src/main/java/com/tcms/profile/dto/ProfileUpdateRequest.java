@@ -15,6 +15,7 @@ public class ProfileUpdateRequest {
     private LocalDate dob;
     private String gender;
     private String address;
+    private String avatar;
 
     // Tutor
     private String school;
@@ -22,5 +23,6 @@ public class ProfileUpdateRequest {
     private String description;
 
     // Student
+    private Integer parentId;
     private String grade;
 }

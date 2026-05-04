@@ -21,30 +21,57 @@ public class ProfileController {
 
         Integer userId = (Integer) session.getAttribute("userId");
 
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("profile", profileService.getProfile(userId));
+        model.addAttribute("request", profileService.buildProfileUpdateRequest(userId));
 
         return "profile/view";
     }
 
     @PostMapping("/update")
     public String updateProfile(HttpSession session,
-                                @ModelAttribute ProfileUpdateRequest request) {
+                                @ModelAttribute ProfileUpdateRequest request,
+                                Model model) {
 
         Integer userId = (Integer) session.getAttribute("userId");
 
-        profileService.updateProfile(userId, request);
+        if (userId == null) {
+            return "redirect:/login";
+        }
 
-        return "redirect:/profile";
+        try {
+            profileService.updateProfile(userId, request);
+            return "redirect:/profile";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("profile", profileService.getProfile(userId));
+            model.addAttribute("request", request);
+            return "profile/view";
+        }
     }
 
     @PostMapping("/avatar")
     public String uploadAvatar(HttpSession session,
-                               @RequestParam("file") MultipartFile file) {
+                               @RequestParam("file") MultipartFile file,
+                               Model model) {
 
         Integer userId = (Integer) session.getAttribute("userId");
 
-        profileService.uploadAvatar(userId, file);
+        if (userId == null) {
+            return "redirect:/login";
+        }
 
-        return "redirect:/profile";
+        try {
+            profileService.uploadAvatar(userId, file);
+            return "redirect:/profile";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("profile", profileService.getProfile(userId));
+            model.addAttribute("request", profileService.buildProfileUpdateRequest(userId));
+            return "profile/view";
+        }
     }
 }

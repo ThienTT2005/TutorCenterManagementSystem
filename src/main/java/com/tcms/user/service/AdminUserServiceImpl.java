@@ -4,6 +4,7 @@ import com.tcms.exception.BadRequestException;
 import com.tcms.parent.dto.request.CreateParentProfileRequest;
 import com.tcms.parent.entity.Parent;
 import com.tcms.parent.repository.ParentRepository;
+import com.tcms.profile.dto.ProfileUpdateRequest;
 import com.tcms.student.dto.request.CreateStudentProfileRequest;
 import com.tcms.student.entity.Student;
 import com.tcms.student.repository.StudentRepository;
@@ -240,5 +241,163 @@ public class AdminUserServiceImpl implements AdminUserService {
                     return user.getStatus() != null && user.getStatus().equals(status);
                 })
                 .toList();
+    }
+
+    @Override
+    public User getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User không tồn tại"));
+    }
+
+    @Override
+    public Object getProfileByUserId(Integer userId) {
+        User user = getUserById(userId);
+
+        String roleName = user.getRole() == null ? "" : user.getRole().getRoleName();
+
+        if ("TUTOR".equalsIgnoreCase(roleName)) {
+            return tutorRepository.findByUserUserId(userId)
+                    .orElseThrow(() -> new BadRequestException("Tài khoản này chưa có hồ sơ gia sư"));
+        }
+
+        if ("PARENT".equalsIgnoreCase(roleName)) {
+            return parentRepository.findByUserUserId(userId)
+                    .orElseThrow(() -> new BadRequestException("Tài khoản này chưa có hồ sơ phụ huynh"));
+        }
+
+        if ("STUDENT".equalsIgnoreCase(roleName)) {
+            return studentRepository.findByUserUserId(userId)
+                    .orElseThrow(() -> new BadRequestException("Tài khoản này chưa có hồ sơ học sinh"));
+        }
+
+        throw new BadRequestException("Admin không có hồ sơ riêng");
+    }
+
+    @Override
+    public ProfileUpdateRequest buildProfileUpdateRequest(Integer userId) {
+        Object profile = getProfileByUserId(userId);
+
+        ProfileUpdateRequest request = new ProfileUpdateRequest();
+
+        if (profile instanceof Tutor tutor) {
+            request.setFullName(tutor.getFullName());
+            request.setPhone(tutor.getPhone());
+            request.setEmail(tutor.getEmail());
+            request.setDob(tutor.getDob());
+            request.setGender(tutor.getGender());
+            request.setAddress(tutor.getAddress());
+            request.setAvatar(tutor.getAvatar());
+            request.setSchool(tutor.getSchool());
+            request.setMajor(tutor.getMajor());
+            request.setDescription(tutor.getDescription());
+            return request;
+        }
+
+        if (profile instanceof Parent parent) {
+            request.setFullName(parent.getFullName());
+            request.setPhone(parent.getPhone());
+            request.setEmail(parent.getEmail());
+            request.setDob(parent.getDob());
+            request.setGender(parent.getGender());
+            request.setAddress(parent.getAddress());
+            request.setAvatar(parent.getAvatar());
+            return request;
+        }
+
+        if (profile instanceof Student student) {
+            request.setFullName(student.getFullName());
+            request.setDob(student.getDob());
+            request.setGender(student.getGender());
+            request.setAddress(student.getAddress());
+            request.setAvatar(student.getAvatar());
+            request.setSchool(student.getSchool());
+            request.setGrade(student.getGrade());
+
+            if (student.getParent() != null) {
+                request.setParentId(student.getParent().getParentId());
+            }
+
+            return request;
+        }
+
+        throw new BadRequestException("Không thể tạo dữ liệu sửa profile");
+    }
+
+    @Override
+    public void updateProfileByAdmin(Integer userId, ProfileUpdateRequest request) {
+        User user = getUserById(userId);
+
+        String roleName = user.getRole() == null ? "" : user.getRole().getRoleName();
+
+        if ("TUTOR".equalsIgnoreCase(roleName)) {
+            Tutor tutor = tutorRepository.findByUserUserId(userId)
+                    .orElseThrow(() -> new BadRequestException("Không tìm thấy hồ sơ gia sư"));
+
+            validatePhone(request.getPhone());
+
+            tutor.setFullName(request.getFullName());
+            tutor.setPhone(request.getPhone());
+            tutor.setEmail(request.getEmail());
+            tutor.setDob(request.getDob());
+            tutor.setGender(request.getGender());
+            tutor.setAddress(request.getAddress());
+            tutor.setAvatar(request.getAvatar());
+            tutor.setSchool(request.getSchool());
+            tutor.setMajor(request.getMajor());
+            tutor.setDescription(request.getDescription());
+
+            tutorRepository.save(tutor);
+            return;
+        }
+
+        if ("PARENT".equalsIgnoreCase(roleName)) {
+            Parent parent = parentRepository.findByUserUserId(userId)
+                    .orElseThrow(() -> new BadRequestException("Không tìm thấy hồ sơ phụ huynh"));
+
+            validatePhone(request.getPhone());
+
+            parent.setFullName(request.getFullName());
+            parent.setPhone(request.getPhone());
+            parent.setEmail(request.getEmail());
+            parent.setDob(request.getDob());
+            parent.setGender(request.getGender());
+            parent.setAddress(request.getAddress());
+            parent.setAvatar(request.getAvatar());
+
+            parentRepository.save(parent);
+            return;
+        }
+
+        if ("STUDENT".equalsIgnoreCase(roleName)) {
+            Student student = studentRepository.findByUserUserId(userId)
+                    .orElseThrow(() -> new BadRequestException("Không tìm thấy hồ sơ học sinh"));
+
+            Parent parent = parentRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new BadRequestException("Phụ huynh không tồn tại"));
+
+            student.setFullName(request.getFullName());
+            student.setDob(request.getDob());
+            student.setGender(request.getGender());
+            student.setAddress(request.getAddress());
+            student.setAvatar(request.getAvatar());
+            student.setSchool(request.getSchool());
+            student.setGrade(request.getGrade());
+            student.setParent(parent);
+
+            studentRepository.save(student);
+            return;
+        }
+
+        throw new BadRequestException("Role không hợp lệ để sửa profile");
+    }
+
+    @Override
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
+    @Override
+    public List<Tutor> getAllTutors() {
+        return tutorRepository.findAll();
     }
 }

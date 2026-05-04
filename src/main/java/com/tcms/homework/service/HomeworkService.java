@@ -13,6 +13,12 @@ public interface HomeworkService {
     List<Homework> getHomeworkBySession(Integer sessionId);
 
     Homework getHomeworkById(Integer homeworkId);
+
     List<HomeworkQuestion> getQuestionsByHomeworkId(Integer homeworkId);
+
     List<Homework> getMyHomework(Integer studentUserId);
+
+    void updateHomework(Integer tutorUserId, Integer homeworkId, CreateHomeworkRequest request);
+
+    void deleteHomework(Integer tutorUserId, Integer homeworkId);
 }
