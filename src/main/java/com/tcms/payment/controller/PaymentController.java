@@ -77,7 +77,7 @@ public class PaymentController {
             Model model
     ) {
         Integer tutorUserId = (Integer) session.getAttribute("userId");
-
+        model.addAttribute("activePage", "payment");
         model.addAttribute(
                 "payments",
                 paymentService.getTutorPayments(tutorUserId)
@@ -92,7 +92,7 @@ public class PaymentController {
             Model model
     ) {
         Integer parentUserId = (Integer) session.getAttribute("userId");
-
+        model.addAttribute("activePage", "payments");
         model.addAttribute(
                 "payments",
                 paymentService.getParentPayments(parentUserId)
@@ -103,7 +103,7 @@ public class PaymentController {
 
     @GetMapping("/admin")
     public String adminPayments(Model model) {
-
+        model.addAttribute("activePage", "payments");
         model.addAttribute(
                 "payments",
                 paymentService.getAllPayments()

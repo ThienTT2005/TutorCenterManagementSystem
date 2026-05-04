@@ -1,11 +1,15 @@
 package com.tcms.homework.controller;
 
 import com.tcms.homework.dto.request.SubmitHomeworkRequest;
+import com.tcms.homework.entity.Homework;
 import com.tcms.homework.entity.HomeworkSubmission;
 import com.tcms.homework.service.HomeworkService;
 import com.tcms.homework.service.HomeworkSubmissionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,15 +32,52 @@ public class StudentHomeworkController {
             return "redirect:/login";
         }
 
-        model.addAttribute("homeworks", homeworkService.getMyHomework(userId));
+        List<Homework> homeworks = homeworkService.getMyHomework(userId);
+
+        Map<Integer, HomeworkSubmission> submissionMap = new HashMap<>();
+
+        for (Homework homework : homeworks) {
+            HomeworkSubmission submission =
+                    submissionService.getMySubmission(userId, homework.getHomeworkId());
+
+            if (submission != null) {
+                submissionMap.put(homework.getHomeworkId(), submission);
+            }
+        }
+
+        model.addAttribute("homeworks", homeworks);
+        model.addAttribute("submissionMap", submissionMap);
 
         return "student/homework/list";
     }
 
     @GetMapping("/session/{sessionId}")
-    public String listHomeworkBySession(@PathVariable Integer sessionId, Model model) {
-        model.addAttribute("homeworks", homeworkService.getHomeworkBySession(sessionId));
+    public String listHomeworkBySession(@PathVariable Integer sessionId,
+                                        HttpSession session,
+                                        Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        List<Homework> homeworks = homeworkService.getHomeworkBySession(sessionId);
+
+        Map<Integer, HomeworkSubmission> submissionMap = new HashMap<>();
+
+        for (Homework homework : homeworks) {
+            HomeworkSubmission submission =
+                    submissionService.getMySubmission(userId, homework.getHomeworkId());
+
+            if (submission != null) {
+                submissionMap.put(homework.getHomeworkId(), submission);
+            }
+        }
+
+        model.addAttribute("homeworks", homeworks);
+        model.addAttribute("submissionMap", submissionMap);
         model.addAttribute("sessionId", sessionId);
+
         return "student/homework/list";
     }
 

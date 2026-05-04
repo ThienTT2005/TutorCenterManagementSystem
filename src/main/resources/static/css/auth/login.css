@@ -529,4 +529,49 @@ body {
         color: var(--text-soft);
         margin-top: 4px;
     }
+}.forgot-password-notice {
+     margin-top: 10px;
+     padding: 12px 14px;
+     border-radius: 12px;
+     background: #eff6ff;
+     border: 1px solid #bfdbfe;
+     color: #1e3a8a;
+     display: flex;
+     align-items: flex-start;
+     gap: 10px;
+     font-size: 13px;
+     line-height: 1.5;
+     animation: fadeInNotice 0.2s ease;
+ }
+
+.forgot-password-notice span {
+    color: #0057bf;
+    font-size: 20px;
+    margin-top: 1px;
+}
+
+.forgot-password-notice p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.forgot-password-notice strong {
+    color: #0057bf;
+    font-weight: 800;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeInNotice {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

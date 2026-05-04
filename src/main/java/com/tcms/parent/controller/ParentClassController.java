@@ -44,27 +44,24 @@ public class ParentClassController {
 
         List<Student> children = studentRepository.findByParentParentId(parent.getParentId());
 
-        Map<Integer, List<Enrollment>> enrollmentMap = new HashMap<>();
-
+        List<Enrollment> allEnrollments = new java.util.ArrayList<>();
         for (Student child : children) {
-            enrollmentMap.put(
-                    child.getStudentId(),
-                    enrollmentRepository.findByStudentStudentIdAndStatusTrue(child.getStudentId())
-            );
+            allEnrollments.addAll(enrollmentRepository.findByStudentStudentIdAndStatusTrue(child.getStudentId()));
         }
 
         model.addAttribute("parent", parent);
+        model.addAttribute("loggedInUser", parent);
         model.addAttribute("children", children);
-        model.addAttribute("enrollmentMap", enrollmentMap);
+        model.addAttribute("enrollments", allEnrollments);
 
         return "parent/classes/list";
     }
 
     @GetMapping("/{studentId}/{classId}")
     public String classDetail(@PathVariable Integer studentId,
-                              @PathVariable Integer classId,
-                              HttpSession session,
-                              Model model) {
+            @PathVariable Integer classId,
+            HttpSession session,
+            Model model) {
 
         Parent parent = getCurrentParent(session);
 
@@ -82,6 +79,8 @@ public class ParentClassController {
             throw new RuntimeException("Học sinh không thuộc lớp này");
         }
 
+        model.addAttribute("parent", parent);
+        model.addAttribute("loggedInUser", parent);
         model.addAttribute("student", student);
         model.addAttribute("classId", classId);
         model.addAttribute("sessions",

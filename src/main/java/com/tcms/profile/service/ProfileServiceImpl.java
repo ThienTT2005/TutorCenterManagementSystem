@@ -8,6 +8,7 @@ import com.tcms.student.entity.Student;
 import com.tcms.student.repository.StudentRepository;
 import com.tcms.tutor.entity.Tutor;
 import com.tcms.tutor.repository.TutorRepository;
+import com.tcms.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final TutorRepository tutorRepository;
     private final ParentRepository parentRepository;
     private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
 
     private static final String UPLOAD_DIR =
             System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
@@ -37,7 +39,8 @@ public class ProfileServiceImpl implements ProfileService {
         Student student = studentRepository.findByUserUserId(userId).orElse(null);
         if (student != null) return student;
 
-        throw new BadRequestException("Không tìm thấy hồ sơ người dùng");
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("Không tìm thấy người dùng"));
     }
 
     @Override

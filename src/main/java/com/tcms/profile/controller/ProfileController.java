@@ -22,6 +22,7 @@ public class ProfileController {
         Integer userId = (Integer) session.getAttribute("userId");
 
         model.addAttribute("profile", profileService.getProfile(userId));
+        model.addAttribute("activePage", "profile");
 
         return "profile/view";
     }

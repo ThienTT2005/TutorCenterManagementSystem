@@ -7,8 +7,8 @@
 <c:set var="avatarUrl" value="${pageContext.request.contextPath}/images/default-avatar.png" />
 
 <header class="top-header">
-    <div class="search-bar">
-        <span class="material-symbols-rounded">search</span>
+    <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Tìm kiếm nhanh...">
     </div>
 
@@ -16,7 +16,7 @@
         <!-- Notification Dropdown -->
         <div class="notification-dropdown">
             <button type="button" class="tool-icon" id="bellToggle">
-                <span class="material-symbols-rounded">notifications</span>
+                <i class="fa-regular fa-bell"></i>
                 <c:if test="${not empty unreadCount and unreadCount > 0}">
                     <span class="badge">${unreadCount}</span>
                 </c:if>
@@ -41,7 +41,7 @@
                         </c:when>
                         <c:otherwise>
                             <div class="noti-empty">
-                                <span class="material-symbols-rounded">notifications_off</span>
+                                <i class="fa-regular fa-bell-slash"></i>
                                 <p>Không có thông báo mới</p>
                             </div>
                         </c:otherwise>
@@ -53,34 +53,32 @@
         <!-- User Dropdown -->
         <div class="user-dropdown">
             <button type="button" class="user-toggle" id="userToggle">
-                <img class="header-avatar"
-                     src="${avatarUrl}"
-                     alt="Admin"
-                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/images/default-avatar.png'">
-
+                <img src="${avatarUrl}" class="header-avatar" alt="Avatar">
                 <div class="user-meta">
-                    <strong><c:out value="${displayName}"/></strong>
+                    <strong><c:out value="${displayName}" /></strong>
                     <span>ADMIN</span>
                 </div>
-                <span class="material-symbols-rounded">expand_more</span>
+                <i class="fa-solid fa-chevron-down"></i>
             </button>
 
             <div class="user-menu" id="userMenu">
                 <div class="user-menu-header">
-                    <strong><c:out value="${displayName}"/></strong>
-                    <span>Hệ thống quản trị</span>
+                    <strong><c:out value="${displayName}" /></strong>
+                    <span>QUẢN TRỊ VIÊN</span>
                 </div>
-
-                <a href="${pageContext.request.contextPath}/change-password">
-                    <span class="material-symbols-rounded">key</span>
-                    <span>Đổi mật khẩu</span>
-                </a>
-
                 <div class="menu-divider"></div>
-
+                <a href="${pageContext.request.contextPath}/profile">
+                    <i class="fa-solid fa-user"></i>
+                    Hồ sơ cá nhân
+                </a>
+                <a href="${pageContext.request.contextPath}/change-password">
+                    <i class="fa-solid fa-key"></i>
+                    Đổi mật khẩu
+                </a>
+                <div class="menu-divider"></div>
                 <a href="${pageContext.request.contextPath}/logout" class="logout-link">
-                    <span class="material-symbols-rounded">logout</span>
-                    <span>Đăng xuất</span>
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Đăng xuất
                 </a>
             </div>
         </div>

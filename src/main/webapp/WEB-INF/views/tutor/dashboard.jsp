@@ -29,7 +29,13 @@
         <!-- Greeting Row -->
         <div class="dashboard-title-row">
             <div>
-                <h1>Xin chào, ${empty loggedInUser.fullName ? 'Gia sư' : loggedInUser.fullName}</h1>
+                <c:set var="displayTitle" value="${not empty currentUser.username ? currentUser.username : 'Gia sư'}" />
+                <c:catch var="e">
+                    <c:if test="${not empty loggedInUser.fullName}">
+                        <c:set var="displayTitle" value="${loggedInUser.fullName}" />
+                    </c:if>
+                </c:catch>
+                <h1>Xin chào, <c:out value="${displayTitle}" /></h1>
                 <p>Hôm nay là ${not empty now ? now : '28/04/2026'}</p>
             </div>
             <a href="${pageContext.request.contextPath}/tutor/schedule" class="btn-view-schedule">

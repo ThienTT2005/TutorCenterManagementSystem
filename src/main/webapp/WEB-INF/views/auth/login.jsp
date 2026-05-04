@@ -112,7 +112,9 @@
                 <div class="form-group">
                     <div class="label-row">
                         <label for="password">Mật khẩu</label>
-                        <a href="${pageContext.request.contextPath}/forgot-password" class="forgot-link">Quên mật khẩu?</a>
+                        <a href="javascript:void(0)" id="forgotPasswordLink" class="forgot-link">
+                            Quên mật khẩu?
+                        </a>
                     </div>
 
                     <div class="input-wrap">
@@ -127,6 +129,14 @@
                         <button type="button" id="togglePassword" class="toggle-password" aria-label="Hiện mật khẩu">
                             <span class="material-symbols-outlined" id="eyeIcon">visibility</span>
                         </button>
+                    </div>
+                    <div id="forgotPasswordNotice" class="forgot-password-notice hidden">
+                        <span class="material-symbols-outlined">support_agent</span>
+                        <p>
+                            Vui lòng liên hệ hotline:
+                            <strong>0000000000</strong>
+                            để được tư vấn và hỗ trợ lấy lại mật khẩu.
+                        </p>
                     </div>
                 </div>
 
@@ -161,18 +171,84 @@
 </div>
 
     <script>
-
         const contextPath = "${pageContext.request.contextPath}";
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const rememberMe = document.getElementById('rememberMe');
+        const errorAlert = document.getElementById('errorAlert');
+
+        // 1. Show/Hide Password Logic
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                eyeIcon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+            });
+        }
+
+        // 2. Forgot Password → Show Hotline Notice
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const forgotPasswordNotice = document.getElementById('forgotPasswordNotice');
+        if (forgotPasswordLink && forgotPasswordNotice) {
+            forgotPasswordLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                const isHidden = forgotPasswordNotice.classList.contains('hidden');
+                if (isHidden) {
+                    forgotPasswordNotice.classList.remove('hidden');
+                } else {
+                    forgotPasswordNotice.classList.add('hidden');
+                }
+            });
+        }
+
+        // 2. Load Saved Credentials from LocalStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUsername = localStorage.getItem('tcms_username');
+            const savedPassword = localStorage.getItem('tcms_password');
+            
+            if (savedUsername && savedPassword) {
+                usernameInput.value = savedUsername;
+                passwordInput.value = savedPassword;
+                rememberMe.checked = true;
+            }
+        });
+
+        // 3. Handle Form Submit (Validation & Save Credentials)
         loginForm.addEventListener('submit', function (event) {
             const username = usernameInput.value.trim();
             const password = passwordInput.value.trim();
 
-            hideError();
+            if (errorAlert) {
+                errorAlert.classList.add('hidden');
+            }
+
+            // Save or remove credentials based on checkbox
+            if (rememberMe.checked) {
+                localStorage.setItem('tcms_username', username);
+                localStorage.setItem('tcms_password', password);
+            } else {
+                localStorage.removeItem('tcms_username');
+                localStorage.removeItem('tcms_password');
+            }
 
             if (username === '' || password === '') {
                 event.preventDefault();
-                showError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.');
-                return; // ✅ OK
+                if (errorAlert) {
+                    errorAlert.classList.remove('hidden');
+                    errorAlert.querySelector('p').textContent = 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.';
+                }
+                return;
+            }
+            
+            // Show loader if exists
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            if (btnText && btnLoader) {
+                btnText.classList.add('hidden');
+                btnLoader.classList.remove('hidden');
             }
         });
     </script>

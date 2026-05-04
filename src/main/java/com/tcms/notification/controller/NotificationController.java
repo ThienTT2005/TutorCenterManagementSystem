@@ -23,6 +23,7 @@ public class NotificationController {
 
         model.addAttribute("notifications", notificationService.getMyNotifications(userId));
         model.addAttribute("unreadCount", notificationService.countUnread(userId));
+        model.addAttribute("activePage", "notifications");
 
         return "notifications/list";
     }

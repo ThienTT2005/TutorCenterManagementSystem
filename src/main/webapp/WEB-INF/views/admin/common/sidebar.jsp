@@ -24,24 +24,7 @@
                 Tài khoản
             </a>
         </li>
-        <li>
-            <a href="${pageContext.request.contextPath}/admin/parents" class="nav-link ${activePage == 'parents' ? 'active' : ''}">
-                <span class="material-symbols-rounded">family_restroom</span>
-                Phụ huynh
-            </a>
-        </li>
-        <li>
-            <a href="${pageContext.request.contextPath}/admin/students" class="nav-link ${activePage == 'students' ? 'active' : ''}">
-                <span class="material-symbols-rounded">face</span>
-                Học sinh
-            </a>
-        </li>
-        <li>
-            <a href="${pageContext.request.contextPath}/admin/tutors" class="nav-link ${activePage == 'tutors' ? 'active' : ''}">
-                <span class="material-symbols-rounded">person_celebrate</span>
-                Gia sư
-            </a>
-        </li>
+
         <li>
             <a href="${pageContext.request.contextPath}/admin/classes" class="nav-link ${activePage == 'classes' ? 'active' : ''}">
                 <span class="material-symbols-rounded">menu_book</span>
@@ -49,27 +32,35 @@
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/admin/payments" class="nav-link ${activePage == 'payments' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/payment/admin" class="nav-link ${activePage == 'payments' ? 'active' : ''}">
                 <span class="material-symbols-rounded">payments</span>
                 Thanh toán
+            </a>
+        </li>
+
+        
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/feedback/pending" class="nav-link ${activePage == 'feedback' ? 'active' : ''}">
+                <span class="material-symbols-rounded">chat</span>
+                Feedback chờ duyệt
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/absence/pending" class="nav-link ${activePage == 'absence' ? 'active' : ''}">
+                <span class="material-symbols-rounded">person_off</span>
+                Duyệt xin nghỉ
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/notifications" class="nav-link ${activePage == 'notifications' ? 'active' : ''}">
+                <span class="material-symbols-rounded">notifications</span>
+                Thông báo
             </a>
         </li>
         <li>
             <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link ${activePage == 'reports' ? 'active' : ''}">
                 <span class="material-symbols-rounded">bar_chart</span>
                 Báo cáo
-            </a>
-        </li>
-        <li>
-            <a href="${pageContext.request.contextPath}/admin/curriculum" class="nav-link ${activePage == 'curriculum' ? 'active' : ''}">
-                <span class="material-symbols-rounded">calendar_month</span>
-                Kế hoạch giảng dạy
-            </a>
-        </li>
-        <li>
-            <a href="${pageContext.request.contextPath}/admin/feedback/pending" class="nav-link ${activePage == 'feedback' ? 'active' : ''}">
-                <span class="material-symbols-rounded">chat</span>
-                Feedback chờ duyệt
             </a>
         </li>
     </ul>
