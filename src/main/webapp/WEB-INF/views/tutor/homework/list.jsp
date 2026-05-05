@@ -515,9 +515,8 @@
                                         </a>
                                     </c:otherwise>
                                 </c:choose>
-
                                 <a href="${pageContext.request.contextPath}/tutor/homework/create?sessionId=${sessionItem.sessionId}"
-                                    class="btn-primary">
+                                   class="btn-primary">
                                     <i class="fa-solid fa-plus"></i>
                                     Tạo bài tập mới
                                 </a>
@@ -663,8 +662,14 @@
                                                     </c:if>
 
                                                     <div class="homework-actions">
-                                                        <a href="${pageContext.request.contextPath}/tutor/homework/${hw.homeworkId}/submissions"
-                                                            class="btn-card blue">
+                                                        <a href="${pageContext.request.contextPath}/tutor/homework/${hw.homeworkId}/edit"
+                                                           class="btn-soft">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
+                                                            Sửa bài tập
+                                                        </a>
+
+                                                        <a href="${pageContext.request.contextPath}/tutor/homework/submissions/homework/${hw.homeworkId}"
+                                                           class="btn-soft">
                                                             <i class="fa-solid fa-users-viewfinder"></i>
                                                             Xem bài nộp
                                                         </a>

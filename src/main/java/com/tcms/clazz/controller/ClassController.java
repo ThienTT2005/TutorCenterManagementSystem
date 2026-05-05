@@ -94,7 +94,7 @@ public class ClassController {
         model.addAttribute("request", new CreateClassRequest());
         model.addAttribute("tutors", classService.getAllTutors());
         model.addAttribute("students", classService.getAllStudents());
-        return "admin/classes/edit";
+        return "admin/classes/class_update";
     }
 
     @PostMapping("/{classId}/edit")
@@ -114,7 +114,7 @@ public class ClassController {
             model.addAttribute("enrollments", classService.getEnrollmentsByClassId(classId));
             model.addAttribute("tutors", classService.getAllTutors());
             model.addAttribute("students", classService.getAllStudents());
-            return "admin/classes/edit";
+            return "admin/classes/class_update";
         }
     }
 

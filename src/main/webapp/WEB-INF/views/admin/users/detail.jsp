@@ -7,6 +7,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Chi tiết tài khoản | TCMS</title>
+    <c:set var="roleName" value="${empty user.role ? '' : user.role.roleName}" />
+    <c:set var="displayName" value="${not empty profile.fullName ? profile.fullName : user.username}" />
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
     <link rel="stylesheet" href="<c:url value='/css/core-dashboard.css' />">
@@ -23,10 +25,30 @@
             color: #94a3b8;
             margin-bottom: 8px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .breadcrumb a:hover {
+            color: #2563eb;
+            text-decoration: underline;
         }
 
         .breadcrumb span {
             color: #2563eb;
+            font-weight: 800;
+        }
+
+        .breadcrumb .separator {
+            color: #cbd5e1;
+            font-weight: 700;
         }
 
         .detail-header {
@@ -366,12 +388,14 @@
                 grid-column: span 1;
             }
         }
+
     </style>
 </head>
 
 <body>
 
 <c:set var="activePage" value="accounts" scope="request" />
+<%-- roleName and displayName are set in head --%>
 
 <jsp:include page="../common/sidebar.jsp" />
 
@@ -381,23 +405,29 @@
     <div class="detail-page">
 
         <div class="breadcrumb">
-            Hệ thống / Danh sách tài khoản / <span>Chi tiết hồ sơ</span>
+            <a href="${pageContext.request.contextPath}/admin/dashboard">Hệ thống</a>
+            <span class="separator">/</span>
+
+            <a href="${pageContext.request.contextPath}/admin/users">Danh sách tài khoản</a>
+            <span class="separator">/</span>
+
+            <span>Chi tiết hồ sơ</span>
         </div>
 
         <div class="detail-header">
             <h1>
                 Hồ sơ
                 <c:choose>
-                    <c:when test="${user.roleName == 'STUDENT'}">Học sinh</c:when>
-                    <c:when test="${user.roleName == 'PARENT'}">Phụ huynh</c:when>
-                    <c:when test="${user.roleName == 'TUTOR'}">Gia sư</c:when>
+                    <c:when test="${roleName == 'STUDENT'}">Học sinh</c:when>
+                    <c:when test="${roleName == 'PARENT'}">Phụ huynh</c:when>
+                    <c:when test="${roleName == 'TUTOR'}">Gia sư</c:when>
                     <c:otherwise>Quản trị viên</c:otherwise>
                 </c:choose>
-                : ${user.fullName}
+                : ${displayName}
             </h1>
 
             <a class="edit-btn"
-               href="${pageContext.request.contextPath}/admin/users/${user.id}/edit">
+               href="${pageContext.request.contextPath}/admin/users/${user.userId}/edit-profile">
                 <span class="material-symbols-rounded">edit</span>
                 Sửa hồ sơ
             </a>
@@ -413,29 +443,36 @@
 
                     <div class="avatar-wrap">
                         <c:choose>
-                            <c:when test="${not empty user.avatar and user.avatar != 'default-avatar.png'}">
-                                <img class="avatar" src="${pageContext.request.contextPath}/uploads/${user.avatar}">
+                            <c:when test="${not empty profile.avatar}">
+                                <c:choose>
+                                    <c:when test="${fn:startsWith(profile.avatar, 'http')}">
+                                        <img class="avatar" src="${profile.avatar}">
+                                    </c:when>
+                                    <c:when test="${fn:startsWith(profile.avatar, '/uploads/')}">
+                                        <img class="avatar" src="${pageContext.request.contextPath}${profile.avatar}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img class="avatar" src="${pageContext.request.contextPath}/uploads/${profile.avatar}">
+                                    </c:otherwise>
+                                </c:choose>
                             </c:when>
-                            <c:otherwise>
-                                <img class="avatar" src="${pageContext.request.contextPath}/images/default-avatar.png">
-                            </c:otherwise>
                         </c:choose>
                         <div class="online-dot"></div>
                     </div>
 
-                    <h2>${user.fullName}</h2>
-                    <p>ID: #${user.id}</p>
+                    <h2>${displayName}</h2>
+                    <p>ID: #${user.userId}</p>
 
                     <c:choose>
                         <c:when test="${user.status}">
                             <span class="status-pill active">Đang hoạt động</span>
-                            <button class="btn-dark" onclick="lockUser(${user.id})">
+                            <button class="btn-dark" onclick="lockUser(${user.userId})">
                                 Khóa tài khoản
                             </button>
                         </c:when>
                         <c:otherwise>
                             <span class="status-pill locked">Đã khóa</span>
-                            <button class="btn-dark" onclick="unlockUser(${user.id})">
+                            <button class="btn-dark" onclick="unlockUser(${user.userId})">
                                 Mở khóa tài khoản
                             </button>
                         </c:otherwise>
@@ -455,7 +492,7 @@
 
                     <div class="info-row">
                         <span>Vai trò</span>
-                        <strong class="role-badge">${user.roleName}</strong>
+                        <strong class="role-badge">${roleName}</strong>
                     </div>
 
                     <div class="info-row">
@@ -476,64 +513,65 @@
                         Thông tin cá nhân
                     </h3>
                     <div class="info-grid">
-                        <c:if test="${user.roleName != 'STUDENT'}">
+                        <c:if test="${roleName != 'STUDENT'}">
                             <div>
                                 <span class="field-label">Email</span>
-                                <p class="field-value">${empty user.email ? '---' : user.email}</p>
+                                <p class="field-value">${empty profile.email ? '---' : profile.email}</p>
+
                             </div>
                             <div>
                                 <span class="field-label">Số điện thoại</span>
-                                <p class="field-value">${empty user.phone ? '---' : user.phone}</p>
+                                <p class="field-value">${empty profile.phone ? '---' : profile.phone}</p>
                             </div>
                         </c:if>
 
                         <div>
                             <span class="field-label">Ngày sinh</span>
-                            <p class="field-value">${empty user.dob ? '---' : user.dob}</p>
+                            <p class="field-value">${empty profile.dob ? '---' : profile.dob}</p>
                         </div>
                         <div>
                             <span class="field-label">Giới tính</span>
-                            <p class="field-value">${empty user.gender ? '---' : user.gender}</p>
+                            <p class="field-value">${empty profile.gender ? '---' : profile.gender}</p>
                         </div>
-                        
-                        <c:if test="${user.roleName == 'STUDENT'}">
+
+                        <c:if test="${roleName == 'STUDENT'}">
                             <div>
                                 <span class="field-label">Trường học</span>
-                                <p class="field-value">${empty user.school ? '---' : user.school}</p>
+                                <p class="field-value">${empty profile.school ? '---' : profile.school}</p>
                             </div>
                             <div>
                                 <span class="field-label">Lớp</span>
-                                <p class="field-value">${empty user.grade ? '---' : user.grade}</p>
+                                <p class="field-value">${empty profile.grade ? '---' : profile.grade}</p>
                             </div>
                         </c:if>
 
-                        <c:if test="${user.roleName == 'TUTOR'}">
+                        <c:if test="${roleName == 'TUTOR'}">
                             <div class="full-row">
                                 <span class="field-label">Chuyên môn</span>
-                                <p class="field-value">${empty user.major ? '---' : user.major}</p>
+                                <p class="field-value">${empty profile.major ? '---' : profile.major}</p>
                             </div>
                         </c:if>
 
-                        <c:if test="${user.roleName != 'STUDENT'}">
+                        <c:if test="${roleName != 'STUDENT'}">
                             <div class="full-row">
                                 <span class="field-label">Địa chỉ</span>
-                                <p class="field-value">${empty user.address ? '---' : user.address}</p>
+                                <p class="field-value">${empty profile.address ? '---' : profile.address}</p>
                             </div>
                         </c:if>
                     </div>
 
-                
-                    <c:if test="${user.roleName == 'STUDENT'}">
+
+                    <c:if test="${roleName == 'STUDENT'}">
                         <div class="parent-box">
                             <span class="field-label">Thông tin phụ huynh</span>
                             <div class="parent-content">
                                 <div>
-                                    <p class="field-value">${empty user.parentName ? 'Chưa gán phụ huynh' : user.parentName}</p>
-                                    <p class="timeline-desc">ID phụ huynh: ${empty user.parentUserId ? '---' : user.parentUserId}</p>
+                                    <p class="field-value">${empty profile.parent.fullName ? 'Chưa gán phụ huynh' : profile.parent.fullName}</p>
+                                    <p class="timeline-desc">ID phụ huynh: ${empty profile.parent.parentId  ? '---' : profile.parent.parentId}</p>
                                 </div>
 
-                                <c:if test="${not empty user.parentUserId}">
-                                    <a href="${pageContext.request.contextPath}/admin/users/${user.parentUserId}/detail">
+                                <c:if test="${not empty profile.parent.parentId}">
+                                    <a href="${pageContext.request.contextPath}/admin/users/${profile.parent.parentId}">
                                         Xem hồ sơ
                                     </a>
                                 </c:if>
@@ -546,7 +584,7 @@
                 <c:choose>
 
                     <%-- STUDENT --%>
-                    <c:when test="${user.roleName == 'STUDENT'}">
+                    <c:when test="${roleName == 'STUDENT'}">
 
                         <div class="content-card table-card">
                             <h3 class="card-title">
@@ -587,46 +625,13 @@
                             </table>
                         </div>
 
-                        <div class="bottom-grid">
-                            <div class="small-card">
-                                <h3 class="card-title">
-                                    <span class="material-symbols-rounded">calendar_month</span>
-                                    Lịch học tuần này
-                                </h3>
 
-                                <c:choose>
-                                    <c:when test="${not empty schedules}">
-                                        <c:forEach items="${schedules}" var="s">
-                                            <div class="timeline-item">
-                                                <div class="dot"></div>
-                                                <div>
-                                                    <p class="timeline-title">${s.subject}</p>
-                                                    <p class="timeline-desc">${s.timeText} - ${s.tutorName}</p>
-                                                </div>
-                                            </div>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <p class="timeline-desc">Chưa có lịch học.</p>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-
-                            <div class="small-card">
-                                <h3 class="card-title">
-                                    <span class="material-symbols-rounded">assignment</span>
-                                    Thống kê học tập
-                                </h3>
-
-                                <div class="money">12/15</div>
-                                <p class="timeline-desc">Bài tập đã hoàn thành</p>
-                            </div>
                         </div>
 
                     </c:when>
 
                     <%-- PARENT --%>
-                    <c:when test="${user.roleName == 'PARENT'}">
+                    <c:when test="${roleName == 'PARENT'}">
 
                         <div class="content-card table-card">
                             <h3 class="card-title">
@@ -654,7 +659,7 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty child.user}">
-                                                            <a href="${pageContext.request.contextPath}/admin/users/${child.user.id}/detail">
+                                                            <a href="${pageContext.request.contextPath}/admin/users/${child.user.userId}">
                                                                 Xem hồ sơ
                                                             </a>
                                                         </c:when>
@@ -676,44 +681,12 @@
                             </table>
                         </div>
 
-                        <div class="bottom-grid">
-                            <div class="small-card">
-                                <h3 class="card-title">
-                                    <span class="material-symbols-rounded">payments</span>
-                                    Lịch sử thanh toán
-                                </h3>
 
-                                <div class="timeline-item">
-                                    <div class="dot"></div>
-                                    <div>
-                                        <p class="timeline-title">Học phí tháng này</p>
-                                        <p class="timeline-desc">2.500.000đ</p>
-                                    </div>
-                                </div>
-
-                                <div class="timeline-item">
-                                    <div class="dot"></div>
-                                    <div>
-                                        <p class="timeline-title">Học phí tháng trước</p>
-                                        <p class="timeline-desc">2.500.000đ</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="small-card">
-                                <h3 class="card-title">
-                                    <span class="material-symbols-rounded">event</span>
-                                    Lớp học đang theo
-                                </h3>
-
-                                <p class="timeline-desc">Danh sách lịch học của các con sẽ hiển thị tại đây.</p>
-                            </div>
-                        </div>
 
                     </c:when>
 
                     <%-- TUTOR --%>
-                    <c:when test="${user.roleName == 'TUTOR'}">
+                    <c:when test="${roleName == 'TUTOR'}">
 
                         <div class="content-card table-card">
                             <h3 class="card-title">
@@ -753,51 +726,6 @@
                                 </c:choose>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <div class="bottom-grid">
-                            <div class="small-card">
-                                <h3 class="card-title">
-                                    <span class="material-symbols-rounded">calendar_today</span>
-                                    Lịch dạy gần nhất
-                                </h3>
-
-                                <div class="timeline-item">
-                                    <div class="dot"></div>
-                                    <div>
-                                        <p class="timeline-title">Toán 12-A1</p>
-                                        <p class="timeline-desc">19:00 - 21:00 - Phòng 101</p>
-                                    </div>
-                                </div>
-
-                                <div class="timeline-item">
-                                    <div class="dot"></div>
-                                    <div>
-                                        <p class="timeline-title">Luyện đề 12-B</p>
-                                        <p class="timeline-desc">08:00 - 11:30 - Phòng 101</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="small-card">
-                                <h3 class="card-title">
-                                    <span class="material-symbols-rounded">account_balance_wallet</span>
-                                    Thu nhập & Thanh toán
-                                </h3>
-
-                                <p class="timeline-desc">Tháng này</p>
-                                <div class="money">12.500.000đ</div>
-
-                                <div class="info-row">
-                                    <span>Đã thanh toán</span>
-                                    <strong>8.200k</strong>
-                                </div>
-
-                                <div class="info-row">
-                                    <span>Chờ duyệt</span>
-                                    <strong>4.300k</strong>
-                                </div>
-                            </div>
                         </div>
 
                     </c:when>

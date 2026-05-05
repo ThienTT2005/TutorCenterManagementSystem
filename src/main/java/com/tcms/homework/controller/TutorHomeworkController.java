@@ -70,6 +70,17 @@ public class TutorHomeworkController {
         TeachingSession sessionItem = teachingSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy buổi học"));
 
+        /*
+         * Nếu buổi học đã có bài tập thì không mở form tạo nữa,
+         * chuyển thẳng sang trang edit bài tập đầu tiên.
+         */
+        var existingHomeworks = homeworkService.getHomeworkBySession(sessionId);
+
+        if (existingHomeworks != null && !existingHomeworks.isEmpty()) {
+            Integer homeworkId = existingHomeworks.get(0).getHomeworkId();
+            return "redirect:/tutor/homework/" + homeworkId + "/edit";
+        }
+
         CreateHomeworkRequest request = new CreateHomeworkRequest();
         request.setSessionId(sessionId);
 
@@ -93,6 +104,13 @@ public class TutorHomeworkController {
 
             if (tutorUserId == null) {
                 throw new RuntimeException("Session không có userId. Hãy đăng nhập lại.");
+            }
+
+            var existingHomeworks = homeworkService.getHomeworkBySession(request.getSessionId());
+
+            if (existingHomeworks != null && !existingHomeworks.isEmpty()) {
+                Integer homeworkId = existingHomeworks.get(0).getHomeworkId();
+                return "redirect:/tutor/homework/" + homeworkId + "/edit";
             }
 
             homeworkService.createHomework(tutorUserId, request);

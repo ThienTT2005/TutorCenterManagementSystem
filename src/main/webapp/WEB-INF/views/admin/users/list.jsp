@@ -153,6 +153,69 @@
             margin-bottom: 8px;
             color: var(--text-dark);
         }
+        .actions-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        /* Dùng selector mạnh để đè CSS cũ trong core-dashboard.css */
+        .actions-cell .action-btn {
+            width: 36px !important;
+            height: 36px !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
+            max-width: 36px !important;
+            max-height: 36px !important;
+
+            padding: 0 !important;
+            margin: 0 !important;
+
+            border-radius: 10px;
+            border: 1px solid #dbe3ef;
+            background: #ffffff;
+
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.18s ease;
+        }
+
+        .actions-cell .action-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            transform: translateY(-1px);
+        }
+
+        .actions-cell .action-btn .material-symbols-rounded {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .actions-cell .action-btn.lock {
+            color: #dc2626;
+        }
+
+        .actions-cell .action-btn.lock:hover {
+            background: #fee2e2;
+            border-color: #fecaca;
+        }
+
+        .actions-cell .action-btn.unlock {
+            color: #16a34a;
+        }
+
+        .actions-cell .action-btn.unlock:hover {
+            background: #dcfce7;
+            border-color: #bbf7d0;
+        }
 
         @media (max-width: 1100px) {
             .account-table-header,
@@ -412,11 +475,33 @@
                                 </div>
 
                                 <div class="actions-cell">
+                                    <!-- Xem chi tiết -->
                                     <a class="action-btn"
-                                       href="${pageContext.request.contextPath}/admin/users/${user.userId}/detail"
+                                       href="${pageContext.request.contextPath}/admin/users/${user.userId}"
                                        title="Xem chi tiết">
                                         <span class="material-symbols-rounded">visibility</span>
                                     </a>
+
+                                    <!-- Khóa / mở khóa tài khoản -->
+                                    <c:choose>
+                                        <c:when test="${user.status == true}">
+                                            <button type="button"
+                                                    class="action-btn lock"
+                                                    title="Khóa tài khoản"
+                                                    onclick="lockUser(${user.userId})">
+                                                <span class="material-symbols-rounded">lock</span>
+                                            </button>
+                                        </c:when>
+
+                                        <c:otherwise>
+                                            <button type="button"
+                                                    class="action-btn unlock"
+                                                    title="Mở khóa tài khoản"
+                                                    onclick="unlockUser(${user.userId})">
+                                                <span class="material-symbols-rounded">lock_open</span>
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
 
                             </div>
@@ -441,6 +526,50 @@
 
     </div>
 </main>
+<script>
+    const contextPath = '${pageContext.request.contextPath}';
 
+    async function lockUser(userId) {
+        if (!confirm('Bạn có chắc muốn khóa tài khoản này?')) return;
+
+        try {
+            const response = await fetch(contextPath + '/admin/users/' + userId + '/lock', {
+                method: 'PATCH'
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                throw new Error('Khóa tài khoản thất bại');
+            }
+
+            alert('Đã khóa tài khoản');
+            window.location.reload();
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    async function unlockUser(userId) {
+        if (!confirm('Bạn có chắc muốn mở khóa tài khoản này?')) return;
+
+        try {
+            const response = await fetch(contextPath + '/admin/users/' + userId + '/unlock', {
+                method: 'PATCH'
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                throw new Error('Mở khóa tài khoản thất bại');
+            }
+
+            alert('Đã mở khóa tài khoản');
+            window.location.reload();
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+
+</script>
 </body>
 </html>

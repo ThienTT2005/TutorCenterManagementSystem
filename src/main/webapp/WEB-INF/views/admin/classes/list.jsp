@@ -436,7 +436,7 @@
                                     <button type="button"
                                             class="action-btn"
                                             title="Sửa lớp"
-                                            onclick="goEdit(event, '${clazz.classId}')">
+                                            onclick="window.location.href='${pageContext.request.contextPath}/admin/classes/${clazz.classId}/edit'">
                                         <span class="material-symbols-rounded">edit_note</span>
                                     </button>
 
@@ -534,10 +534,10 @@
         window.location.href = contextPath + '/admin/classes/' + classId;
     }
 
-    function goEdit(event, classId) {
-        event.stopPropagation();
-        window.location.href = contextPath + '/admin/classes/edit/' + classId;
-    }
+    // function goEdit(event, classId) {
+    //     event.stopPropagation();
+    //     window.location.href = contextPath + '/admin/classes/edit/' + classId;
+    // }
 
     function goSchedule(event, classId) {
         event.stopPropagation();

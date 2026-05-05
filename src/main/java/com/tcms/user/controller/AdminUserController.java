@@ -9,6 +9,7 @@ import com.tcms.user.entity.User;
 import com.tcms.user.service.AdminUserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class AdminUserController {
         model.addAttribute("selectedRole", role);
         model.addAttribute("selectedStatus", status);
 
-        return "admin/accounts/account_list";
+        return "admin/users/list";
     }
 
     @GetMapping("/create")
@@ -185,7 +186,7 @@ public class AdminUserController {
         model.addAttribute("user", adminUserService.getUserById(userId));
         model.addAttribute("profile", adminUserService.getProfileByUserId(userId));
 
-        return "admin/accounts/account_detail";
+        return "admin/users/detail";
     }
 
     @GetMapping("/{userId}/edit-profile")
@@ -201,7 +202,7 @@ public class AdminUserController {
         model.addAttribute("request", adminUserService.buildProfileUpdateRequest(userId));
         model.addAttribute("parents", adminUserService.getAllParents());
 
-        return "admin/accounts/account_edit";
+        return "admin/users/edit-profile";
     }
 
     @PostMapping("/{userId}/edit-profile")
@@ -221,6 +222,28 @@ public class AdminUserController {
             model.addAttribute("user", adminUserService.getUserById(userId));
             model.addAttribute("profile", adminUserService.getProfileByUserId(userId));
             model.addAttribute("request", request);
+            model.addAttribute("parents", adminUserService.getAllParents());
+
+            return "admin/users/edit-profile";
+        }
+    }
+    @PostMapping("/{userId}/change-password")
+    public String changePasswordByAdmin(@PathVariable Integer userId,
+                                        @RequestParam String newPassword,
+                                        HttpSession session,
+                                        Model model) {
+        if (!isAdmin(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            adminUserService.changePasswordByAdmin(userId, newPassword);
+            return "redirect:/admin/users/" + userId + "/edit-profile";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("user", adminUserService.getUserById(userId));
+            model.addAttribute("profile", adminUserService.getProfileByUserId(userId));
+            model.addAttribute("request", adminUserService.buildProfileUpdateRequest(userId));
             model.addAttribute("parents", adminUserService.getAllParents());
 
             return "admin/users/edit-profile";
@@ -262,4 +285,30 @@ public class AdminUserController {
 
         return "admin/tutors/tutor_list";
     }
+    @PatchMapping("/{userId}/lock")
+    @ResponseBody
+    public ResponseEntity<?> lockUser(@PathVariable Integer userId,
+                                      HttpSession session) {
+        if (!isAdmin(session)) {
+            return ResponseEntity.status(403).body("Bạn không có quyền thực hiện thao tác này");
+        }
+
+        adminUserService.lockUser(userId);
+
+        return ResponseEntity.ok("Đã khóa tài khoản");
+    }
+
+    @PatchMapping("/{userId}/unlock")
+    @ResponseBody
+    public ResponseEntity<?> unlockUser(@PathVariable Integer userId,
+                                        HttpSession session) {
+        if (!isAdmin(session)) {
+            return ResponseEntity.status(403).body("Bạn không có quyền thực hiện thao tác này");
+        }
+
+        adminUserService.unlockUser(userId);
+
+        return ResponseEntity.ok("Đã mở khóa tài khoản");
+    }
+
 }

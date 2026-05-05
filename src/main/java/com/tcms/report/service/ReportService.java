@@ -12,8 +12,12 @@ public interface ReportService {
     Long countStudents();
 
     Long countTutors();
+    
+    Long countParents();
 
     BigDecimal calculateRevenue();
+    
+    List<Object[]> getMonthlyRevenue();
 
     List<ClassEntity> getTopClasses();
 }

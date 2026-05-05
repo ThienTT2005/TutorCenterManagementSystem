@@ -432,6 +432,7 @@
 <body>
 
 <c:set var="activePage" value="classes" scope="request"/>
+<c:set var="tutor" value="${classItem.tutor}" />
 
 <jsp:include page="../common/sidebar.jsp"/>
 
@@ -441,7 +442,7 @@
     <div class="dashboard-body update-page">
 
         <form method="post"
-              action="${pageContext.request.contextPath}/admin/classes/${classDetail.id}/update">
+              action="${pageContext.request.contextPath}/admin/classes/${classItem.classId}/edit">
 
             <div class="page-header">
                 <div class="page-title">
@@ -452,7 +453,7 @@
                 </div>
 
                 <div class="header-actions">
-                    <a class="btn" href="${pageContext.request.contextPath}/admin/classes/${classDetail.id}">
+                    <a class="btn" href="${pageContext.request.contextPath}/admin/classes/${classItem.classId}">
                         ← Quay lại
                     </a>
 
@@ -462,47 +463,6 @@
                 </div>
             </div>
 
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-symbols-rounded">groups</span>
-                    </div>
-                    <div>
-                        <div class="stat-label">Tổng học sinh</div>
-                        <div class="stat-value">${stats.totalStudents}</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#ecfeff;color:#0891b2;">
-                        <span class="material-symbols-rounded">event_repeat</span>
-                    </div>
-                    <div>
-                        <div class="stat-label">Lịch học hằng tuần</div>
-                        <div class="stat-value">${stats.weeklySchedules}</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#fff7ed;color:#f97316;">
-                        <span class="material-symbols-rounded">event_available</span>
-                    </div>
-                    <div>
-                        <div class="stat-label">Số buổi đã tạo</div>
-                        <div class="stat-value">${stats.totalSessions}</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#dcfce7;color:#16a34a;">
-                        <span class="material-symbols-rounded">verified</span>
-                    </div>
-                    <div>
-                        <div class="stat-label">Đã hoàn thành</div>
-                        <div class="stat-value">${stats.completedSessions}</div>
-                    </div>
-                </div>
-            </section>
 
             <div class="notice">
                 <span class="material-symbols-rounded">info</span>
@@ -517,8 +477,8 @@
                             <div>
                                 <strong>Trạng thái:</strong>
                                 <span id="statusText"
-                                      style="font-weight:900; color:${classDetail.status ? '#16a34a' : '#dc2626'};">
-                                    ${classDetail.status ? 'Đang hoạt động' : 'Tạm dừng'}
+                                      style="font-weight:900; color:${classItem.status ? '#16a34a' : '#dc2626'};">
+                                    ${classItem.status ? 'Đang hoạt động' : 'Tạm dừng'}
                                 </span>
                             </div>
 
@@ -527,7 +487,7 @@
                                        id="statusToggle"
                                        name="status"
                                        value="true"
-                                       <c:if test="${classDetail.status}">checked</c:if>
+                                       <c:if test="${classItem.status}">checked</c:if>
                                        onchange="changeStatusText()">
                                 <span class="slider"></span>
                             </label>
@@ -542,65 +502,59 @@
                             <div class="form-group">
                                 <label>Tên lớp</label>
                                 <input type="text" name="className"
-                                       value="${classDetail.className}"
+                                       value="${classItem.className}"
                                        placeholder="IELTS Master 6.5 - K24" required>
                             </div>
 
                             <div class="form-group">
                                 <label>Môn học</label>
                                 <select name="subject" required>
-                                    <option value="Tiếng Anh" ${classDetail.subject == 'Tiếng Anh' ? 'selected' : ''}>Tiếng Anh</option>
-                                    <option value="Toán" ${classDetail.subject == 'Toán' ? 'selected' : ''}>Toán</option>
-                                    <option value="Vật lý" ${classDetail.subject == 'Vật lý' ? 'selected' : ''}>Vật lý</option>
-                                    <option value="Hóa học" ${classDetail.subject == 'Hóa học' ? 'selected' : ''}>Hóa học</option>
-                                    <option value="Ngữ văn" ${classDetail.subject == 'Ngữ văn' ? 'selected' : ''}>Ngữ văn</option>
+                                    <option value="Tiếng Anh" ${classItem.subject == 'Tiếng Anh' ? 'selected' : ''}>Tiếng Anh</option>
+                                    <option value="Toán" ${classItem.subject == 'Toán' ? 'selected' : ''}>Toán</option>
+                                    <option value="Vật lý" ${classItem.subject == 'Vật lý' ? 'selected' : ''}>Vật lý</option>
+                                    <option value="Hóa học" ${classItem.subject == 'Hóa học' ? 'selected' : ''}>Hóa học</option>
+                                    <option value="Ngữ văn" ${classItem.subject == 'Ngữ văn' ? 'selected' : ''}>Ngữ văn</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label>Khối / Trình độ</label>
                                 <input type="text" name="grade"
-                                       value="${classDetail.grade}"
+                                       value="${classItem.grade}"
                                        placeholder="Đại học / Người đi làm">
                             </div>
 
                             <div class="form-group">
                                 <label>Học phí VNĐ/buổi</label>
                                 <input type="number" name="tuitionFeePerSession"
-                                       value="${classDetail.tuitionFeePerSession}"
+                                       value="${classItem.tuitionFeePerSession}"
                                        placeholder="350000" min="0">
                             </div>
 
                             <div class="form-group">
                                 <label>Tổng số buổi dự kiến</label>
                                 <input type="number" name="requiredSessions"
-                                       value="${classDetail.requiredSessions}"
+                                       value="${classItem.requiredSessions}"
                                        placeholder="48" min="1">
                             </div>
 
                             <div class="form-group">
                                 <label>Mã lớp</label>
-                                <input type="text" name="classCode"
-                                       value="${classDetail.classCode}"
-                                       placeholder="HS-CLASS-001">
+                                <input type="text"
+                                       value="CLASS-${classItem.classId}"
+                                       readonly>
                             </div>
 
                             <div class="form-group full">
                                 <label>Mô tả chương trình học</label>
                                 <textarea name="description"
-                                          placeholder="Nhập mô tả chương trình học...">${classDetail.description}</textarea>
+                                          placeholder="Nhập mô tả chương trình học...">${classItem.description}</textarea>
                             </div>
                         </div>
                     </div>
 
                     <div class="card" style="margin-top:22px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                            <h3 class="card-title" style="margin:0;">
-                                <span class="material-symbols-rounded">group</span>
-                                Danh sách học sinh (${stats.totalStudents})
-                            </h3>
-                            <button type="button" class="small-link" onclick="openStudentModal()">+ Thêm học sinh</button>
-                        </div>
+
 
                         <table style="width:100%;border-collapse:collapse;">
                             <thead>
@@ -614,29 +568,52 @@
                             </thead>
 
                             <tbody>
-                            <c:forEach items="${students}" var="student">
-                                <tr style="border-top:1px solid #f1f5f9;">
-                                    <td style="padding:12px;color:#0057bf;font-weight:700;">
-                                        HS-${student.id}
-                                    </td>
-                                    <td style="padding:12px;font-weight:700;">
-                                        ${student.fullName}
-                                    </td>
-                                    <td style="padding:12px;color:#475569;">
-                                        <c:if test="${not empty student.parent}">${student.parent.fullName}</c:if>
-                                    </td>
-                                    <td style="padding:12px;color:#475569;">
-                                        <c:if test="${not empty student.parent}">${student.parent.phone}</c:if>
-                                    </td>
-                                    <td style="padding:12px;text-align:center;">
-                                        <button type="button"
-                                                onclick="removeStudent('${student.id}')"
-                                                style="border:none;background:transparent;color:#dc2626;cursor:pointer;" title="Xóa khỏi lớp">
-                                            <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </c:forEach>
+                            <c:choose>
+                                <c:when test="${not empty enrollments}">
+                                    <c:forEach items="${enrollments}" var="enrollment">
+                                        <c:set var="student" value="${enrollment.student}" />
+
+                                        <tr style="border-top:1px solid #f1f5f9;">
+                                            <td style="padding:12px;color:#0057bf;font-weight:700;">
+                                                HS-${student.studentId}
+                                            </td>
+
+                                            <td style="padding:12px;font-weight:700;">
+                                                    ${student.fullName}
+                                            </td>
+
+                                            <td style="padding:12px;color:#475569;">
+                                                <c:if test="${not empty student.parent}">
+                                                    ${student.parent.fullName}
+                                                </c:if>
+                                            </td>
+
+                                            <td style="padding:12px;color:#475569;">
+                                                <c:if test="${not empty student.parent}">
+                                                    ${student.parent.phone}
+                                                </c:if>
+                                            </td>
+
+                                            <td style="padding:12px;text-align:center;">
+                                                <button type="button"
+                                                        onclick="removeStudent('${student.studentId}')"
+                                                        style="border:none;background:transparent;color:#dc2626;cursor:pointer;"
+                                                        title="Xóa khỏi lớp">
+                                                    <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </c:when>
+
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="5" style="text-align:center;color:#64748b;padding:24px;">
+                                            Lớp chưa có học sinh.
+                                        </td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
                             </tbody>
                         </table>
                     </div>
@@ -649,7 +626,7 @@
                             Gia sư phụ trách
                         </h3>
 
-                        <input type="hidden" name="tutorId" id="tutorId" value="${tutor.id}">
+                        <input type="hidden" name="tutorId" id="tutorId" value="${tutor.tutorId}">
 
                         <div id="currentTutorBox" class="tutor-selected" style="align-items: flex-start; gap: 16px; padding: 16px;">
                             <img id="tutorAvatar" class="avatar" style="width: 60px; height: 60px; border-radius: 12px;"
@@ -685,14 +662,14 @@
                             <select id="tutorSelect" class="mini-input" style="width: 100%;" onchange="handleTutorChange(this)">
                                 <option value="">-- Chọn gia sư --</option>
                                 <c:forEach items="${tutors}" var="t">
-                                    <option value="${t.id}" 
+                                    <option value="${t.tutorId}"
                                             data-name="${t.fullName}" 
                                             data-major="${empty t.major ? 'Chưa cập nhật chuyên ngành' : t.major}"
                                             data-school="${empty t.school ? 'Chưa cập nhật trường' : t.school}"
                                             data-phone="${empty t.phone ? '---' : t.phone}"
                                             data-email="${empty t.email ? '---' : t.email}"
                                             data-avatar="${t.avatar}"
-                                            ${tutor.id == t.id ? 'selected' : ''}>
+                                            ${tutor.tutorId == t.tutorId ? 'selected' : ''}>
                                         ${t.fullName} (${empty t.major ? 'N/A' : t.major})
                                     </option>
                                 </c:forEach>
@@ -736,12 +713,12 @@
                         </div>
 
                         <div id="scheduleList">
-                            <c:forEach items="${weeklySchedules}" var="schedule">
+                            <c:forEach items="${schedules}" var="schedule">
                                 <div class="schedule-item">
                                     <span>Thứ ${schedule.weekday}</span>
                                     <span>${schedule.startTime} - ${schedule.endTime}</span>
                                     <button type="button"
-                                            onclick="removeSchedule('${schedule.id}')"
+                                            onclick="removeSchedule('${schedule.scheduleId}')"
                                             style="border:none;background:transparent;color:#64748b;cursor:pointer;">
                                         <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
                                     </button>
@@ -756,14 +733,6 @@
 
             <!-- SESSIONS TABLE -->
             <section class="card" style="margin-top:22px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                    <h3 class="card-title" style="margin:0;">
-                        <span class="material-symbols-rounded">calendar_view_week</span>
-                        Lịch các buổi học
-                    </h3>
-                    <span style="font-size:13px;color:#64748b;font-weight:700;">${stats.totalSessions} buổi</span>
-                </div>
-
                 <table style="width:100%;border-collapse:collapse;">
                     <thead>
                     <tr style="color:#64748b;font-size:11px;text-transform:uppercase;background:#f8fafc;">
@@ -807,12 +776,12 @@
 
             <div class="bottom-bar">
                 <button type="button" class="btn-danger"
-                        onclick="deleteClass('${classDetail.id}')">
+                        onclick="deleteClass('${classItem.classId}')">
                     Xóa lớp học
                 </button>
 
                 <div class="bottom-actions">
-                    <a class="btn" href="${pageContext.request.contextPath}/admin/classes/${classDetail.id}">
+                    <a class="btn" href="${pageContext.request.contextPath}/admin/classes/${classItem.classId}">
                         Hủy bỏ
                     </a>
 
@@ -838,23 +807,34 @@
         </div>
 
         <div id="studentListModal">
-            <c:forEach items="${allStudents}" var="st">
+            <c:forEach items="${students}" var="st">
                 <c:set var="isEnrolled" value="false" />
-                <c:forEach items="${students}" var="enrolled">
-                    <c:if test="${enrolled.id == st.id}">
+
+                <c:forEach items="${enrollments}" var="enrollment">
+                    <c:if test="${enrollment.student.studentId == st.studentId}">
                         <c:set var="isEnrolled" value="true" />
                     </c:if>
                 </c:forEach>
+
                 <c:if test="${!isEnrolled}">
                     <div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #f1f5f9;">
-                        <input type="checkbox" name="selectedStudents" value="${st.id}" id="mst_${st.id}" style="width:18px;height:18px;cursor:pointer;">
-                        <label for="mst_${st.id}" style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+                        <input type="checkbox"
+                               name="selectedStudents"
+                               value="${st.studentId}"
+                               id="mst_${st.studentId}"
+                               style="width:18px;height:18px;cursor:pointer;">
+
+                        <label for="mst_${st.studentId}"
+                               style="cursor:pointer;display:flex;align-items:center;gap:10px;">
                             <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0057bf,#60a5fa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">
-                                ${empty st.fullName ? '?' : fn:substring(st.fullName, 0, 1)}
+                                    ${empty st.fullName ? '?' : fn:substring(st.fullName, 0, 1)}
                             </div>
+
                             <div>
                                 <div style="font-weight:700;font-size:14px;">${st.fullName}</div>
-                                <div style="font-size:12px;color:#64748b;">MSHS: ${st.id} | ${st.school}</div>
+                                <div style="font-size:12px;color:#64748b;">
+                                    MSHS: ${st.studentId} | ${st.school}
+                                </div>
                             </div>
                         </label>
                     </div>
@@ -871,7 +851,7 @@
 
 <script>
     const contextPath = '${pageContext.request.contextPath}';
-    const classId = '${classDetail.id}';
+    const classId = '${classItem.classId}';
 
     function toggleScheduleForm() {
         document.getElementById('scheduleForm').classList.toggle('show');

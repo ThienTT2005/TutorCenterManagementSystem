@@ -22,4 +22,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.status = 'COMPLETED'")
     BigDecimal sumAllPayments();
+
+    @Query("SELECT MONTH(p.requestDate) as month, SUM(p.amount) as total " +
+           "FROM Payment p " +
+           "WHERE p.status = 'COMPLETED' AND YEAR(p.requestDate) = YEAR(CURRENT_DATE) " +
+           "GROUP BY MONTH(p.requestDate) " +
+           "ORDER BY MONTH(p.requestDate)")
+    List<Object[]> getMonthlyRevenue();
 }

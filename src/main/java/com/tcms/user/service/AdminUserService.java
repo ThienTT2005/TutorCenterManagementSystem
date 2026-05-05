@@ -37,4 +37,7 @@ public interface AdminUserService {
 
     List<Student> getAllStudents();
     List<Tutor> getAllTutors();
+    void changePasswordByAdmin(Integer userId, String newPassword);
+    void lockUser(Integer userID);
+    void unlockUser(Integer userId);
 }

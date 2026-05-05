@@ -400,4 +400,44 @@ public class AdminUserServiceImpl implements AdminUserService {
     public List<Tutor> getAllTutors() {
         return tutorRepository.findAll();
     }
+    @Override
+    public void changePasswordByAdmin(Integer userId, String newPassword) {
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new BadRequestException("Mật khẩu mới không được để trống");
+        }
+
+        if (newPassword.length() < 6) {
+            throw new BadRequestException("Mật khẩu mới phải có ít nhất 6 ký tự");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User không tồn tại"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
+    }
+    @Override
+    public void lockUser(Integer userId) {
+        User user = getUserById(userId);
+
+        if (user.getStatus() != null && user.getStatus() == false) {
+            throw new BadRequestException("Tài khoản đã bị khóa trước đó");
+        }
+
+        user.setStatus(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void unlockUser(Integer userId) {
+        User user = getUserById(userId);
+
+        if (user.getStatus() != null && user.getStatus() == true) {
+            throw new BadRequestException("Tài khoản đang hoạt động");
+        }
+
+        user.setStatus(true);
+        userRepository.save(user);
+    }
 }

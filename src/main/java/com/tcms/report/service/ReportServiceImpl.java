@@ -3,6 +3,7 @@ package com.tcms.report.service;
 import com.tcms.clazz.entity.ClassEntity;
 import com.tcms.clazz.repository.ClassRepository;
 import com.tcms.payment.repository.PaymentRepository;
+import com.tcms.parent.repository.ParentRepository;
 import com.tcms.student.repository.StudentRepository;
 import com.tcms.tutor.repository.TutorRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class ReportServiceImpl implements ReportService {
     private final StudentRepository studentRepository;
     private final TutorRepository tutorRepository;
     private final PaymentRepository paymentRepository;
+    private final ParentRepository parentRepository;
 
     @Override
     public Long countClasses() {
@@ -36,8 +38,18 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public Long countParents() {
+        return parentRepository.count();
+    }
+
+    @Override
     public BigDecimal calculateRevenue() {
         return paymentRepository.sumAllPayments();
+    }
+
+    @Override
+    public List<Object[]> getMonthlyRevenue() {
+        return paymentRepository.getMonthlyRevenue();
     }
 
     @Override
