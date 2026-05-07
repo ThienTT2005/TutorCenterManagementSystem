@@ -180,7 +180,6 @@ public class ProfileServiceImpl implements ProfileService {
         tutor.setDob(request.getDob());
         tutor.setGender(request.getGender());
         tutor.setAddress(request.getAddress());
-        tutor.setAvatar(request.getAvatar());
         tutor.setSchool(request.getSchool());
         tutor.setMajor(request.getMajor());
         tutor.setDescription(request.getDescription());
@@ -193,7 +192,6 @@ public class ProfileServiceImpl implements ProfileService {
         parent.setDob(request.getDob());
         parent.setGender(request.getGender());
         parent.setAddress(request.getAddress());
-        parent.setAvatar(request.getAvatar());
     }
 
     private void updateStudent(Student student, ProfileUpdateRequest request) {
@@ -201,7 +199,6 @@ public class ProfileServiceImpl implements ProfileService {
         student.setDob(request.getDob());
         student.setGender(request.getGender());
         student.setAddress(request.getAddress());
-        student.setAvatar(request.getAvatar());
         student.setSchool(request.getSchool());
         student.setGrade(request.getGrade());
     }

@@ -4,7 +4,6 @@
 
 <c:set var="role" value="${sessionScope.role}" />
 
-<c:set var="role" value="${sessionScope.role}" />
 
 <c:if test="${empty role and not empty profile and not empty profile.user and not empty profile.user.role}">
     <c:set var="role" value="${profile.user.role.roleName}" />
@@ -62,11 +61,16 @@
             margin: 0;
             background: var(--bg-page);
             color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
         }
 
         .main-content {
+            flex: 1;
             margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
+            padding: 0;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
             background: var(--bg-page);
         }
@@ -1106,7 +1110,7 @@
                                     <c:set var="displayAvatar" value="${profile.avatar}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:set var="displayAvatar" value="${pageContext.request.contextPath}/uploads/${profile.avatar}"/>
+                                    <c:set var="displayAvatar" value="${pageContext.request.contextPath}${profile.avatar}"/>
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
@@ -1176,6 +1180,7 @@
                                 <c:choose>
                                     <c:when test="${not empty displayAvatar}">
                                         <img src="${displayAvatar}"
+                                             id="avatarPreview"
                                              class="avatar-img"
                                              alt="Avatar"
                                              onerror="this.src='${pageContext.request.contextPath}/images/default-avatar.png'">
@@ -1193,17 +1198,20 @@
                                               action="${pageContext.request.contextPath}/profile/avatar"
                                               method="post"
                                               enctype="multipart/form-data">
-                                            <label class="avatar-upload-mini" for="avatarInput">
+
+                                            <label class="avatar-upload-mini" for="avatarInput" title="Đổi ảnh đại diện">
                                                 <i class="fa-solid fa-camera"></i>
                                             </label>
+
                                             <input id="avatarInput"
                                                    class="hidden-file-input"
                                                    type="file"
                                                    name="file"
-                                                   accept="image/*"
-                                                   onchange="document.getElementById('avatarUploadForm').submit();">
+                                                   accept="image/jpeg,image/png,image/webp"
+                                                   onchange="previewAndSubmitAvatar(this);">
                                         </form>
                                     </c:when>
+
                                     <c:otherwise>
                                         <span class="avatar-status"></span>
                                     </c:otherwise>
@@ -1715,6 +1723,43 @@
 
     </section>
 </main>
+
+<script>
+    function previewAndSubmitAvatar(input) {
+        const file = input.files && input.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const maxSize = 5 * 1024 * 1024;
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('Chỉ cho phép tải ảnh JPG, PNG hoặc WEBP.');
+            input.value = '';
+            return;
+        }
+
+        if (file.size > maxSize) {
+            alert('Ảnh đại diện không được vượt quá 5MB.');
+            input.value = '';
+            return;
+        }
+
+        const preview = document.getElementById('avatarPreview');
+
+        if (preview) {
+            preview.src = URL.createObjectURL(file);
+        }
+
+        const avatarForm = document.getElementById('avatarUploadForm');
+
+        if (avatarForm) {
+            avatarForm.submit();
+        }
+    }
+</script>
 
 </body>
 </html>

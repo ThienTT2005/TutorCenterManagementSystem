@@ -68,7 +68,7 @@ public class ProfileController {
 
         try {
             profileService.uploadAvatar(userId, file);
-            return "redirect:/profile";
+            return "redirect:/profile?edit=true";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("profile", profileService.getProfile(userId));

@@ -4,6 +4,7 @@ import com.tcms.payment.dto.request.CreatePaymentRequest;
 import com.tcms.payment.dto.request.RejectPaymentRequest;
 import com.tcms.payment.dto.request.UploadPaymentProofRequest;
 import com.tcms.payment.service.PaymentService;
+import com.tcms.tutor.service.TutorClassService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,15 +17,40 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final TutorClassService tutorclass;
 
     @PostMapping("/create")
     public String createPayment(
             @ModelAttribute CreatePaymentRequest request,
-            HttpSession session
+            HttpSession session,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes
     ) {
+
         Integer tutorUserId = (Integer) session.getAttribute("userId");
 
-        paymentService.createPayment(tutorUserId, request);
+        try {
+
+            paymentService.createPayment(tutorUserId, request);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Tạo yêu cầu thanh toán thành công!"
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    e.getMessage()
+            );
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Có lỗi xảy ra khi tạo yêu cầu thanh toán"
+            );
+        }
 
         return "redirect:/payment/tutor";
     }
@@ -72,16 +98,29 @@ public class PaymentController {
     }
 
     @GetMapping("/tutor")
-    public String tutorPayments(
-            HttpSession session,
-            Model model
-    ) {
+    public String tutorPayments(HttpSession session, Model model) {
         Integer tutorUserId = (Integer) session.getAttribute("userId");
+
         model.addAttribute("activePage", "payment");
-        model.addAttribute(
-                "payments",
-                paymentService.getTutorPayments(tutorUserId)
-        );
+        model.addAttribute("payments", paymentService.getTutorPayments(tutorUserId));
+
+        model.addAttribute("classes", tutorclass.getMyClasses(tutorUserId));
+
+        // Ban đầu chưa chọn lớp nên chưa load học sinh
+        var classes = tutorclass.getMyClasses(tutorUserId);
+
+        model.addAttribute("classes", classes);
+
+        if (classes != null && !classes.isEmpty()) {
+            Integer firstClassId = classes.get(0).getClassId();
+
+            model.addAttribute(
+                    "students",
+                    tutorclass.getStudentsOfClass(tutorUserId, firstClassId)
+            );
+        } else {
+            model.addAttribute("students", java.util.Collections.emptyList());
+        }
 
         return "tutor/payments";
     }

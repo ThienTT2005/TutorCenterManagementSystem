@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <c:set var="activePage" value="homework" scope="request" />
 
 <!DOCTYPE html>
@@ -9,6 +9,9 @@
     <meta charset="UTF-8">
     <title>Chi tiết bài nộp | TCMS Tutor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"/>
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -437,6 +440,85 @@
             font-weight: 700;
         }
 
+        /* Quiz UI */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .quiz-item {
+            padding: 1.25rem;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+        }
+        .quiz-question {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+            display: flex;
+            gap: 10px;
+        }
+        .quiz-question .q-num {
+            color: #0057bf;
+            flex-shrink: 0;
+        }
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .quiz-option {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #f1f5f9;
+            background: #f8fafc;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        .quiz-option.correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+        }
+        .quiz-option.wrong {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
+        .option-label {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 900;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        .correct .option-label {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+        .wrong .option-label {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
         @media (max-width: 1150px) {
             .detail-layout {
                 grid-template-columns: 1fr;
@@ -654,22 +736,60 @@
 
                         <c:choose>
                             <c:when test="${not empty submission.homework and submission.homework.type == 'MULTIPLE_CHOICE'}">
-                                <div class="mc-note">
-                                    Đây là bài trắc nghiệm. Backend hiện lưu câu trả lời trong trường <strong>answers</strong>.
-                                    Nếu muốn hiển thị từng câu hỏi giống hình mẫu, controller cần truyền thêm danh sách câu hỏi và map đáp án đã parse.
-                                </div>
 
                                 <div style="height: 1rem;"></div>
 
-                                <div class="answer-block">
-                                    <h3>Đáp án học sinh đã nộp</h3>
+                                <%
+                                    try {
+                                        com.tcms.homework.entity.HomeworkSubmission sub = (com.tcms.homework.entity.HomeworkSubmission) request.getAttribute("submission");
+                                        if (sub != null && sub.getAnswers() != null) {
+                                            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                                            java.util.Map<String, String> answersMap = mapper.readValue(sub.getAnswers(), 
+                                                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, String>>() {});
+                                            request.setAttribute("answersMap", answersMap);
+                                        }
+                                    } catch (Exception e) {
+                                        // Silent catch for parse errors
+                                    }
+                                %>
 
+                                <div class="quiz-container">
                                     <c:choose>
-                                        <c:when test="${not empty submission.answers}">
-                                            <pre class="answer-json"><c:out value="${submission.answers}" /></pre>
+                                        <c:when test="${not empty submission.homework.questions}">
+                                            <c:forEach var="q" items="${submission.homework.questions}" varStatus="vs">
+                                                <c:set var="qKey" value="q_${q.questionId}" />
+                                                <c:set var="studentAns" value="${answersMap[qKey]}" />
+                                                <c:set var="correctAns" value="${q.correctAnswer}" />
+                                                
+                                                <div class="quiz-item">
+                                                    <div class="quiz-question">
+                                                        <span class="q-num">Câu ${vs.count}:</span>
+                                                        <span><c:out value="${q.questionText}" /></span>
+                                                    </div>
+                                                    <div class="quiz-options">
+                                                        <c:forEach var="opt" items="${['A', 'B', 'C', 'D']}">
+                                                            <c:set var="optText" value="${opt == 'A' ? q.optionA : (opt == 'B' ? q.optionB : (opt == 'C' ? q.optionC : q.optionD))}" />
+                                                            <c:set var="isCorrect" value="${opt == correctAns}" />
+                                                            <c:set var="isStudent" value="${opt == studentAns}" />
+                                                            
+                                                            <div class="quiz-option ${isCorrect ? 'correct' : (isStudent ? 'wrong' : '')}">
+                                                                <span class="option-label">${opt}</span>
+                                                                <span><c:out value="${optText}" /></span>
+                                                                
+                                                                <c:if test="${isCorrect}">
+                                                                    <i class="fa-solid fa-circle-check" style="margin-left: auto;"></i>
+                                                                </c:if>
+                                                                <c:if test="${isStudent && !isCorrect}">
+                                                                    <i class="fa-solid fa-circle-xmark" style="margin-left: auto;"></i>
+                                                                </c:if>
+                                                            </div>
+                                                        </c:forEach>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="empty-text">Chưa có dữ liệu đáp án.</div>
+                                            <div class="empty-text">Bài tập này chưa có câu hỏi trắc nghiệm nào.</div>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>

@@ -13,6 +13,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"/>
+
+    <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet"
@@ -230,42 +233,7 @@
             min-width: 0;
         }
 
-        .tabs {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 18px;
-            padding: 8px;
-            display: flex;
-            gap: 8px;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-        }
 
-        .tab-btn {
-            border: 0;
-            background: transparent;
-            border-radius: 12px;
-            padding: 11px 16px;
-            font-size: 14px;
-            font-weight: 800;
-            color: #64748b;
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-
-        .tab-btn:hover,
-        .tab-btn.active {
-            background: #eff6ff;
-            color: #0057bf;
-        }
-
-        .tab-panel {
-            display: none;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
 
         .panel-card,
         .session-card,
@@ -293,7 +261,120 @@
             font-weight: 900;
             color: #0f172a;
         }
+        .detail-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
 
+        .detail-section-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 22px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+            padding: 1.5rem;
+        }
+
+        .detail-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .detail-section-header h2 {
+            font-size: 18px;
+            font-weight: 900;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .detail-section-header p {
+            margin: 6px 0 0;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .section-count-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #0057bf;
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .session-table-wrap {
+            overflow-x: auto;
+        }
+
+        .session-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        .session-table th,
+        .session-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: left;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .session-table th {
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: .3px;
+        }
+
+        .session-topic-cell strong {
+            display: block;
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .session-topic-cell span {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .session-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .session-action-table {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(105px, 1fr));
+            gap: 8px;
+        }
+
+        @media (max-width: 760px) {
+            .detail-section-header {
+                flex-direction: column;
+            }
+
+            .session-action-table {
+                grid-template-columns: 1fr;
+            }
+        }
         /* ===== STUDENT TABLE ===== */
         .student-table-wrap {
             overflow-x: auto;
@@ -765,27 +846,64 @@
 
             <!-- LEFT -->
             <div class="detail-left">
+                <div class="detail-sections">
+                    <section class="upcoming-section">
+                        <h2>
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            Buổi học gần nhất
+                        </h2>
 
-                <div class="tabs">
-                    <button type="button" class="tab-btn active" data-tab="students">
-                        Danh sách học sinh
-                    </button>
+                        <div class="upcoming-grid">
+                            <c:choose>
+                                <c:when test="${not empty sessions}">
+                                    <c:forEach var="s" items="${sessions}" begin="0" end="1">
+                                        <div class="upcoming-card">
+                                        <span class="badge subject">
+                                            <c:out value="${empty s.sessionDate ? 'Chưa có ngày' : s.sessionDate}" />
+                                        </span>
 
-                    <button type="button" class="tab-btn" data-tab="sessions">
-                        Lịch dạy / Buổi học
-                    </button>
+                                            <span class="badge gray">
+                                            <c:out value="${empty s.status ? 'Chưa cập nhật' : s.status}" />
+                                        </span>
 
+                                            <h3>
+                                                <c:out value="${empty s.topic ? 'Chưa cập nhật chủ đề' : s.topic}" />
+                                            </h3>
 
+                                            <p>
+                                                <i class="fa-regular fa-clock"></i>
+                                                <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
+                                                -
+                                                <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
+                                            </p>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+
+                                <c:otherwise>
+                                    <div class="empty-card" style="grid-column: 1 / -1;">
+                                        Chưa có buổi học gần nhất.
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </section>
                 </div>
+                    <!-- STUDENTS TABLE -->
+                    <section class="detail-section-card">
+                        <div class="detail-section-header">
+                            <div>
+                                <h2>
+                                    Học sinh lớp
+                                    <c:out value="${empty classItem.className ? '' : classItem.className}" />
+                                </h2>
+                                <p>Danh sách học sinh đang được đăng ký trong lớp học này.</p>
+                            </div>
 
-                <!-- STUDENTS TAB -->
-                <div class="tab-panel active" id="students">
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <h2>
-                                Học sinh lớp
-                                <c:out value="${empty classItem.className ? '' : classItem.className}" />
-                            </h2>
+                            <span class="section-count-badge">
+                <i class="fa-solid fa-users"></i>
+                ${empty enrollments ? 0 : fn:length(enrollments)} học sinh
+            </span>
                         </div>
 
                         <div class="student-table-wrap">
@@ -859,137 +977,133 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </section>
+
+                    <!-- SESSIONS TABLE -->
+                    <section class="detail-section-card">
+                        <div class="detail-section-header">
+                            <div>
+                                <h2>Lịch học cụ thể</h2>
+                                <p>Danh sách các buổi học đã được tạo cho lớp này.</p>
+                            </div>
+
+                            <span class="section-count-badge">
+                <i class="fa-solid fa-calendar-days"></i>
+                ${empty sessions ? 0 : fn:length(sessions)} buổi học
+            </span>
+                        </div>
+
+                        <div class="session-table-wrap">
+                            <table class="session-table">
+                                <thead>
+                                <tr>
+                                    <th>Ngày học</th>
+                                    <th>Thời gian</th>
+                                    <th>Chủ đề</th>
+                                    <th>Mã điểm danh</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <c:choose>
+                                    <c:when test="${not empty sessions}">
+                                        <c:forEach var="s" items="${sessions}">
+                                            <tr>
+                                                <td>
+                                    <span class="badge subject">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        <c:out value="${empty s.sessionDate ? 'Chưa có ngày' : s.sessionDate}" />
+                                    </span>
+                                                </td>
+
+                                                <td>
+                                    <span class="session-code">
+                                        <i class="fa-regular fa-clock"></i>
+                                        <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
+                                        -
+                                        <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
+                                    </span>
+                                                </td>
+
+                                                <td>
+                                                    <div class="session-topic-cell">
+                                                        <strong>
+                                                            <c:out value="${empty s.topic ? 'Chưa cập nhật chủ đề' : s.topic}" />
+                                                        </strong>
+                                                        <span>
+                                            Buổi học #<c:out value="${s.sessionId}" />
+                                        </span>
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                    <span class="session-code">
+                                        <i class="fa-solid fa-key"></i>
+                                        <c:out value="${empty s.attendanceCode ? 'Chưa có' : s.attendanceCode}" />
+                                    </span>
+                                                </td>
+
+                                                <td>
+                                    <span class="badge gray">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        <c:out value="${empty s.status ? 'Chưa cập nhật' : s.status}" />
+                                    </span>
+                                                </td>
+
+                                                <td>
+                                                    <div class="session-action-table">
+                                                        <a class="session-action blue"
+                                                           href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/attendance">
+                                                            <i class="fa-solid fa-user-check"></i>
+                                                            Điểm danh
+                                                        </a>
+
+                                                        <a class="session-action green"
+                                                           href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/feedback">
+                                                            <i class="fa-solid fa-comment-dots"></i>
+                                                            Feedback
+                                                        </a>
+
+                                                        <a class="session-action purple"
+                                                           href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/learning-plan">
+                                                            <i class="fa-solid fa-clipboard-list"></i>
+                                                            Kế hoạch
+                                                        </a>
+
+                                                        <a class="session-action orange"
+                                                           href="${pageContext.request.contextPath}/tutor/homework/session/${s.sessionId}">
+                                                            <i class="fa-solid fa-book-open-reader"></i>
+                                                            Bài tập
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <tr>
+                                            <td colspan="6" class="empty-row">
+                                                Chưa có buổi học nào được tạo cho lớp này.
+                                            </td>
+                                        </tr>
+                                    </c:otherwise>
+                                </c:choose>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
                 </div>
 
-                <!-- SESSIONS TAB -->
-                <div class="tab-panel" id="sessions">
-                    <div class="session-list">
-                        <c:choose>
-                            <c:when test="${not empty sessions}">
-                                <c:forEach var="s" items="${sessions}">
-                                    <div class="session-card">
-                                        <div class="session-main">
-                                            <div class="session-top">
-                                                <span class="badge subject">
-                                                    <i class="fa-regular fa-calendar"></i>
-                                                    <c:out value="${empty s.sessionDate ? 'Chưa có ngày' : s.sessionDate}" />
-                                                </span>
 
-                                                <span class="badge gray">
-                                                    <i class="fa-solid fa-circle-info"></i>
-                                                    <c:out value="${empty s.status ? 'Chưa cập nhật' : s.status}" />
-                                                </span>
-                                            </div>
-
-                                            <h3>
-                                                <c:out value="${empty s.topic ? 'Chưa cập nhật chủ đề' : s.topic}" />
-                                            </h3>
-
-                                            <div class="session-meta">
-                                                <span>
-                                                    <i class="fa-regular fa-clock"></i>
-                                                    <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
-                                                    -
-                                                    <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
-                                                </span>
-
-                                                <span>
-                                                    <i class="fa-solid fa-key"></i>
-                                                    Mã điểm danh:
-                                                    <c:out value="${empty s.attendanceCode ? 'Chưa có' : s.attendanceCode}" />
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="session-actions">
-                                            <a class="session-action blue"
-                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/attendance">
-                                                <i class="fa-solid fa-user-check"></i>
-                                                Điểm danh
-                                            </a>
-
-                                            <a class="session-action green"
-                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/feedback">
-                                                <i class="fa-solid fa-comment-dots"></i>
-                                                Feedback
-                                            </a>
-
-                                            <a class="session-action purple"
-                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/learning-plan">
-                                                <i class="fa-solid fa-clipboard-list"></i>
-                                                Kế hoạch
-                                            </a>
-
-                                            <a class="session-action orange"
-                                               href="${pageContext.request.contextPath}/tutor/homework/session/${s.sessionId}">
-                                                <i class="fa-solid fa-book-open-reader"></i>
-                                                Bài tập
-                                            </a>
-                                            <a class="session-action detail"
-                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/attendance">
-                                                <i class="fa-solid fa-eye"></i>
-                                                Xem chi tiết
-                                            </a>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                            </c:when>
-
-                            <c:otherwise>
-                                <div class="panel-card empty-card">
-                                    Chưa có buổi học nào được tạo cho lớp này.
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
 
 
 
                 <!-- UPCOMING -->
-                <section class="upcoming-section">
-                    <h2>
-                        <i class="fa-solid fa-calendar-plus"></i>
-                        Buổi học gần nhất
-                    </h2>
 
-                    <div class="upcoming-grid">
-                        <c:choose>
-                            <c:when test="${not empty sessions}">
-                                <c:forEach var="s" items="${sessions}" begin="0" end="1">
-                                    <div class="upcoming-card">
-                                        <span class="badge subject">
-                                            <c:out value="${empty s.sessionDate ? 'Chưa có ngày' : s.sessionDate}" />
-                                        </span>
-
-                                        <span class="badge gray">
-                                            <c:out value="${empty s.status ? 'Chưa cập nhật' : s.status}" />
-                                        </span>
-
-                                        <h3>
-                                            <c:out value="${empty s.topic ? 'Chưa cập nhật chủ đề' : s.topic}" />
-                                        </h3>
-
-                                        <p>
-                                            <i class="fa-regular fa-clock"></i>
-                                            <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
-                                            -
-                                            <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
-                                        </p>
-                                    </div>
-                                </c:forEach>
-                            </c:when>
-
-                            <c:otherwise>
-                                <div class="empty-card" style="grid-column: 1 / -1;">
-                                    Chưa có buổi học gần nhất.
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </section>
-            </div>
 
             <!-- RIGHT SIDEBAR -->
             <aside class="detail-sidebar">
@@ -1045,39 +1159,5 @@
 
     </main>
 </div>
-
-<script>
-    function openTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(function (button) {
-            button.classList.remove('active');
-        });
-
-        document.querySelectorAll('.tab-panel').forEach(function (panel) {
-            panel.classList.remove('active');
-        });
-
-        const targetButton = document.querySelector('.tab-btn[data-tab="' + tabName + '"]');
-        const targetPanel = document.getElementById(tabName);
-
-        if (targetButton && targetPanel) {
-            targetButton.classList.add('active');
-            targetPanel.classList.add('active');
-        }
-    }
-
-    document.querySelectorAll('.tab-btn').forEach(function (button) {
-        button.addEventListener('click', function () {
-            openTab(button.dataset.tab);
-        });
-    });
-
-    document.querySelectorAll('[data-go-tab]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            openTab(button.dataset.goTab);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    });
-</script>
-
 </body>
 </html>

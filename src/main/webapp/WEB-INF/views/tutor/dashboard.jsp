@@ -9,6 +9,8 @@
     <title>Dashboard - Gia sư | TCMS</title>
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/tutor-dashboard.css">
 </head>
 <body>
@@ -38,10 +40,10 @@
                 <h1>Xin chào, <c:out value="${displayTitle}" /></h1>
                 <p>Hôm nay là ${not empty now ? now : '28/04/2026'}</p>
             </div>
-            <a href="${pageContext.request.contextPath}/tutor/schedule" class="btn-view-schedule">
-                <i class="fa-solid fa-calendar-days"></i>
-                Xem lịch dạy
-            </a>
+<%--            <a href="${pageContext.request.contextPath}/tutor/schedule" class="btn-view-schedule">--%>
+<%--                <i class="fa-solid fa-calendar-days"></i>--%>
+<%--                Xem lịch dạy--%>
+<%--            </a>--%>
         </div>
 
         <!-- Stats Grid -->
@@ -86,42 +88,71 @@
         <div class="dashboard-grid">
             <!-- LEFT COLUMN -->
             <div class="section-group">
-                
+
                 <!-- Today Sessions -->
                 <div class="section-container">
                     <div class="section-header">
-                        <h2>Lịch dạy hôm nay</h2>
+                        <h2>Buổi học hôm nay</h2>
                     </div>
-                    
-                    <c:choose>
-                        <c:when test="${not empty todaySessions}">
-                            <c:forEach var="s" items="${todaySessions}">
-                                <div class="session-card">
-                                    <div class="session-info">
-                                        <div class="session-icon">
-                                            <i class="fa-solid fa-book"></i>
-                                        </div>
-                                        <div class="session-details">
-                                            <h3>${s.classEntity.className}</h3>
-                                            <div class="session-time">
+
+                    <div class="card-row">
+                        <c:choose>
+                            <c:when test="${not empty todaySessions}">
+                                <c:forEach var="s" items="${todaySessions}">
+
+                                    <div class="today-session-row">
+                                        <div class="today-session-left">
+                                            <h3>
+                                                <c:out value="${empty s.classEntity.className ? 'Chưa cập nhật tên lớp' : s.classEntity.className}" />
+                                            </h3>
+
+                                            <div class="today-time">
                                                 <i class="fa-regular fa-clock"></i>
-                                                ${s.startTime} - ${s.endTime}
+                                                <span>
+                                    <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
+                                    -
+                                    <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
+                                </span>
                                             </div>
                                         </div>
+
+                                        <div class="today-session-actions">
+                                            <a class="today-action blue"
+                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/attendance">
+                                                <i class="fa-solid fa-user-check"></i>
+                                                Điểm danh
+                                            </a>
+
+                                            <a class="today-action green"
+                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/feedback">
+                                                <i class="fa-solid fa-comment-dots"></i>
+                                                Feedback
+                                            </a>
+
+                                            <a class="today-action purple"
+                                               href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/learning-plan">
+                                                <i class="fa-solid fa-clipboard-list"></i>
+                                                Kế hoạch
+                                            </a>
+
+                                            <a class="today-action orange"
+                                               href="${pageContext.request.contextPath}/tutor/homework/session/${s.sessionId}">
+                                                <i class="fa-solid fa-book-open-reader"></i>
+                                                Bài tập
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div class="session-meta">
-                                        <span class="badge-status badge-upcoming">Sắp diễn ra</span>
-                                        <a href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}" class="btn-detail">Xem chi tiết</a>
-                                    </div>
+
+                                </c:forEach>
+                            </c:when>
+
+                            <c:otherwise>
+                                <div class="empty-card" style="grid-column: span 2;">
+                                    Hôm nay chưa có lịch dạy.
                                 </div>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="empty-card">
-                                Hôm nay chưa có lịch dạy.
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
 
                 <!-- Feedback Section -->

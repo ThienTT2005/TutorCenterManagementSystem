@@ -80,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .collect(Collectors.toList());
 
         if (validLogs.isEmpty()) {
-            throw new RuntimeException("Không có buổi học hợp lệ để yêu cầu thanh toán");
+            throw new IllegalArgumentException("Không có buổi học hợp lệ để yêu cầu thanh toán");
         }
 
         String sessionIds = validLogs.stream()

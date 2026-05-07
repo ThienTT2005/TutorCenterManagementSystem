@@ -32,6 +32,55 @@ public class AuthController {
             session.setAttribute("role", user.getRole().getRoleName());
 
             String role = user.getRole().getRoleName();
+            if ("TUTOR".equalsIgnoreCase(role) && user.getTutor() != null) {
+
+                session.setAttribute(
+                        "avatar",
+                        user.getTutor().getAvatar()
+                );
+
+                session.setAttribute(
+                        "fullName",
+                        user.getTutor().getFullName()
+                );
+            }
+            else if ("PARENT".equalsIgnoreCase(role) && user.getParent() != null) {
+
+                session.setAttribute(
+                        "avatar",
+                        user.getParent().getAvatar()
+                );
+
+                session.setAttribute(
+                        "fullName",
+                        user.getParent().getFullName()
+                );
+            }
+            else if ("STUDENT".equalsIgnoreCase(role) && user.getStudent() != null) {
+
+                session.setAttribute(
+                        "avatar",
+                        user.getStudent().getAvatar()
+                );
+
+                session.setAttribute(
+                        "fullName",
+                        user.getStudent().getFullName()
+                );
+            }
+
+           else {
+
+                session.setAttribute(
+                        "avatar",
+                        null
+                );
+
+                session.setAttribute(
+                        "fullName",
+                        user.getUsername()
+                );
+            }
 
             if ("ADMIN".equalsIgnoreCase(role)) {
                 return "redirect:/admin/dashboard";

@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="activePage" value="notifications" scope="request" />
 <c:set var="currentUser" value="${sessionScope.currentUser}" />
-<c:set var="role" value="${not empty currentUser and not empty currentUser.role ? currentUser.role.roleName : ''}" />
+<c:set var="role" value="${sessionScope.role}" />
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -13,7 +13,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thông báo của tôi | TCMS</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="<c:url value='/css/core-dashboard.css' />">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/core-dashboard.css">
     <style>
         .notification-page {
             max-width: 900px;
