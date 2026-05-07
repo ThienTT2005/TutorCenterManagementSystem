@@ -6,6 +6,7 @@ import com.tcms.clazz.repository.ClassRepository;
 import com.tcms.clazz.repository.EnrollmentRepository;
 import com.tcms.exception.BadRequestException;
 import com.tcms.schedule.dto.request.CreateScheduleRequest;
+import com.tcms.schedule.dto.request.UpdateScheduleRequest;
 import com.tcms.schedule.entity.TeachingSchedule;
 import com.tcms.schedule.repository.TeachingScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,13 +42,13 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new BadRequestException("Giờ bắt đầu phải nhỏ hơn giờ kết thúc");
         }
 
-        checkClassScheduleConflict(classEntity.getClassId(), request.getWeekday(), startTime, endTime);
+        checkClassScheduleConflict(classEntity.getClassId(), request.getWeekday(), startTime, endTime, null);
 
         if (classEntity.getTutor() != null) {
-            checkTutorScheduleConflict(classEntity.getTutor().getTutorId(), request.getWeekday(), startTime, endTime);
+            checkTutorScheduleConflict(classEntity.getTutor().getTutorId(), request.getWeekday(), startTime, endTime, null);
         }
 
-        checkStudentScheduleConflict(classEntity.getClassId(), request.getWeekday(), startTime, endTime);
+        checkStudentScheduleConflict(classEntity.getClassId(), request.getWeekday(), startTime, endTime, null);
 
         TeachingSchedule schedule = new TeachingSchedule();
         schedule.setClassEntity(classEntity);
@@ -80,29 +81,31 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
     }
 
-    private void checkClassScheduleConflict(Integer classId, Integer weekday, LocalTime startTime, LocalTime endTime) {
+    private void checkClassScheduleConflict(Integer classId, Integer weekday, LocalTime startTime, LocalTime endTime, Integer excludeScheduleId) {
         List<TeachingSchedule> schedules = teachingScheduleRepository.findByClassEntityClassId(classId);
 
         for (TeachingSchedule s : schedules) {
             if (s.getWeekday().equals(weekday)
+                    && (excludeScheduleId == null || !s.getScheduleId().equals(excludeScheduleId))
                     && isOverlap(startTime, endTime, s.getStartTime(), s.getEndTime())) {
                 throw new BadRequestException("Lịch học bị trùng trong cùng lớp");
             }
         }
     }
 
-    private void checkTutorScheduleConflict(Integer tutorId, Integer weekday, LocalTime startTime, LocalTime endTime) {
+    private void checkTutorScheduleConflict(Integer tutorId, Integer weekday, LocalTime startTime, LocalTime endTime, Integer excludeScheduleId) {
         List<TeachingSchedule> schedules = teachingScheduleRepository.findByClassEntityTutorTutorId(tutorId);
 
         for (TeachingSchedule s : schedules) {
             if (s.getWeekday().equals(weekday)
+                    && (excludeScheduleId == null || !s.getScheduleId().equals(excludeScheduleId))
                     && isOverlap(startTime, endTime, s.getStartTime(), s.getEndTime())) {
                 throw new BadRequestException("Gia sư đã có lịch dạy trùng thời gian");
             }
         }
     }
 
-    private void checkStudentScheduleConflict(Integer classId, Integer weekday, LocalTime startTime, LocalTime endTime) {
+    private void checkStudentScheduleConflict(Integer classId, Integer weekday, LocalTime startTime, LocalTime endTime, Integer excludeScheduleId) {
         List<Enrollment> currentClassEnrollments =
                 enrollmentRepository.findByClassEntityClassIdAndStatusTrue(classId);
 
@@ -113,6 +116,9 @@ public class ScheduleServiceImpl implements ScheduleService {
                     teachingScheduleRepository.findByWeekday(weekday);
 
             for (TeachingSchedule schedule : allSchedulesInSameWeekday) {
+                if (excludeScheduleId != null && schedule.getScheduleId().equals(excludeScheduleId)) {
+                    continue;
+                }
                 List<Enrollment> enrollmentsOfOtherClass =
                         enrollmentRepository.findByClassEntityClassIdAndStatusTrue(
                                 schedule.getClassEntity().getClassId()
@@ -135,5 +141,48 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private boolean isOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
         return start1.isBefore(end2) && end1.isAfter(start2);
+    }
+    @Override
+    public void deleteSchedule(Integer scheduleId) {
+
+        TeachingSchedule schedule = teachingScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new BadRequestException("Lịch học không tồn tại"));
+
+        long count = teachingScheduleRepository.countByClassEntityClassId(schedule.getClassEntity().getClassId());
+        if (count <= 1) {
+            throw new BadRequestException("Cần có ít nhất 1 buổi/tuần cố định");
+        }
+
+        teachingScheduleRepository.delete(schedule);
+    }
+
+    @Override
+    public void updateSchedule(Integer scheduleId,
+                               UpdateScheduleRequest request) {
+
+        TeachingSchedule schedule = teachingScheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new BadRequestException("Lịch học không tồn tại"));
+
+        LocalTime startTime = LocalTime.parse(request.getStartTime());
+        LocalTime endTime = LocalTime.parse(request.getEndTime());
+
+        if (!startTime.isBefore(endTime)) {
+            throw new BadRequestException("Giờ bắt đầu phải nhỏ hơn giờ kết thúc");
+        }
+
+        Integer classId = schedule.getClassEntity().getClassId();
+        checkClassScheduleConflict(classId, request.getWeekday(), startTime, endTime, scheduleId);
+
+        if (schedule.getClassEntity().getTutor() != null) {
+            checkTutorScheduleConflict(schedule.getClassEntity().getTutor().getTutorId(), request.getWeekday(), startTime, endTime, scheduleId);
+        }
+
+        checkStudentScheduleConflict(classId, request.getWeekday(), startTime, endTime, scheduleId);
+
+        schedule.setWeekday(request.getWeekday());
+        schedule.setStartTime(startTime);
+        schedule.setEndTime(endTime);
+
+        teachingScheduleRepository.save(schedule);
     }
 }

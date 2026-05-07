@@ -151,6 +151,40 @@ function addScheduleTemp() {
         return;
     }
 
+    // Kiểm tra trùng lặp/giao thoa với lịch hiện có trong bảng
+    const rows = tableBody.querySelectorAll("tr:not(.empty)");
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        
+        // Lấy thứ và thời gian từ dòng hiện tại
+        let rowWeekday, rowStart, rowEnd;
+        
+        // Nếu là dòng đã có trong database (có select và input)
+        const select = row.querySelector('select[name="weekday"]');
+        if (select) {
+            rowWeekday = select.value;
+            rowStart = row.querySelector('input[name="startTime"]').value;
+            rowEnd = row.querySelector('input[name="endTime"]').value;
+        } else {
+            // Nếu là dòng temp (chỉ hiển thị text trong div hoặc td)
+            const dayNumDiv = row.querySelector('.day-number');
+            if (dayNumDiv) {
+                rowWeekday = dayNumDiv.innerText.trim();
+                const timeText = row.cells[1].innerText.trim(); // Giả sử cột 2 là thời gian "HH:mm - HH:mm"
+                const times = timeText.split(' - ');
+                rowStart = times[0];
+                rowEnd = times[1];
+            }
+        }
+
+        if (rowWeekday === weekday) {
+            if (startTime < rowEnd && endTime > rowStart) {
+                alert("Lịch học mới bị trùng hoặc giao thoa với lịch học đã có ở Thứ " + getWeekdayName(weekday) + " (" + rowStart + " - " + rowEnd + ")");
+                return;
+            }
+        }
+    }
+
     removeEmptyRow();
 
     const index = tempScheduleIndex++;

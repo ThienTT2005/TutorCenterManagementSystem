@@ -701,11 +701,20 @@
                         <form id="adminEditProfileForm"
                               action="${pageContext.request.contextPath}/admin/users/${user.userId}/edit-profile"
                               method="post"
+                              enctype="multipart/form-data"
                               class="edit-form">
 
                             <input type="hidden"
                                    name="avatar"
                                    value="${request.avatar}">
+
+                            <div class="form-group full" style="margin-bottom: 20px; border-bottom: 1px dashed #eee; padding-bottom: 20px;">
+                                <label>Thay đổi ảnh đại diện</label>
+                                <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                                    <input type="file" name="avatarFile" id="avatarFileInput" accept="image/*" class="form-control" style="max-width: 300px;">
+                                    <small class="hint-text" style="margin: 0;">JPG, PNG hoặc WebP. Tối đa 2MB.</small>
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <label>Họ và tên</label>

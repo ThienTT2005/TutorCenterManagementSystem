@@ -20,19 +20,6 @@
             align-items: center;
         }
 
-        .btn-export {
-            height: 44px;
-            padding: 0 18px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: white;
-            color: var(--text-dark);
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
 
         .class-table-header,
         .class-table-row {
@@ -255,11 +242,6 @@
             </div>
 
             <div class="class-header-actions">
-                <a href="${pageContext.request.contextPath}/admin/classes/export"
-                   class="btn-export">
-                    <span class="material-symbols-rounded">download</span>
-                    Xuất danh sách
-                </a>
 
                 <a href="${pageContext.request.contextPath}/admin/classes/create"
                    class="btn-primary"

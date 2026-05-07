@@ -328,6 +328,15 @@
             background: #dcfce7;
             color: #16a34a;
         }
+        .badge.blue {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .badge.red {
+            background: #fee2e2;
+            color: #dc2626;
+        }
 
         .badge.orange {
             background: #ffedd5;
@@ -558,17 +567,7 @@
                         </div>
                     </div>
 
-                    <div>
-                        <div class="info-label">Ngày tạo</div>
-                        <div class="info-value">
-                            <c:choose>
-                                <c:when test="${not empty classItem.createdAt}">
-                                    <c:out value="${classItem.createdAt}" />
-                                </c:when>
-                                <c:otherwise>---</c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="description-box">
@@ -773,17 +772,37 @@
 
                                 <td>
                                     <c:choose>
+
                                         <c:when test="${ss.status == 'COMPLETED'}">
-                                            <span class="badge green">Hoàn thành</span>
+                                            <span class="badge green">
+                                                Hoàn thành
+                                            </span>
                                         </c:when>
+
                                         <c:when test="${ss.status == 'ONGOING'}">
-                                            <span class="badge orange">Đang diễn ra</span>
+                                        <span class="badge orange">
+                                            Đang diễn ra
+                                        </span>
                                         </c:when>
+
+                                        <c:when test="${ss.status == 'PLANNED'}">
+                                            <span class="badge blue">
+                                                Đã lên kế hoạch
+                                            </span>
+                                        </c:when>
+
+                                        <c:when test="${ss.status == 'CANCELLED'}">
+                                            <span class="badge red">
+                                                Đã hủy
+                                            </span>
+                                        </c:when>
+
                                         <c:otherwise>
                                             <span class="badge gray">
                                                 <c:out value="${empty ss.status ? 'Chưa học' : ss.status}" />
                                             </span>
                                         </c:otherwise>
+
                                     </c:choose>
                                 </td>
 

@@ -2,6 +2,7 @@ package com.tcms.dashboard.controller;
 
 import com.tcms.dashboard.service.DashboardService;
 import com.tcms.notification.service.NotificationService;
+import com.tcms.user.entity.User;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,11 +19,27 @@ public class DashboardController {
     private final NotificationService notificationService;
     @GetMapping("/admin/dashboard")
     public String adminDashboard(HttpSession session, Model model) {
-        if (session.getAttribute("currentUser") == null) {
+        User currentUser = (User) session.getAttribute("currentUser");
+
+        if (currentUser == null) {
             return "redirect:/login";
         }
 
+        Integer userId = currentUser.getUserId();
+
         model.addAttribute("stats", dashboardService.getAdminStats());
+
+        // Lấy 5 thông báo mới nhất của admin đang đăng nhập
+        model.addAttribute("recentNotifications",
+                notificationService.getLatestNotifications(userId));
+
+        // Đếm số thông báo chưa đọc
+        model.addAttribute("unreadCount",
+                notificationService.countUnread(userId));
+
+        model.addAttribute("loggedInUser", currentUser);
+        model.addAttribute("currentUser", currentUser);
+
         return "admin/dashboard";
     }
 

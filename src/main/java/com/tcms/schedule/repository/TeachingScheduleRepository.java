@@ -12,4 +12,6 @@ public interface TeachingScheduleRepository extends JpaRepository<TeachingSchedu
     List<TeachingSchedule> findByClassEntityTutorTutorId(Integer tutorId);
 
     List<TeachingSchedule> findByWeekday(Integer weekday);
+
+    long countByClassEntityClassId(Integer classId);
 }

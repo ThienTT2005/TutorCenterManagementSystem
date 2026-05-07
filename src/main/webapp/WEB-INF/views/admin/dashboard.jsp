@@ -47,7 +47,7 @@
                         <div class="stat-icon blue">
                             <span class="material-symbols-rounded">group</span>
                         </div>
-                        <span class="stat-badge positive">+12%</span>
+
                     </div>
                     <div class="stat-title">TỔNG HỌC SINH</div>
                     <div class="stat-value">
@@ -60,7 +60,7 @@
                         <div class="stat-icon cyan">
                             <span class="material-symbols-rounded">how_to_reg</span>
                         </div>
-                        <span class="stat-badge positive">+5%</span>
+
                     </div>
                     <div class="stat-title">GIA SƯ ĐANG DẠY</div>
                     <div class="stat-value">
@@ -73,9 +73,9 @@
                         <div class="stat-icon red">
                             <span class="material-symbols-rounded">payments</span>
                         </div>
-                        <span class="stat-badge negative">-2%</span>
+
                     </div>
-                    <div class="stat-title">DOANH THU THÁNG</div>
+                    <div class="stat-title">SỐ LỚP THÁNG NÀY</div>
                     <div class="stat-value">
                         <fmt:formatNumber value="${empty stats.monthlyRevenue ? 0 : stats.monthlyRevenue}" pattern="#,###" />                        <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">VNĐ</span>
                     </div>
@@ -117,67 +117,118 @@
                         </div>
                     </div>
 
-                    <!-- Recent Activity Card -->
+                    <!-- Recent Notifications Card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Hoạt động gần đây</h3>
-                            <a href="#" class="card-action">Xem tất cả</a>
+                            <h3 class="card-title">
+                                Thông báo gần đây
+                                <c:if test="${unreadCount gt 0}">
+                <span class="stat-badge warning" style="margin-left: 8px;">
+                    ${unreadCount} chưa đọc
+                </span>
+                                </c:if>
+                            </h3>
+                            <a href="${pageContext.request.contextPath}/notifications" class="card-action">
+                                Xem tất cả
+                            </a>
                         </div>
+
                         <div class="table-container">
                             <div class="table-header">
-                                <div class="th">HỌC SINH / GIA SƯ</div>
-                                <div class="th">MÔN HỌC</div>
+                                <div class="th">THÔNG BÁO</div>
+                                <div class="th">LOẠI</div>
                                 <div class="th">TRẠNG THÁI</div>
-                                <div class="th right">NGÀY ĐĂNG KÝ</div>
+                                <div class="th right">THỜI GIAN</div>
                             </div>
-                            <!-- Row 1 -->
-                            <div class="table-row">
-                                <div class="user-cell">
-                                    <div class="user-initials initials-blue">NL</div>
-                                    <div class="user-detail">
-                                        <h4>Nguyễn Lam</h4>
-                                        <p>Gia sư Toán Cao cấp</p>
+
+                            <c:choose>
+                                <c:when test="${not empty recentNotifications}">
+                                    <c:forEach items="${recentNotifications}" var="notification">
+                                        <div class="table-row">
+                                            <div class="user-cell">
+                                                <div class="user-initials ${notification.isRead eq true ? 'initials-blue' : 'initials-yellow'}">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">
+                                    notifications
+                                </span>
+                                                </div>
+
+                                                <div class="user-detail">
+                                                    <h4>
+                                                        <c:out value="${empty notification.title ? 'Thông báo' : notification.title}" />
+                                                    </h4>
+                                                    <p>
+                                                        <c:out value="${empty notification.content ? 'Không có nội dung' : notification.content}" />
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="subject-cell">
+                                                <c:choose>
+                                                    <c:when test="${not empty notification.type}">
+                                                        <c:out value="${notification.type}" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        Chung
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+
+                                            <div>
+                                                <c:choose>
+                                                    <c:when test="${notification.isRead eq true}">
+                                                        <span class="status-badge status-approved">ĐÃ ĐỌC</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="status-badge status-pending">CHƯA ĐỌC</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+
+                                            <div class="date-cell">
+                                                <c:choose>
+                                                    <c:when test="${not empty notification.createdAt}">
+                                                        <c:set var="createdAtText"
+                                                               value="${fn:replace(notification.createdAt, 'T', ' ')}" />
+
+                                                        <span class="date-primary">
+                                                                ${fn:substring(createdAtText, 0, 10)}
+                                                        </span>
+                                                        <span class="date-secondary">
+                                                                ${fn:substring(createdAtText, 11, 16)}
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="date-secondary">Chưa có thời gian</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+
+                                <c:otherwise>
+                                    <div class="table-row">
+                                        <div class="user-cell">
+                                            <div class="user-initials initials-blue">
+                            <span class="material-symbols-rounded" style="font-size: 18px;">
+                                notifications_off
+                            </span>
+                                            </div>
+                                            <div class="user-detail">
+                                                <h4>Chưa có thông báo</h4>
+                                                <p>Hiện tại bạn chưa có thông báo nào.</p>
+                                            </div>
+                                        </div>
+                                        <div class="subject-cell">-</div>
+                                        <div>
+                                            <span class="status-badge status-approved">TRỐNG</span>
+                                        </div>
+                                        <div class="date-cell">
+                                            <span class="date-secondary">-</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="subject-cell">Toán học 12</div>
-                                <div><span class="status-badge status-approved">ĐÃ DUYỆT</span></div>
-                                <div class="date-cell">
-                                    <span class="date-primary">Hôm nay,</span>
-                                    <span class="date-secondary">14:30</span>
-                                </div>
-                            </div>
-                            <!-- Row 2 -->
-                            <div class="table-row">
-                                <div class="user-cell">
-                                    <div class="user-initials initials-yellow">TH</div>
-                                    <div class="user-detail">
-                                        <h4>Trần Hưng</h4>
-                                        <p>Học sinh lớp 9</p>
-                                    </div>
-                                </div>
-                                <div class="subject-cell">Tiếng Anh Giao tiếp</div>
-                                <div><span class="status-badge status-pending">CHỜ XỬ LÝ</span></div>
-                                <div class="date-cell">
-                                    <span class="date-primary">Hôm nay,</span>
-                                    <span class="date-secondary">11:20</span>
-                                </div>
-                            </div>
-                            <!-- Row 3 -->
-                            <div class="table-row">
-                                <div class="user-cell">
-                                    <div class="user-initials initials-red">PA</div>
-                                    <div class="user-detail">
-                                        <h4>Phạm Anh</h4>
-                                        <p>Học sinh lớp 11</p>
-                                    </div>
-                                </div>
-                                <div class="subject-cell">Vật Lý</div>
-                                <div><span class="status-badge status-cancelled">HỦY BỎ</span></div>
-                                <div class="date-cell">
-                                    <span class="date-primary">Hôm qua,</span>
-                                    <span class="date-secondary">18:45</span>
-                                </div>
-                            </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </div>

@@ -178,8 +178,45 @@
                             transition: all 0.2s;
                         }
 
-                        .btn-filter:hover {
-                            background: #0f172a;
+                        .btn-clear-filter {
+                            background: transparent;
+                            color: #2563eb;
+                            padding: 0;
+                            border: none;
+                            font-weight: 700;
+                            font-size: 0.875rem;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 0.75rem;
+                            white-space: nowrap;
+                        }
+
+                        .btn-clear-filter .clear-icon {
+                            width: 42px;
+                            height: 42px;
+                            border: 1px solid #dbe4f0;
+                            background: #f8fafc;
+                            color: #0f172a;
+                            border-radius: 0;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .btn-clear-filter:hover {
+                            color: #1d4ed8;
+                        }
+
+                        .filter-select[type="month"] {
+                            min-width: 170px;
+                        }
+
+                        .no-result-row td {
+                            text-align: center;
+                            padding: 2rem;
+                            color: #64748b;
+                            font-weight: 600;
                         }
 
                         /* Table Container */
@@ -504,13 +541,18 @@
                             <c:set var="totalAmount" value="0" />
                             <c:set var="pendingCount" value="0" />
                             <c:set var="completedCount" value="0" />
+                            <c:set var="collectedTuition" value="0" />
+
                             <c:forEach var="p" items="${payments}">
                                 <c:set var="totalAmount" value="${totalAmount + p.amount}" />
+
                                 <c:if test="${p.status == 'TUTOR_CONFIRMED'}">
                                     <c:set var="pendingCount" value="${pendingCount + 1}" />
                                 </c:if>
+
                                 <c:if test="${p.status == 'COMPLETED' || p.status == 'ADMIN_APPROVED'}">
                                     <c:set var="completedCount" value="${completedCount + 1}" />
+                                    <c:set var="collectedTuition" value="${collectedTuition + p.amount}" />
                                 </c:if>
                             </c:forEach>
 
@@ -553,33 +595,91 @@
 
                                 <div class="summary-card">
                                     <div class="card-header">
-                                        <div class="card-icon icon-done">
-                                            <span class="material-symbols-rounded">check_circle</span>
+                                        <div class="card-icon icon-overdue">
+                                            <span class="material-symbols-rounded">account_balance_wallet</span>
                                         </div>
                                     </div>
-                                    <div class="card-label">Đã hoàn tất</div>
-                                    <div class="card-value">${completedCount}</div>
-                                    <div class="card-subtext" style="color: #10b981;">+${completedCount} hôm nay</div>
+
+                                    <div class="card-label">Tổng học phí đã thu</div>
+
+                                    <div class="card-value">
+                                        <fmt:formatNumber value="${collectedTuition}" type="number" pattern="#,###" /> VND
+                                    </div>
+
+                                    <div class="card-subtext" style="color: #16a34a;">
+                                        Từ các giao dịch đã duyệt / hoàn tất
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Filter Section -->
-                            <div class="filter-section">
-                                <div class="search-box">
-                                    <i class="fa-solid fa-search"></i>
-                                    <input type="text" placeholder="Lọc theo tên Gia sư / Phụ huynh...">
+                            <form action="${pageContext.request.contextPath}/admin/payments/approve"
+                                  method="GET"
+                                  class="filters-toolbar"
+                                  id="paymentFilterForm">
+
+                                <div class="filter-group" style="flex: 2;">
+                                    <div class="filter-input">
+            <span class="material-symbols-rounded" style="color: var(--text-muted);">
+                search
+            </span>
+
+                                        <input type="text"
+                                               id="paymentKeyword"
+                                               name="keyword"
+                                               value="${param.keyword}"
+                                               placeholder="Tìm mã GD, gia sư, phụ huynh, học sinh, lớp học...">
+                                    </div>
                                 </div>
-                                <select class="filter-select">
-                                    <option value="">Trạng thái: Tất cả</option>
-                                    <option value="PENDING">Chờ thanh toán</option>
-                                    <option value="TUTOR_CONFIRMED">Chờ Admin duyệt</option>
-                                    <option value="COMPLETED">Đã hoàn tất</option>
-                                </select>
-                                <select class="filter-select">
-                                    <option>Tháng 5, 2026</option>
-                                </select>
-                                <button class="btn-filter">Lọc dữ liệu</button>
-                            </div>
+
+                                <div class="filter-group">
+                                    <div class="filter-input">
+                                        <select id="paymentStatus" name="status">
+                                            <option value="">Trạng thái</option>
+                                            <option value="PENDING" ${param.status == 'PENDING' ? 'selected' : ''}>
+                                                Chờ thanh toán
+                                            </option>
+                                            <option value="PROOF_UPLOADED" ${param.status == 'PROOF_UPLOADED' ? 'selected' : ''}>
+                                                Đã gửi minh chứng
+                                            </option>
+                                            <option value="TUTOR_CONFIRMED" ${param.status == 'TUTOR_CONFIRMED' ? 'selected' : ''}>
+                                                Chờ Admin duyệt
+                                            </option>
+                                            <option value="ADMIN_APPROVED" ${param.status == 'ADMIN_APPROVED' ? 'selected' : ''}>
+                                                Đã duyệt
+                                            </option>
+                                            <option value="COMPLETED" ${param.status == 'COMPLETED' ? 'selected' : ''}>
+                                                Hoàn tất
+                                            </option>
+                                            <option value="REJECTED" ${param.status == 'REJECTED' ? 'selected' : ''}>
+                                                Từ chối
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="filter-group">
+                                    <div class="filter-input">
+                                        <input type="month"
+                                               id="paymentMonth"
+                                               name="month"
+                                               value="${param.month}">
+                                    </div>
+                                </div>
+
+                                <button type="submit"
+                                        id="applyPaymentFilter"
+                                        class="icon-btn"
+                                        style="background: var(--bg-page); border: 1px solid var(--border-color); width: 44px; height: 44px;">
+                                    <span class="material-symbols-rounded">filter_list</span>
+                                </button>
+
+                                <a href="${pageContext.request.contextPath}/admin/payments/approve"
+                                   id="clearPaymentFilter"
+                                   style="color: var(--primary); font-size: 13px; font-weight: 700; text-decoration: none;">
+                                    Xóa lọc
+                                </a>
+                            </form>
 
                             <!-- Table Container -->
                             <div class="table-card">
@@ -598,7 +698,14 @@
                                         </thead>
                                         <tbody>
                                             <c:forEach var="payment" items="${payments}">
-                                                <tr>
+                                                <c:set var="paymentMonth" value="" />
+                                                <c:if test="${not empty payment.requestDate}">
+                                                    <c:set var="paymentMonth" value="${fn:substring(payment.requestDate, 0, 7)}" />
+                                                </c:if>
+
+                                                <tr class="payment-row"
+                                                    data-status="${payment.status}"
+                                                    data-month="${paymentMonth}">
                                                     <td>
                                                         <div class="payment-id">
                                                             #PAY-${payment.paymentId}
@@ -730,13 +837,20 @@
                                                     </td>
                                                 </tr>
                                             </c:forEach>
+                                            <tr id="noPaymentResultRow" class="no-result-row" style="display: none;">
+                                                <td colspan="7">
+                                                    Không tìm thấy giao dịch phù hợp với điều kiện lọc.
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
 
                                 <!-- Pagination -->
                                 <div class="pagination">
-                                    <div class="page-info">Trang 1 / 1 (Tổng ${fn:length(payments)} giao dịch)</div>
+                                    <div class="page-info" id="paymentPageInfo">
+                                        Trang 1 / 1 (Tổng ${fn:length(payments)} giao dịch)
+                                    </div>
                                     <div class="page-nav">
                                         <a href="#" class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
                                         <a href="#" class="page-btn active">1</a>
@@ -779,24 +893,181 @@
 
                     <script>
                         function openRejectModal(id, tutorName) {
-                            document.getElementById('rejectPaymentId').value = id;
-                            document.getElementById('rejectTutorName').innerText = tutorName;
-                            document.getElementById('rejectModal').classList.add('active');
+                            const rejectPaymentId = document.getElementById('rejectPaymentId');
+                            const rejectTutorName = document.getElementById('rejectTutorName');
+                            const rejectModal = document.getElementById('rejectModal');
+
+                            if (rejectPaymentId) {
+                                rejectPaymentId.value = id;
+                            }
+
+                            if (rejectTutorName) {
+                                rejectTutorName.innerText = tutorName || '';
+                            }
+
+                            if (rejectModal) {
+                                rejectModal.classList.add('active');
+                            }
                         }
 
                         function closeRejectModal() {
-                            document.getElementById('rejectModal').classList.remove('active');
-                        }
+                            const rejectModal = document.getElementById('rejectModal');
 
-                        // Close modal when clicking outside
-                        window.onclick = function (event) {
-                            const modal = document.getElementById('rejectModal');
-                            if (event.target === modal) {
-                                closeRejectModal();
+                            if (rejectModal) {
+                                rejectModal.classList.remove('active');
                             }
                         }
-                    </script>
 
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const keywordInput = document.getElementById('paymentKeyword');
+                            const statusSelect = document.getElementById('paymentStatus');
+                            const monthInput = document.getElementById('paymentMonth');
+                            const applyButton = document.getElementById('applyPaymentFilter');
+                            const clearButton = document.getElementById('clearPaymentFilter');
+                            const filterForm = document.getElementById('paymentFilterForm');
+
+                            const rows = Array.from(document.querySelectorAll('.payment-row'));
+                            const noResultRow = document.getElementById('noPaymentResultRow');
+                            const pageInfo = document.getElementById('paymentPageInfo');
+
+                            const totalRows = rows.length;
+
+                            function normalizeText(value) {
+                                return (value || '')
+                                    .toString()
+                                    .toLowerCase()
+                                    .normalize('NFD')
+                                    .replace(/[\u0300-\u036f]/g, '')
+                                    .trim();
+                            }
+
+                            function getInputValue(element) {
+                                return element ? element.value : '';
+                            }
+
+                            function updatePageInfo(visibleCount) {
+                                if (!pageInfo) {
+                                    return;
+                                }
+
+                                if (visibleCount === totalRows) {
+                                    pageInfo.innerText = 'Trang 1 / 1 (Tổng ' + totalRows + ' giao dịch)';
+                                } else {
+                                    pageInfo.innerText = 'Hiển thị ' + visibleCount + ' / ' + totalRows + ' giao dịch';
+                                }
+                            }
+
+                            function applyPaymentFilter() {
+                                const keyword = normalizeText(getInputValue(keywordInput));
+                                const selectedStatus = getInputValue(statusSelect);
+                                const selectedMonth = getInputValue(monthInput);
+
+                                let visibleCount = 0;
+
+                                rows.forEach(function (row) {
+                                    const rowText = normalizeText(row.innerText);
+                                    const rowStatus = row.getAttribute('data-status') || '';
+                                    const rowMonth = row.getAttribute('data-month') || '';
+
+                                    const matchKeyword = keyword === '' || rowText.includes(keyword);
+                                    const matchStatus = selectedStatus === '' || rowStatus === selectedStatus;
+                                    const matchMonth = selectedMonth === '' || rowMonth === selectedMonth;
+
+                                    if (matchKeyword && matchStatus && matchMonth) {
+                                        row.style.display = '';
+                                        visibleCount++;
+                                    } else {
+                                        row.style.display = 'none';
+                                    }
+                                });
+
+                                if (noResultRow) {
+                                    noResultRow.style.display = visibleCount === 0 ? '' : 'none';
+                                }
+
+                                updatePageInfo(visibleCount);
+                            }
+
+                            function clearPaymentFilter(event) {
+                                if (event) {
+                                    event.preventDefault();
+                                }
+
+                                if (keywordInput) {
+                                    keywordInput.value = '';
+                                }
+
+                                if (statusSelect) {
+                                    statusSelect.value = '';
+                                }
+
+                                if (monthInput) {
+                                    monthInput.value = '';
+                                }
+
+                                rows.forEach(function (row) {
+                                    row.style.display = '';
+                                });
+
+                                if (noResultRow) {
+                                    noResultRow.style.display = 'none';
+                                }
+
+                                updatePageInfo(totalRows);
+
+                                if (keywordInput) {
+                                    keywordInput.focus();
+                                }
+
+                                if (window.history && window.history.replaceState) {
+                                    const cleanUrl = window.location.origin + window.location.pathname;
+                                    window.history.replaceState({}, document.title, cleanUrl);
+                                }
+                            }
+
+                            if (filterForm) {
+                                filterForm.addEventListener('submit', function (event) {
+                                    event.preventDefault();
+                                    applyPaymentFilter();
+                                });
+                            }
+
+                            if (applyButton) {
+                                applyButton.addEventListener('click', function (event) {
+                                    event.preventDefault();
+                                    applyPaymentFilter();
+                                });
+                            }
+
+                            if (clearButton) {
+                                clearButton.addEventListener('click', clearPaymentFilter);
+                            }
+
+                            if (keywordInput) {
+                                keywordInput.addEventListener('keyup', function (event) {
+                                    if (event.key === 'Enter') {
+                                        applyPaymentFilter();
+                                    }
+                                });
+                            }
+
+                            if (statusSelect) {
+                                statusSelect.addEventListener('change', applyPaymentFilter);
+                            }
+
+                            if (monthInput) {
+                                monthInput.addEventListener('change', applyPaymentFilter);
+                            }
+
+                            document.addEventListener('click', function (event) {
+                                const modal = document.getElementById('rejectModal');
+
+                                if (modal && event.target === modal) {
+                                    closeRejectModal();
+                                }
+                            });
+                        });
+                    </script>
                 </body>
 
                 </html>

@@ -3,6 +3,7 @@ package com.tcms.schedule.controller;
 import com.tcms.clazz.service.ClassService;
 import com.tcms.schedule.dto.request.CreateScheduleBatchRequest;
 import com.tcms.schedule.dto.request.CreateScheduleRequest;
+import com.tcms.schedule.dto.request.UpdateScheduleRequest;
 import com.tcms.schedule.service.ScheduleService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +49,11 @@ public class ScheduleController {
         if (!isAdmin(session)) return "redirect:/login";
 
         try {
-            if (batchRequest.getSchedules() == null || batchRequest.getSchedules().isEmpty()) {
-                throw new RuntimeException("Vui lòng thêm ít nhất một lịch học");
-            }
-
-            for (CreateScheduleRequest item : batchRequest.getSchedules()) {
-                item.setClassId(classId);
-                scheduleService.createSchedule(item);
+            if (batchRequest.getSchedules() != null && !batchRequest.getSchedules().isEmpty()) {
+                for (CreateScheduleRequest item : batchRequest.getSchedules()) {
+                    item.setClassId(classId);
+                    scheduleService.createSchedule(item);
+                }
             }
 
             return "redirect:/admin/classes/" + classId;
@@ -66,5 +65,29 @@ public class ScheduleController {
             model.addAttribute("request", new CreateScheduleRequest());
             return "admin/schedules/create";
         }
+
+    }
+    @PostMapping("/{scheduleId}/delete")
+    public String deleteSchedule(@PathVariable Integer classId,
+                                 @PathVariable Integer scheduleId,
+                                 HttpSession session) {
+
+        if (!isAdmin(session)) return "redirect:/login";
+
+        scheduleService.deleteSchedule(scheduleId);
+
+        return "redirect:/admin/classes/" + classId + "/schedules/create";
+    }
+    @PostMapping("/{scheduleId}/update")
+    public String updateSchedule(@PathVariable Integer classId,
+                                 @PathVariable Integer scheduleId,
+                                 @ModelAttribute UpdateScheduleRequest request,
+                                 HttpSession session) {
+
+        if (!isAdmin(session)) return "redirect:/login";
+
+        scheduleService.updateSchedule(scheduleId, request);
+
+        return "redirect:/admin/classes/" + classId + "/schedules/create";
     }
 }

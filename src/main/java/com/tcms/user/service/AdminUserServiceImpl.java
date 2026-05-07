@@ -28,7 +28,7 @@ import java.util.List;
 public class AdminUserServiceImpl implements AdminUserService {
 
     private static final String UPLOAD_DIR =
-            System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+            System.getProperty("user.dir") + "/uploads/";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TutorRepository tutorRepository;
@@ -205,8 +205,11 @@ public class AdminUserServiceImpl implements AdminUserService {
             String fileName = java.util.UUID.randomUUID() + "_" + originalName.replaceAll("\\s+", "_");
             java.io.File dest = new java.io.File(UPLOAD_DIR + fileName);
             file.transferTo(dest);
+            System.out.println(">>> Đã lưu avatar thành công: " + dest.getAbsolutePath());
             return "/uploads/" + fileName;
         } catch (Exception e) {
+            System.err.println(">>> Lỗi lưu avatar: " + e.getMessage());
+            e.printStackTrace();
             throw new BadRequestException("Upload avatar thất bại: " + e.getMessage());
         }
     }
@@ -341,7 +344,13 @@ public class AdminUserServiceImpl implements AdminUserService {
             tutor.setDob(request.getDob());
             tutor.setGender(request.getGender());
             tutor.setAddress(request.getAddress());
-            tutor.setAvatar(request.getAvatar());
+            
+            if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+                tutor.setAvatar(saveAvatar(request.getAvatarFile()));
+            } else {
+                tutor.setAvatar(request.getAvatar());
+            }
+
             tutor.setSchool(request.getSchool());
             tutor.setMajor(request.getMajor());
             tutor.setDescription(request.getDescription());
@@ -362,7 +371,12 @@ public class AdminUserServiceImpl implements AdminUserService {
             parent.setDob(request.getDob());
             parent.setGender(request.getGender());
             parent.setAddress(request.getAddress());
-            parent.setAvatar(request.getAvatar());
+            
+            if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+                parent.setAvatar(saveAvatar(request.getAvatarFile()));
+            } else {
+                parent.setAvatar(request.getAvatar());
+            }
 
             parentRepository.save(parent);
             return;
@@ -379,7 +393,13 @@ public class AdminUserServiceImpl implements AdminUserService {
             student.setDob(request.getDob());
             student.setGender(request.getGender());
             student.setAddress(request.getAddress());
-            student.setAvatar(request.getAvatar());
+            
+            if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+                student.setAvatar(saveAvatar(request.getAvatarFile()));
+            } else {
+                student.setAvatar(request.getAvatar());
+            }
+
             student.setSchool(request.getSchool());
             student.setGrade(request.getGrade());
             student.setParent(parent);

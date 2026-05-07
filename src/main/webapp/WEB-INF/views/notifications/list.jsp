@@ -2,6 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<c:set var="activePage" value="notifications" scope="request" />
+<c:set var="currentUser" value="${sessionScope.currentUser}" />
+<c:set var="role" value="${not empty currentUser and not empty currentUser.role ? currentUser.role.roleName : ''}" />
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -168,10 +171,45 @@
 </head>
 <body>
 
-    <main class="main-content">
-        <!-- Header -->
+<c:choose>
+    <c:when test="${role == 'TUTOR'}">
+        <jsp:include page="../tutor/common/sidebar.jsp"/>
+    </c:when>
 
-        <div class="dashboard-body">
+    <c:when test="${role == 'STUDENT'}">
+        <jsp:include page="../student/common/sidebar.jsp"/>
+    </c:when>
+
+    <c:when test="${role == 'PARENT'}">
+        <jsp:include page="../parent/common/sidebar.jsp"/>
+    </c:when>
+
+    <c:when test="${role == 'ADMIN'}">
+        <jsp:include page="../admin/common/sidebar.jsp"/>
+    </c:when>
+</c:choose>
+
+<main class="main-content">
+
+    <c:choose>
+        <c:when test="${role == 'TUTOR'}">
+            <jsp:include page="../tutor/common/header.jsp"/>
+        </c:when>
+
+        <c:when test="${role == 'STUDENT'}">
+            <jsp:include page="../student/common/header.jsp"/>
+        </c:when>
+
+        <c:when test="${role == 'PARENT'}">
+            <jsp:include page="../parent/common/header.jsp"/>
+        </c:when>
+
+        <c:when test="${role == 'ADMIN'}">
+            <jsp:include page="../admin/common/header.jsp"/>
+        </c:when>
+    </c:choose>
+
+    <div class="dashboard-body">
             <div class="notification-page">
                 <div class="noti-card">
                     <div class="noti-page-header">

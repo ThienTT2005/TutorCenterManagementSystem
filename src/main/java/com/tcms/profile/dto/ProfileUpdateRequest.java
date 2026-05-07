@@ -16,6 +16,7 @@ public class ProfileUpdateRequest {
     private String gender;
     private String address;
     private String avatar;
+    private org.springframework.web.multipart.MultipartFile avatarFile;
 
     // Tutor
     private String school;

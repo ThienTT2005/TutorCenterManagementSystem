@@ -448,14 +448,14 @@
                                     <c:when test="${fn:startsWith(profile.avatar, 'http')}">
                                         <img class="avatar" src="${profile.avatar}">
                                     </c:when>
-                                    <c:when test="${fn:startsWith(profile.avatar, '/uploads/')}">
-                                        <img class="avatar" src="${pageContext.request.contextPath}${profile.avatar}">
-                                    </c:when>
                                     <c:otherwise>
-                                        <img class="avatar" src="${pageContext.request.contextPath}/uploads/${profile.avatar}">
+                                        <img class="avatar" src="${pageContext.request.contextPath}${fn:startsWith(profile.avatar, '/') ? '' : '/'}${profile.avatar}">
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
+                            <c:otherwise>
+                                <img class="avatar" src="${pageContext.request.contextPath}/uploads/avatar-default.png">
+                            </c:otherwise>
                         </c:choose>
                         <div class="online-dot"></div>
                     </div>
@@ -495,10 +495,7 @@
                         <strong class="role-badge">${roleName}</strong>
                     </div>
 
-                    <div class="info-row">
-                        <span>Ngày tạo</span>
-                        <strong>${user.createdAt}</strong>
-                    </div>
+
                 </div>
 
             </aside>

@@ -610,32 +610,74 @@
 
                         <div class="feedback-table-card">
 
-                            <div class="toolbar">
-                                <div class="search-box">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                    <input type="text" placeholder="Tìm theo tên lớp / môn học">
+                            <form action="${pageContext.request.contextPath}/admin/feedback/pending"
+                                  method="GET"
+                                  class="filters-toolbar"
+                                  id="feedbackFilterForm">
+
+                                <div class="filter-group" style="flex: 2;">
+                                    <div class="filter-input">
+            <span class="material-symbols-rounded" style="color: var(--text-muted);">
+                search
+            </span>
+
+                                        <input type="text"
+                                               id="feedbackKeyword"
+                                               name="keyword"
+                                               value="${param.keyword}"
+                                               placeholder="Tìm gia sư, lớp, học sinh, nội dung feedback...">
+                                    </div>
                                 </div>
 
                                 <div class="filter-group">
-                                    <select class="filter-select">
-                                        <option>Lớp</option>
-                                    </select>
+                                    <div class="filter-input">
+                                        <select id="feedbackClass" name="className">
+                                            <option value="">Lớp</option>
 
-                                    <select class="filter-select">
-                                        <option>Trạng thái</option>
-                                        <option selected>Chờ duyệt</option>
-                                    </select>
+                                            <c:forEach var="feedback" items="${feedbacks}">
+                                                <c:set var="currentClassName" value="${feedback.session.classEntity.className}" />
 
-                                    <button type="button" class="filter-icon-btn">
-                                        <i class="fa-solid fa-sliders"></i>
-                                    </button>
-
-                                    <a href="${pageContext.request.contextPath}/admin/feedback/pending"
-                                        class="clear-btn">
-                                        Xóa lọc
-                                    </a>
+                                                <c:if test="${not empty currentClassName}">
+                                                    <option value="${currentClassName}"
+                                                        ${param.className == currentClassName ? 'selected' : ''}>
+                                                        <c:out value="${currentClassName}" />
+                                                    </option>
+                                                </c:if>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
+
+                                <div class="filter-group">
+                                    <div class="filter-input">
+                                        <select id="feedbackStatus" name="status">
+                                            <option value="">Trạng thái</option>
+                                            <option value="PENDING" ${param.status == 'PENDING' ? 'selected' : ''}>
+                                                Chờ duyệt
+                                            </option>
+                                            <option value="APPROVED" ${param.status == 'APPROVED' ? 'selected' : ''}>
+                                                Đã duyệt
+                                            </option>
+                                            <option value="REJECTED" ${param.status == 'REJECTED' ? 'selected' : ''}>
+                                                Từ chối
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit"
+                                        id="applyFeedbackFilter"
+                                        class="icon-btn"
+                                        style="background: var(--bg-page); border: 1px solid var(--border-color); width: 44px; height: 44px;">
+                                    <span class="material-symbols-rounded">filter_list</span>
+                                </button>
+
+                                <a href="${pageContext.request.contextPath}/admin/feedback/pending"
+                                   id="clearFeedbackFilter"
+                                   style="color: var(--primary); font-size: 13px; font-weight: 700; text-decoration: none;">
+                                    Xóa lọc
+                                </a>
+                            </form>
 
                             <c:choose>
                                 <c:when test="${empty feedbacks}">
@@ -660,8 +702,10 @@
                                         </thead>
 
                                         <tbody>
-                                            <c:forEach var="feedback" items="${feedbacks}" varStatus="loop">
-                                                <tr>
+                                        <c:forEach var="feedback" items="${feedbacks}" varStatus="loop">
+                                            <tr class="feedback-row"
+                                                data-status="${feedback.status}"
+                                                data-class="${feedback.session.classEntity.className}">
                                                     <td>
                                                         <div class="tutor-cell">
                                                             <div class="avatar ${loop.index % 2 == 0 ? '' : 'purple'}">
@@ -755,11 +799,16 @@
                                                     </td>
                                                 </tr>
                                             </c:forEach>
+                                            <tr id="noFeedbackResultRow" style="display: none;">
+                                                <td colspan="5" style="padding: 40px; text-align: center; color: #64748b; font-weight: 600;">
+                                                    Không tìm thấy feedback phù hợp với điều kiện lọc.
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
 
                                     <div class="table-footer">
-                                        <span>
+                                        <span id="feedbackPageInfo">
                                             Hiển thị 1 - ${pendingCount} trên tổng số ${pendingCount} feedback
                                         </span>
 
@@ -810,7 +859,149 @@
 
                     </div>
                 </main>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const keywordInput = document.getElementById('feedbackKeyword');
+                        const classSelect = document.getElementById('feedbackClass');
+                        const statusSelect = document.getElementById('feedbackStatus');
+                        const applyButton = document.getElementById('applyFeedbackFilter');
+                        const clearButton = document.getElementById('clearFeedbackFilter');
+                        const filterForm = document.getElementById('feedbackFilterForm');
 
+                        const rows = Array.from(document.querySelectorAll('.feedback-row'));
+                        const noResultRow = document.getElementById('noFeedbackResultRow');
+                        const pageInfo = document.getElementById('feedbackPageInfo');
+
+                        const totalRows = rows.length;
+
+                        function normalizeText(value) {
+                            return (value || '')
+                                .toString()
+                                .toLowerCase()
+                                .normalize('NFD')
+                                .replace(/[\u0300-\u036f]/g, '')
+                                .trim();
+                        }
+
+                        function getInputValue(element) {
+                            return element ? element.value : '';
+                        }
+
+                        function updatePageInfo(visibleCount) {
+                            if (!pageInfo) {
+                                return;
+                            }
+
+                            if (visibleCount === totalRows) {
+                                pageInfo.innerText = 'Hiển thị 1 - ' + totalRows + ' trên tổng số ' + totalRows + ' feedback';
+                            } else {
+                                pageInfo.innerText = 'Hiển thị ' + visibleCount + ' / ' + totalRows + ' feedback';
+                            }
+                        }
+
+                        function applyFeedbackFilter() {
+                            const keyword = normalizeText(getInputValue(keywordInput));
+                            const selectedClass = normalizeText(getInputValue(classSelect));
+                            const selectedStatus = getInputValue(statusSelect);
+
+                            let visibleCount = 0;
+
+                            rows.forEach(function (row) {
+                                const rowText = normalizeText(row.innerText);
+                                const rowClass = normalizeText(row.getAttribute('data-class') || '');
+                                const rowStatus = row.getAttribute('data-status') || '';
+
+                                const matchKeyword = keyword === '' || rowText.includes(keyword);
+                                const matchClass = selectedClass === '' || rowClass === selectedClass;
+                                const matchStatus = selectedStatus === '' || rowStatus === selectedStatus;
+
+                                if (matchKeyword && matchClass && matchStatus) {
+                                    row.style.display = '';
+                                    visibleCount++;
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                            });
+
+                            if (noResultRow) {
+                                noResultRow.style.display = visibleCount === 0 ? '' : 'none';
+                            }
+
+                            updatePageInfo(visibleCount);
+                        }
+
+                        function clearFeedbackFilter(event) {
+                            if (event) {
+                                event.preventDefault();
+                            }
+
+                            if (keywordInput) {
+                                keywordInput.value = '';
+                            }
+
+                            if (classSelect) {
+                                classSelect.value = '';
+                            }
+
+                            if (statusSelect) {
+                                statusSelect.value = '';
+                            }
+
+                            rows.forEach(function (row) {
+                                row.style.display = '';
+                            });
+
+                            if (noResultRow) {
+                                noResultRow.style.display = 'none';
+                            }
+
+                            updatePageInfo(totalRows);
+
+                            if (keywordInput) {
+                                keywordInput.focus();
+                            }
+
+                            if (window.history && window.history.replaceState) {
+                                const cleanUrl = window.location.origin + window.location.pathname;
+                                window.history.replaceState({}, document.title, cleanUrl);
+                            }
+                        }
+
+                        if (filterForm) {
+                            filterForm.addEventListener('submit', function (event) {
+                                event.preventDefault();
+                                applyFeedbackFilter();
+                            });
+                        }
+
+                        if (applyButton) {
+                            applyButton.addEventListener('click', function (event) {
+                                event.preventDefault();
+                                applyFeedbackFilter();
+                            });
+                        }
+
+                        if (clearButton) {
+                            clearButton.addEventListener('click', clearFeedbackFilter);
+                        }
+
+                        if (keywordInput) {
+                            keywordInput.addEventListener('keyup', function (event) {
+                                if (event.key === 'Enter') {
+                                    applyFeedbackFilter();
+                                }
+                            });
+                        }
+
+                        if (classSelect) {
+                            classSelect.addEventListener('change', applyFeedbackFilter);
+                        }
+
+                        if (statusSelect) {
+                            statusSelect.addEventListener('change', applyFeedbackFilter);
+                        }
+                    });
+                </script>
             </body>
 
             </html>

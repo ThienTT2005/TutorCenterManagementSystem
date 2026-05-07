@@ -28,5 +28,14 @@ public class User {
     private Boolean status;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private java.time.LocalDateTime createdAt;
+
+    @OneToOne(mappedBy = "user")
+    private com.tcms.tutor.entity.Tutor tutor;
+
+    @OneToOne(mappedBy = "user")
+    private com.tcms.parent.entity.Parent parent;
+
+    @OneToOne(mappedBy = "user")
+    private com.tcms.student.entity.Student student;
 }

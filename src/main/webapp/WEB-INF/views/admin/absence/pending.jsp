@@ -20,27 +20,10 @@
     <link rel="stylesheet" href="<c:url value='/css/core-dashboard.css' />">
 
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #eef2ff;
-            --success: #10b981;
-            --success-light: #ecfdf5;
-            --danger: #ef4444;
-            --danger-light: #fef2f2;
-            --warning: #f59e0b;
-            --warning-light: #fffbeb;
-            --bg-page: #f8fafc;
-            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-        }
-
-        body {
-            background-color: var(--bg-page);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #1e293b;
-        }
-
-        .main-content {
-            transition: all 0.3s ease;
+        .absence-page {
+            padding: 2.5rem;
+            background: #f8fafc;
+            min-height: calc(100vh - 70px);
         }
 
         .page-header {
@@ -48,73 +31,162 @@
         }
 
         .page-header h1 {
+            margin: 0;
             font-size: 1.875rem;
             font-weight: 800;
             color: #0f172a;
-            letter-spacing: -0.025em;
+            letter-spacing: -0.03em;
         }
 
         .page-header p {
+            margin: 0.5rem 0 0;
             color: #64748b;
-            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
-        /* Summary Cards */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .summary-card {
             background: #ffffff;
-            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
             border-radius: 1.25rem;
-            border: 1px solid #f1f5f9;
-            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
             display: flex;
             align-items: center;
             gap: 1rem;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
         }
 
         .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            flex-shrink: 0;
         }
 
-        .icon-pending { background: var(--warning-light); color: var(--warning); }
-        .icon-approved { background: var(--success-light); color: var(--success); }
+        .card-icon .material-symbols-rounded {
+            font-size: 28px;
+        }
+
+        .icon-pending {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        .icon-approved {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
 
         .card-info h3 {
-            font-size: 0.875rem;
-            color: #64748b;
-            font-weight: 600;
             margin: 0;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 700;
         }
 
         .card-info .count {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #0f172a;
             margin-top: 0.25rem;
+            color: #0f172a;
+            font-size: 1.75rem;
+            font-weight: 800;
         }
 
-        /* Table Card */
+        .filters-toolbar {
+            background: #ffffff;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-input {
+            height: 44px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 14px;
+            width: 100%;
+        }
+
+        .filter-input:focus-within {
+            border-color: #0057bf;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 87, 191, 0.08);
+        }
+
+        .filter-input input,
+        .filter-input select {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 14px;
+            color: #334155;
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        .filter-input select {
+            min-width: 150px;
+            cursor: pointer;
+        }
+
+        .icon-btn {
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background: #e2e8f0 !important;
+        }
+
+        .clear-filter-link {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .clear-filter-link:hover {
+            text-decoration: underline;
+        }
+
         .absence-table-card {
             background: #ffffff;
-            border-radius: 1.25rem;
-            border: 1px solid #f1f5f9;
-            box-shadow: var(--card-shadow);
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
             overflow: hidden;
         }
 
-        .table-header {
+        .absence-table-card .table-header {
             padding: 1.5rem;
             border-bottom: 1px solid #f1f5f9;
             display: flex;
@@ -122,12 +194,15 @@
             align-items: center;
         }
 
-        .table-header h2 {
+        .absence-table-card .table-header h2 {
+            margin: 0;
+            color: #0f172a;
             font-size: 1.125rem;
-            font-weight: 700;
+            font-weight: 800;
         }
 
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
         }
 
@@ -138,13 +213,14 @@
 
         th {
             background: #f8fafc;
-            padding: 1rem 1.5rem;
-            text-align: left;
+            color: #64748b;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #64748b;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         td {
@@ -153,52 +229,60 @@
             vertical-align: middle;
         }
 
+        .absence-row:hover {
+            background: #f8fafc;
+        }
+
         .student-info {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.875rem;
         }
 
         .student-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: #f1f5f9;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: #0369a1;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4f46e5;
-            font-weight: 700;
+            font-size: 0.875rem;
+            font-weight: 800;
+            flex-shrink: 0;
         }
 
         .student-details h4 {
-            font-size: 0.9375rem;
-            font-weight: 700;
             margin: 0;
+            color: #0f172a;
+            font-size: 0.9rem;
+            font-weight: 800;
         }
 
         .student-details p {
-            font-size: 0.8125rem;
+            margin: 0.25rem 0 0;
             color: #64748b;
-            margin-top: 0.125rem;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         .session-badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: var(--primary-light);
-            color: var(--primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 0.8rem;
+            font-weight: 700;
         }
 
         .reason-box {
-            max-width: 300px;
+            max-width: 420px;
+            color: #475569;
             font-size: 0.875rem;
             line-height: 1.5;
-            color: #475569;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -207,116 +291,40 @@
 
         .action-group {
             display: flex;
-            gap: 0.5rem;
+            align-items: center;
+            gap: 0.625rem;
         }
 
         .btn {
-            height: 38px;
+            min-height: 38px;
             padding: 0 1rem;
             border-radius: 10px;
-            font-size: 0.875rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
             border: none;
-            transition: all 0.2s;
+            font-size: 0.8125rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.2s ease;
         }
 
         .btn-approve {
-            background-color: var(--success);
-            color: white;
+            background: #dcfce7;
+            color: #166534;
         }
 
         .btn-approve:hover {
-            background-color: #059669;
-            transform: translateY(-2px);
+            background: #bbf7d0;
         }
 
         .btn-reject-modal {
-            background-color: var(--danger-light);
-            color: var(--danger);
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .btn-reject-modal:hover {
-            background-color: var(--danger);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Modal styling */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active { display: flex; }
-
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 450px;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalIn 0.3s ease-out;
-        }
-
-        @keyframes modalIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-header h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: #475569;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            font-family: inherit;
-            resize: none;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-light);
-        }
-
-        .modal-footer {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
+            background: #fecaca;
         }
 
         .btn-ghost {
@@ -325,21 +333,132 @@
         }
 
         .empty-state {
-            padding: 5rem 2rem;
+            padding: 4rem 2rem;
             text-align: center;
+            color: #94a3b8;
         }
 
-        .empty-state i {
-            font-size: 4rem;
-            color: #e2e8f0;
-            margin-bottom: 1.5rem;
+        .empty-state .material-symbols-rounded {
+            font-size: 56px;
+            color: #16a34a;
+            opacity: 0.7;
         }
 
         .empty-state h3 {
-            font-size: 1.25rem;
+            margin: 1rem 0 0.5rem;
+            color: #334155;
+            font-size: 1.125rem;
+            font-weight: 800;
+        }
+
+        .empty-state p {
+            margin: 0;
             color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .table-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #f1f5f9;
+            color: #64748b;
+            font-size: 0.825rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.75rem;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #0f172a;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-top: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #334155;
+            font-size: 0.825rem;
+            font-weight: 800;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            outline: none;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: #0057bf;
+            box-shadow: 0 0 0 4px rgba(0, 87, 191, 0.08);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .absence-page {
+                padding: 1.5rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
+</head>
+
+
 </head>
 <body>
 
@@ -375,9 +494,73 @@
             </div>
         </div>
 
+        <form action="${pageContext.request.contextPath}/admin/absence"
+              method="GET"
+              class="filters-toolbar"
+              id="absenceFilterForm">
+
+            <div class="filter-group" style="flex: 2;">
+                <div class="filter-input">
+            <span class="material-symbols-rounded" style="color: var(--text-muted);">
+                search
+            </span>
+
+                    <input type="text"
+                           id="absenceKeyword"
+                           name="keyword"
+                           value="${param.keyword}"
+                           placeholder="Tìm học sinh, lớp học, lý do xin nghỉ...">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-input">
+                    <select id="absenceClass" name="className">
+                        <option value="">Lớp học</option>
+
+                        <c:forEach var="absence" items="${requests}">
+                            <c:set var="currentClassName" value="${absence.session.classEntity.className}" />
+
+                            <c:if test="${not empty currentClassName}">
+                                <option value="${currentClassName}"
+                                    ${param.className == currentClassName ? 'selected' : ''}>
+                                    <c:out value="${currentClassName}" />
+                                </option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-input">
+                    <input type="date"
+                           id="absenceDate"
+                           name="sessionDate"
+                           value="${param.sessionDate}">
+                </div>
+            </div>
+
+            <button type="submit"
+                    id="applyAbsenceFilter"
+                    class="icon-btn"
+                    style="background: var(--bg-page); border: 1px solid var(--border-color); width: 44px; height: 44px;">
+                <span class="material-symbols-rounded">filter_list</span>
+            </button>
+
+            <a href="${pageContext.request.contextPath}/admin/absence"
+               id="clearAbsenceFilter"
+               class="clear-filter-link">
+                Xóa lọc
+            </a>
+        </form>
+
         <div class="absence-table-card">
             <div class="table-header">
                 <h2>Danh sách đơn chờ duyệt</h2>
+                <span id="absencePageInfo">
+            Tổng ${fn:length(requests)} đơn
+        </span>
             </div>
 
             <div class="table-responsive">
@@ -394,7 +577,9 @@
                             </thead>
                             <tbody>
                             <c:forEach var="absence" items="${requests}">
-                                <tr>
+                                <tr class="absence-row"
+                                    data-class="${absence.session.classEntity.className}"
+                                    data-date="${absence.session.sessionDate}">
                                     <td>
                                         <div class="student-info">
                                             <div class="student-avatar">
@@ -438,6 +623,11 @@
                                     </td>
                                 </tr>
                             </c:forEach>
+                            <tr id="noAbsenceResultRow" style="display: none;">
+                                <td colspan="4" style="padding: 40px; text-align: center; color: #64748b; font-weight: 700;">
+                                    Không tìm thấy đơn xin nghỉ phù hợp với điều kiện lọc.
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </c:when>
@@ -476,24 +666,182 @@
     </div>
 </div>
 
-<script>
+<<script>
     function openRejectModal(id, name) {
-        document.getElementById('rejectRequestId').value = id;
-        document.getElementById('studentDisplay').innerText = 'Học sinh: ' + name;
-        document.getElementById('rejectModal').classList.add('active');
+        const rejectRequestId = document.getElementById('rejectRequestId');
+        const studentDisplay = document.getElementById('studentDisplay');
+        const rejectModal = document.getElementById('rejectModal');
+
+        if (rejectRequestId) {
+            rejectRequestId.value = id;
+        }
+
+        if (studentDisplay) {
+            studentDisplay.innerText = 'Học sinh: ' + (name || '');
+        }
+
+        if (rejectModal) {
+            rejectModal.classList.add('active');
+        }
     }
 
     function closeRejectModal() {
-        document.getElementById('rejectModal').classList.remove('active');
-    }
+        const rejectModal = document.getElementById('rejectModal');
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('rejectModal');
-        if (event.target === modal) {
-            closeRejectModal();
+        if (rejectModal) {
+            rejectModal.classList.remove('active');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const keywordInput = document.getElementById('absenceKeyword');
+        const classSelect = document.getElementById('absenceClass');
+        const dateInput = document.getElementById('absenceDate');
+        const applyButton = document.getElementById('applyAbsenceFilter');
+        const clearButton = document.getElementById('clearAbsenceFilter');
+        const filterForm = document.getElementById('absenceFilterForm');
+
+        const rows = Array.from(document.querySelectorAll('.absence-row'));
+        const noResultRow = document.getElementById('noAbsenceResultRow');
+        const pageInfo = document.getElementById('absencePageInfo');
+
+        const totalRows = rows.length;
+
+        function normalizeText(value) {
+            return (value || '')
+                .toString()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .trim();
+        }
+
+        function getInputValue(element) {
+            return element ? element.value : '';
+        }
+
+        function updatePageInfo(visibleCount) {
+            if (!pageInfo) {
+                return;
+            }
+
+            if (visibleCount === totalRows) {
+                pageInfo.innerText = 'Tổng ' + totalRows + ' đơn';
+            } else {
+                pageInfo.innerText = 'Hiển thị ' + visibleCount + ' / ' + totalRows + ' đơn';
+            }
+        }
+
+        function applyAbsenceFilter() {
+            const keyword = normalizeText(getInputValue(keywordInput));
+            const selectedClass = normalizeText(getInputValue(classSelect));
+            const selectedDate = getInputValue(dateInput);
+
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const rowText = normalizeText(row.innerText);
+                const rowClass = normalizeText(row.getAttribute('data-class') || '');
+                const rowDate = row.getAttribute('data-date') || '';
+
+                const matchKeyword = keyword === '' || rowText.includes(keyword);
+                const matchClass = selectedClass === '' || rowClass === selectedClass;
+                const matchDate = selectedDate === '' || rowDate === selectedDate;
+
+                if (matchKeyword && matchClass && matchDate) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (noResultRow) {
+                noResultRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
+
+            updatePageInfo(visibleCount);
+        }
+
+        function clearAbsenceFilter(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            if (keywordInput) {
+                keywordInput.value = '';
+            }
+
+            if (classSelect) {
+                classSelect.value = '';
+            }
+
+            if (dateInput) {
+                dateInput.value = '';
+            }
+
+            rows.forEach(function (row) {
+                row.style.display = '';
+            });
+
+            if (noResultRow) {
+                noResultRow.style.display = 'none';
+            }
+
+            updatePageInfo(totalRows);
+
+            if (keywordInput) {
+                keywordInput.focus();
+            }
+
+            if (window.history && window.history.replaceState) {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        }
+
+        if (filterForm) {
+            filterForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                applyAbsenceFilter();
+            });
+        }
+
+        if (applyButton) {
+            applyButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                applyAbsenceFilter();
+            });
+        }
+
+        if (clearButton) {
+            clearButton.addEventListener('click', clearAbsenceFilter);
+        }
+
+        if (keywordInput) {
+            keywordInput.addEventListener('keyup', function (event) {
+                if (event.key === 'Enter') {
+                    applyAbsenceFilter();
+                }
+            });
+        }
+
+        if (classSelect) {
+            classSelect.addEventListener('change', applyAbsenceFilter);
+        }
+
+        if (dateInput) {
+            dateInput.addEventListener('change', applyAbsenceFilter);
+        }
+
+        document.addEventListener('click', function (event) {
+            const modal = document.getElementById('rejectModal');
+
+            if (modal && event.target === modal) {
+                closeRejectModal();
+            }
+        });
+    });
 </script>
 
 </body>

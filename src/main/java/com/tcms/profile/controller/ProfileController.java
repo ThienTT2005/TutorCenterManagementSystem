@@ -32,6 +32,7 @@ public class ProfileController {
         return "profile/view";
     }
 
+
     @PostMapping("/update")
     public String updateProfile(HttpSession session,
                                 @ModelAttribute ProfileUpdateRequest request,
