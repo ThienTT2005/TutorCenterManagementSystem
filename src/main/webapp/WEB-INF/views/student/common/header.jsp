@@ -1,25 +1,44 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
-<%--
-    HEADER STUDENT AN TOÀN
-    Không dùng loggedInUser.fullName / loggedInUser.avatar để tránh lỗi 500.
-    Chỉ dùng sessionScope.currentUser.username vì User entity chắc chắn có username.
---%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <c:set var="currentUser" value="${sessionScope.currentUser}" />
 
+<c:set var="rawAvatar" value="" />
+<c:set var="displayName" value="${not empty currentUser ? currentUser.username : 'Học sinh'}" />
+
 <c:choose>
-    <c:when test="${not empty currentUser and not empty currentUser.username}">
-        <c:set var="displayName" value="${currentUser.username}" />
+    <c:when test="${not empty currentUser.student}">
+        <c:set var="rawAvatar" value="${currentUser.student.avatar}" />
+        <c:set var="displayName" value="${empty currentUser.student.fullName ? currentUser.username : currentUser.student.fullName}" />
     </c:when>
+
     <c:otherwise>
-        <c:set var="displayName" value="Học sinh" />
+        <c:set var="displayName" value="${not empty currentUser.username ? currentUser.username : 'Học sinh'}" />
     </c:otherwise>
 </c:choose>
 
 <c:set var="avatarUrl" value="${pageContext.request.contextPath}/images/default-avatar.png" />
 
+<c:if test="${not empty rawAvatar}">
+    <c:choose>
+        <c:when test="${fn:startsWith(rawAvatar, 'http')}">
+            <c:set var="avatarUrl" value="${rawAvatar}" />
+        </c:when>
+
+        <c:when test="${fn:startsWith(rawAvatar, '/uploads/')}">
+            <c:set var="avatarUrl" value="${pageContext.request.contextPath}${rawAvatar}" />
+        </c:when>
+
+        <c:when test="${fn:startsWith(rawAvatar, 'uploads/')}">
+            <c:set var="avatarUrl" value="${pageContext.request.contextPath}/${rawAvatar}" />
+        </c:when>
+
+        <c:otherwise>
+            <c:set var="avatarUrl" value="${pageContext.request.contextPath}/${rawAvatar}" />
+        </c:otherwise>
+    </c:choose>
+</c:if>
 <header class="top-header">
     <form class="search-wrapper"
           action="${pageContext.request.contextPath}/student/classes"

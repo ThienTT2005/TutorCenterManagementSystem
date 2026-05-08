@@ -21,13 +21,12 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"/>
 
-    <link rel="stylesheet" href="<c:url value='/css/student-dashboard.css' />">
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/parent-dashboard.css">
 
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #eef2ff;
-            --success: #10b981;
+            --success: #16a34a;
             --success-light: #ecfdf5;
             --danger: #ef4444;
             --danger-light: #fef2f2;
@@ -255,7 +254,7 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-blue">
 
 <jsp:include page="../common/sidebar.jsp" />
 

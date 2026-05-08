@@ -4,11 +4,40 @@
 
 <c:set var="currentUser" value="${sessionScope.currentUser}" />
 
-<c:set var="displayName" value="Phụ huynh" />
+<c:set var="rawAvatar" value="" />
+<c:set var="displayName" value="${not empty currentUser ? currentUser.username : 'Phụ huynh'}" />
+
+<c:choose>
+    <c:when test="${not empty currentUser.parent}">
+        <c:set var="rawAvatar" value="${currentUser.parent.avatar}" />
+        <c:set var="displayName" value="${empty currentUser.parent.fullName ? currentUser.username : currentUser.parent.fullName}" />
+    </c:when>
+
+    <c:otherwise>
+        <c:set var="displayName" value="${not empty currentUser.username ? currentUser.username : 'Phụ huynh'}" />
+    </c:otherwise>
+</c:choose>
+
 <c:set var="avatarUrl" value="${pageContext.request.contextPath}/images/default-avatar.png" />
 
-<c:if test="${not empty currentUser and not empty currentUser.username}">
-    <c:set var="displayName" value="${currentUser.username}" />
+<c:if test="${not empty rawAvatar}">
+    <c:choose>
+        <c:when test="${fn:startsWith(rawAvatar, 'http')}">
+            <c:set var="avatarUrl" value="${rawAvatar}" />
+        </c:when>
+
+        <c:when test="${fn:startsWith(rawAvatar, '/uploads/')}">
+            <c:set var="avatarUrl" value="${pageContext.request.contextPath}${rawAvatar}" />
+        </c:when>
+
+        <c:when test="${fn:startsWith(rawAvatar, 'uploads/')}">
+            <c:set var="avatarUrl" value="${pageContext.request.contextPath}/${rawAvatar}" />
+        </c:when>
+
+        <c:otherwise>
+            <c:set var="avatarUrl" value="${pageContext.request.contextPath}/${rawAvatar}" />
+        </c:otherwise>
+    </c:choose>
 </c:if>
 
 <header class="top-header">

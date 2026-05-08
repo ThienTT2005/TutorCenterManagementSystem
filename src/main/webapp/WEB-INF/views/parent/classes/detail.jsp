@@ -509,6 +509,14 @@
                 grid-template-columns: 1fr;
             }
         }
+        .session-id-sub {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 
@@ -622,8 +630,9 @@
                                             <div class="session-header">
                                                 <div>
                                                     <h3 class="session-topic">
-                                                        <c:out value="${empty s.topic ? 'Chủ đề chưa cập nhật' : s.topic}" />
+                                                        <c:out value="${empty s.topic ? (empty s.lessonName ? 'Chủ đề chưa cập nhật' : s.lessonName) : s.topic}" />
                                                     </h3>
+                                                    <span class="session-id-sub">Buổi học #<c:out value="${s.sessionId}" /></span>
 
                                                     <div class="session-info-grid">
                                                         <div class="info-pill">

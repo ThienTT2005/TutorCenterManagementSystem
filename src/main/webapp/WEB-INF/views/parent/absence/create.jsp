@@ -366,7 +366,7 @@
     </style>
 </head>
 
-<body>
+<body class="theme-blue">
 
 <jsp:include page="../common/sidebar.jsp" />
 

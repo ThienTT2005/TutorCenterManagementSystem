@@ -417,6 +417,19 @@
                 flex-direction: column;
             }
         }
+        .session-topic-cell strong {
+            display: block;
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .session-topic-cell span {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -767,7 +780,14 @@
                                 </td>
 
                                 <td>
-                                    <c:out value="${empty ss.topic ? 'Đang cập nhật' : ss.topic}" />
+                                    <div class="session-topic-cell">
+                                        <strong>
+                                            <c:out value="${empty ss.topic ? (empty ss.lessonName ? 'Đang cập nhật' : ss.lessonName) : ss.topic}" />
+                                        </strong>
+                                        <span>
+                                            Buổi học #<c:out value="${ss.sessionId}" />
+                                        </span>
+                                    </div>
                                 </td>
 
                                 <td>

@@ -4,6 +4,7 @@ import com.tcms.clazz.entity.ClassEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class TeachingSession {
     private LocalTime endTime;
 
     private String topic;
+    
+    @Formula("(SELECT lp.lesson_name FROM learning_plans lp WHERE lp.session_id = session_id LIMIT 1)")
+    private String lessonName;
 
     @Enumerated(EnumType.STRING)
     private SessionStatus status;

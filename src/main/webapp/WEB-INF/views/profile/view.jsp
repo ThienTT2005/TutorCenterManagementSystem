@@ -1146,9 +1146,13 @@
                     </div>
 
                     <div class="top-actions">
+
                         <c:choose>
+
                             <c:when test="${isEdit}">
-                                <a href="${pageContext.request.contextPath}/profile" class="btn btn-outline">
+
+                                <a href="${pageContext.request.contextPath}/profile"
+                                   class="btn btn-outline">
                                     Hủy
                                 </a>
 
@@ -1158,16 +1162,21 @@
                                     <i class="fa-regular fa-floppy-disk"></i>
                                     Lưu thông tin
                                 </button>
+
                             </c:when>
 
                             <c:otherwise>
+
                                 <a href="${pageContext.request.contextPath}/profile?edit=true"
                                    class="btn btn-primary">
                                     <i class="fa-solid fa-pen"></i>
                                     Sửa hồ sơ
                                 </a>
+
                             </c:otherwise>
+
                         </c:choose>
+
                     </div>
                 </div>
 
@@ -1208,7 +1217,15 @@
                                                    type="file"
                                                    name="file"
                                                    accept="image/jpeg,image/png,image/webp"
-                                                   onchange="previewAndSubmitAvatar(this);">
+                                                   onchange="uploadAvatarNow(this);">
+
+                                            <button type="submit"
+                                                    id="saveAvatarBtn"
+                                                    class="save-avatar-btn"
+                                                    style="display:none;">
+                                                <i class="fa-regular fa-floppy-disk"></i>
+                                                Lưu ảnh
+                                            </button>
                                         </form>
                                     </c:when>
 
@@ -1725,14 +1742,18 @@
 </main>
 
 <script>
-    function previewAndSubmitAvatar(input) {
+    function uploadAvatarNow(input) {
+
         const file = input.files && input.files[0];
 
-        if (!file) {
-            return;
-        }
+        if (!file) return;
 
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
         const maxSize = 5 * 1024 * 1024;
 
         if (!allowedTypes.includes(file.type)) {
@@ -1753,13 +1774,8 @@
             preview.src = URL.createObjectURL(file);
         }
 
-        const avatarForm = document.getElementById('avatarUploadForm');
-
-        if (avatarForm) {
-            avatarForm.submit();
-        }
+        document.getElementById('avatarUploadForm').submit();
     }
 </script>
-
 </body>
 </html>

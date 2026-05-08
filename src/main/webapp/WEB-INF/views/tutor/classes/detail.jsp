@@ -846,7 +846,7 @@
 
             <!-- LEFT -->
             <div class="detail-left">
-                <div class="detail-sections">
+
                     <section class="upcoming-section">
                         <h2>
                             <i class="fa-solid fa-calendar-plus"></i>
@@ -867,7 +867,7 @@
                                         </span>
 
                                             <h3>
-                                                <c:out value="${empty s.topic ? 'Chưa cập nhật chủ đề' : s.topic}" />
+                                                <c:out value="${empty s.topic ? (empty s.lessonName ? 'Chưa cập nhật chủ đề' : s.lessonName) : s.topic}" />
                                             </h3>
 
                                             <p>
@@ -888,7 +888,7 @@
                             </c:choose>
                         </div>
                     </section>
-                </div>
+
                     <!-- STUDENTS TABLE -->
                     <section class="detail-section-card">
                         <div class="detail-section-header">
@@ -1030,7 +1030,7 @@
                                                 <td>
                                                     <div class="session-topic-cell">
                                                         <strong>
-                                                            <c:out value="${empty s.topic ? 'Chưa cập nhật chủ đề' : s.topic}" />
+                                                            <c:out value="${empty s.topic ? (empty s.lessonName ? 'Chưa cập nhật chủ đề' : s.lessonName) : s.topic}" />
                                                         </strong>
                                                         <span>
                                             Buổi học #<c:out value="${s.sessionId}" />

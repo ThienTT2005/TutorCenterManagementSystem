@@ -14,8 +14,8 @@
     --success: #16a34a;
     --success-light: #dcfce7;
 
-    --purple: #9333ea;
-    --purple-light: #faf5ff;
+    --purple: var(--primary);
+    --purple-light: var(--primary-light);
 
     --yellow: #ca8a04;
     --yellow-light: #fef9c3;
@@ -32,8 +32,8 @@
     --radius-lg: 16px;
     --radius-xl: 24px;
 
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, .1);
 
     --transition: all .2s ease;
 }
@@ -159,12 +159,35 @@ a {
     margin-bottom: 1rem;
 }
 
-.bg-light-blue { background: var(--primary-light); color: var(--primary); }
-.bg-light-green { background: var(--success-light); color: var(--success); }
-.bg-light-orange { background: #fff7ed; color: #f97316; }
-.bg-light-purple { background: var(--purple-light); color: var(--purple); }
-.bg-light-red { background: var(--danger-light); color: var(--danger); }
-.bg-light-yellow { background: var(--yellow-light); color: var(--yellow); }
+.bg-light-blue {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.bg-light-green {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.bg-light-orange {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.bg-light-purple {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.bg-light-red {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.bg-light-yellow {
+    background: var(--yellow-light);
+    color: var(--yellow);
+}
 
 .stat-value {
     font-size: 28px;
@@ -437,6 +460,7 @@ a {
         flex-direction: column;
     }
 }
+
 /* =========================================================
    PARENT LAYOUT: SIDEBAR + HEADER FIX
    Dán vào cuối file parent-dashboard.css
@@ -1012,6 +1036,7 @@ input {
     }
 
 }
+
 /* =========================================================
    PARENT DASHBOARD MAIN CONTENT - NEW UI
    Chỉ áp dụng cho nội dung chính, không sửa header/sidebar
@@ -1088,10 +1113,10 @@ input {
     color: #16a34a;
 }
 
-.icon-purple {
-    background: #f3e8ff;
-    color: #9333ea;
-}
+/*.icon-purple {*/
+/*    background: #f3e8ff;*/
+/*    color: #9333ea;*/
+/*}*/
 
 .icon-red {
     background: #fee2e2;
@@ -1604,6 +1629,7 @@ input {
 }
 
 @media (max-width: 1000px) {
+
     .children-grid,
     .parent-right-column {
         grid-template-columns: 1fr;
@@ -1638,4 +1664,24 @@ input {
     .schedule-time {
         width: 96px;
     }
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
+}
+
+.sidebar .nav-link:hover .material-symbols-rounded,
+.sidebar .nav-link.active .material-symbols-rounded {
+    color: var(--primary) !important;
+}
+
+/* =========================================================
+   CUSTOM THEMES
+========================================================= */
+.theme-blue {
+    --primary: #0057bf;
+    --primary-hover: #004da8;
+    --primary-light: #eff6ff;
 }

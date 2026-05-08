@@ -266,6 +266,14 @@
         @media (max-width: 700px) {
             .action-grid { grid-template-columns: 1fr; }
         }
+        .session-id-sub {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 
@@ -344,10 +352,18 @@
                                         <div class="session-card">
                                             <div class="session-header">
                                                 <div>
-                                                    <h3 class="session-topic"><c:out value="${empty s.topic ? 'Chủ đề chưa cập nhật' : s.topic}" /></h3>
+                                                    <h3 class="session-topic">
+                                                        <c:out value="${empty s.topic ? (empty s.lessonName ? 'Chủ đề chưa cập nhật' : s.lessonName) : s.topic}" />
+                                                    </h3>
+                                                    <span class="session-id-sub">Buổi học #<c:out value="${s.sessionId}" /></span>
                                                     <div class="session-info-grid">
-                                                        <div class="info-pill"><i class="fa-regular fa-calendar"></i> <c:out value="${s.sessionDate}" /></div>
-                                                        <div class="info-pill"><i class="fa-regular fa-clock"></i> <c:out value="${s.startTime}"/> - <c:out value="${s.endTime}"/></div>
+                                                        <div class="info-pill">
+                                                            <i class="fa-regular fa-calendar"></i>
+                                                            <c:out value="${s.sessionDate}" /></div>
+                                                        <div class="info-pill">
+                                                            <i class="fa-regular fa-clock"></i>
+                                                            <c:out value="${s.startTime}"/> - <c:out value="${s.endTime}"/>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <span class="session-badge status">${empty s.status ? 'N/A' : s.status}</span>
@@ -357,11 +373,11 @@
                                                 <a href="${pageContext.request.contextPath}/student/homework?sessionId=${s.sessionId}"
                                                    class="action-btn btn-homework">
                                                     <i class="fa-solid fa-book-open"></i> Bài tập</a>
-                                                <a href="${pageContext.request.contextPath}/student/sesions/${sessionId}/learning-plan"
+                                                <a href="${pageContext.request.contextPath}/student/sessions/${s.sessionId}/learning-plan"
                                                    class="action-btn btn-progress">
-                                                    <i class="fa-solid fa-chart-line">
-
-                                                </i> Tiến độ</a>
+                                                    <i class="fa-solid fa-chart-line"></i>
+                                                    Tiến độ
+                                                </a>
                                                 <a href="${pageContext.request.contextPath}/student/sessions/${s.sessionId}/feedback"
                                                    class="action-btn btn-feedback">
                                                     <i class="fa-solid fa-comments"></i>
@@ -394,7 +410,7 @@
                                                 <img src="${classItem.tutor.avatar}" alt="Tutor">
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="${pageContext.request.contextPath}/uploads/${classItem.tutor.avatar}" alt="Tutor">
+                                                <img src="${pageContext.request.contextPath}${classItem.tutor.avatar}" alt="Tutor">
                                             </c:otherwise>
                                         </c:choose>
                                     </c:when>
@@ -405,9 +421,9 @@
                             <div class="tutor-info-header">
                                 <strong><c:out value="${empty classItem.tutor.fullName ? 'Chưa cập nhật' : classItem.tutor.fullName}" /></strong>
                                 <span>
-                                    <c:out value="${empty classItem.tutor.major ? 'Gia sư' : classItem.tutor.major}" />
+
                                     <c:if test="${not empty classItem.tutor.school}">
-                                        - <c:out value="${classItem.tutor.school}" />
+                                         <c:out value="${classItem.tutor.school}" />
                                     </c:if>
                                 </span>
                             </div>
