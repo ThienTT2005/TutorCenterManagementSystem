@@ -17,7 +17,6 @@ public interface ReportService {
 
     BigDecimal calculateRevenue();
 
-    List<Object[]> getMonthlyRevenue();
 
     List<ClassEntity> getTopClasses();
 }

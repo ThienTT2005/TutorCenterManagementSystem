@@ -56,8 +56,8 @@ public class ClassController {
 
     @PostMapping("/create")
     public String createClass(@ModelAttribute("request") CreateClassRequest request,
-            HttpSession session,
-            Model model) {
+                              HttpSession session,
+                              Model model) {
         if (!isAdmin(session))
             return "redirect:/login";
         try {
@@ -73,8 +73,8 @@ public class ClassController {
 
     @GetMapping("/{classId}")
     public String classDetail(@PathVariable Integer classId,
-            HttpSession session,
-            Model model) {
+                              HttpSession session,
+                              Model model) {
         if (!isAdmin(session))
             return "redirect:/login";
         model.addAttribute("classItem", classService.getClassById(classId));

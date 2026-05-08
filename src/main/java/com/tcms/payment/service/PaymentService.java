@@ -4,6 +4,8 @@ import com.tcms.payment.dto.request.CreatePaymentRequest;
 import com.tcms.payment.dto.request.RejectPaymentRequest;
 import com.tcms.payment.dto.request.UploadPaymentProofRequest;
 import com.tcms.payment.entity.Payment;
+import com.tcms.payment.entity.PaymentStatus;
+import com.tcms.payment.repository.PaymentRepository;
 
 import java.util.List;
 
@@ -24,4 +26,6 @@ public interface PaymentService {
     List<Payment> getParentPayments(Integer parentUserId);
 
     List<Payment> getAllPayments();
+    long countApprovedPayments() ;
+
 }

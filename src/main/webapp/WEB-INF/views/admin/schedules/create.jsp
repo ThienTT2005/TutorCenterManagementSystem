@@ -443,6 +443,7 @@
                         border-color: #cbd5e1;
                         background: #f8fafc;
                     }
+
                 </style>
             </head>
 
@@ -507,11 +508,7 @@
                                         Tạo lịch học mới
                                     </div>
 
-                                    <c:if test="${not empty error}">
-                                        <div class="error-box">
-                                            ${error}
-                                        </div>
-                                    </c:if>
+
 
                                     <form id="scheduleForm" method="post"
                                         action="${pageContext.request.contextPath}/admin/classes/${classItem.classId}/schedules/create">
@@ -562,6 +559,7 @@
 
                             <section class="card schedule-list-card">
                                 <div class="list-header">
+
                                     <div class="list-title">
                                         <div class="list-title-icon">
                                             <span class="material-symbols-rounded">calendar_month</span>
@@ -571,6 +569,17 @@
                                             <p>Các lịch học cố định trong tuần</p>
                                         </div>
                                     </div>
+                                    <c:if test="${not empty error}">
+                                        <div class="error-box">
+                                                ${error}
+                                        </div>
+                                    </c:if>
+                                    <c:if test="${not empty success}">
+                                        <div class="schedule-success-box">
+                                            <span class="material-symbols-rounded">check_circle</span>
+                                                ${success}
+                                        </div>
+                                    </c:if>
                                 </div>
 
                                 <table>

@@ -104,13 +104,11 @@
                     <div class="card">
                         <div class="card-header">
                             <div>
-                                <h3 class="card-title">Biểu đồ tăng trưởng</h3>
-                                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Số lượng học sinh mới trong 6 tháng qua</p>
+                                <h3 class="card-title">Số lớp trong tuần</h3>
+                                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                                    Thống kê số lớp học cố định theo từng ngày trong tuần
+                                </p>
                             </div>
-                            <select style="border: none; background: var(--bg-page); padding: 6px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; color: var(--text-dark); cursor: pointer;">
-                                <option>Năm 2026</option>
-                                <option>Năm 2025</option>
-                            </select>
                         </div>
                         <div class="chart-container">
                             <canvas id="growthChart"></canvas>
@@ -262,11 +260,11 @@
                                 <div class="action-icon"><span class="material-symbols-rounded">person_add</span></div>
                                 Create Account
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin/schedules" class="action-btn">
+                            <a href="${pageContext.request.contextPath}/admin/feedback/pending" class="action-btn">
                                 <div class="action-icon"><span class="material-symbols-rounded">calendar_add_on</span></div>
-                                Add Schedule
+                                View Feedback
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin/payments/approve" class="action-btn">
+                            <a href="${pageContext.request.contextPath}/payment/admin" class="action-btn">
                                 <div class="action-icon"><span class="material-symbols-rounded">fact_check</span></div>
                                 Approve Payment
                             </a>
@@ -293,27 +291,27 @@
                 data: {
                     labels: [
                         <c:choose>
-                        <c:when test="${not empty stats and not empty stats.monthlyGrowth}">
-                        <c:forEach items="${stats.monthlyGrowth}" var="entry" varStatus="status">
+                        <c:when test="${not empty stats and not empty stats.weeklyClasses}">
+                        <c:forEach items="${stats.weeklyClasses}" var="entry" varStatus="status">
                         '${entry.key}'${not status.last ? ',' : ''}
                         </c:forEach>
                         </c:when>
                         <c:otherwise>
-                        'Không có dữ liệu'
+                        'T2','T3','T4','T5','T6','T7','CN'
                         </c:otherwise>
                         </c:choose>
                     ],
                     datasets: [{
-                        label: 'Lớp học mới',
+                        label: 'Số lớp trong tuần',
                         data: [
                             <c:choose>
-                            <c:when test="${not empty stats and not empty stats.monthlyGrowth}">
-                            <c:forEach items="${stats.monthlyGrowth}" var="entry" varStatus="status">
+                            <c:when test="${not empty stats and not empty stats.weeklyClasses}">
+                            <c:forEach items="${stats.weeklyClasses}" var="entry" varStatus="status">
                             ${entry.value}${not status.last ? ',' : ''}
                             </c:forEach>
                             </c:when>
                             <c:otherwise>
-                            0
+                            0,0,0,0,0,0,0
                             </c:otherwise>
                             </c:choose>
                         ],

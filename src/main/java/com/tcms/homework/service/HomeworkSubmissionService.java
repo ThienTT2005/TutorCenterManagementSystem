@@ -14,4 +14,5 @@ public interface HomeworkSubmissionService {
 
     void grade(Integer submissionId, Double score, String feedback);
     HomeworkSubmission getMySubmission(Integer studentUserId, Integer homeworkId);
+    HomeworkSubmission getMySubmissionByStudentId(Integer studentId, Integer homeworkId);
 }

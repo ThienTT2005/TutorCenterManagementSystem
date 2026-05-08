@@ -14,6 +14,7 @@ import com.tcms.tutor.entity.Tutor;
 import com.tcms.tutor.repository.TutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -75,7 +76,7 @@ public class ClassServiceImpl implements ClassService {
         classEntity.setRequiredSessions(request.getRequiredSessionsPerMonth());
         classEntity.setDescription(request.getDescription());
         classEntity.setStatus(true);
-
+        classEntity.setCreatedAt(LocalDateTime.now());
         ClassEntity savedClass = classRepository.save(classEntity);
 
         notifyTutorAddedToClass(savedClass, tutor);

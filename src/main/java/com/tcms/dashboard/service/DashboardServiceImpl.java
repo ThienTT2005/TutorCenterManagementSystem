@@ -28,7 +28,7 @@ import com.tcms.tutor.entity.Tutor;
 import com.tcms.tutor.repository.TutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import java.time.DayOfWeek;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -63,18 +63,38 @@ public class DashboardServiceImpl implements DashboardService {
                 .map(p -> p.getAmount() == null ? BigDecimal.ZERO : p.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Map<String, Long> monthlyGrowth = new LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
 
-        for (int i = 5; i >= 0; i--) {
-            YearMonth ym = currentMonth.minusMonths(i);
+        Map<String, Long> weeklyClasses = new LinkedHashMap<>();
+        weeklyClasses.put("T2", 0L);
+        weeklyClasses.put("T3", 0L);
+        weeklyClasses.put("T4", 0L);
+        weeklyClasses.put("T5", 0L);
+        weeklyClasses.put("T6", 0L);
+        weeklyClasses.put("T7", 0L);
+        weeklyClasses.put("CN", 0L);
 
-            long count = classRepository.findAll().stream()
-                    .filter(c -> c.getCreatedAt() != null)
-                    .filter(c -> YearMonth.from(c.getCreatedAt()).equals(ym))
-                    .count();
+        classRepository.findAll().stream()
+                .filter(c -> c.getCreatedAt() != null)
+                .filter(c -> {
+                    LocalDate createdDate = c.getCreatedAt().toLocalDate();
+                    return !createdDate.isBefore(monday) && !createdDate.isAfter(sunday);
+                })
+                .forEach(c -> {
+                    String key = switch (c.getCreatedAt().getDayOfWeek()) {
+                        case MONDAY -> "T2";
+                        case TUESDAY -> "T3";
+                        case WEDNESDAY -> "T4";
+                        case THURSDAY -> "T5";
+                        case FRIDAY -> "T6";
+                        case SATURDAY -> "T7";
+                        case SUNDAY -> "CN";
+                    };
 
-            monthlyGrowth.put("Tháng " + ym.getMonthValue() + "/" + ym.getYear(), count);
-        }
+                    weeklyClasses.put(key, weeklyClasses.get(key) + 1);
+                });
 
         return AdminDashboardStats.builder()
                 .totalStudents(studentRepository.count())
@@ -90,7 +110,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .pendingAbsenceRequests(absenceRequestRepository
                         .findByStatusOrderByRequestedAtDesc(AbsenceRequestStatus.PENDING)
                         .size())
-                .monthlyGrowth(monthlyGrowth)
+                .weeklyClasses(weeklyClasses)
                 .build();
     }
 

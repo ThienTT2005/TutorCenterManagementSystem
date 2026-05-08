@@ -161,4 +161,10 @@ public class HomeworkSubmissionServiceImpl implements HomeworkSubmissionService 
                 "homework_submissions"
         );
     }
+    @Override
+    public HomeworkSubmission getMySubmissionByStudentId(Integer studentId, Integer homeworkId) {
+        return homeworkSubmissionRepository
+                .findByHomeworkHomeworkIdAndStudentStudentId(homeworkId, studentId)
+                .orElse(null);
+    }
 }

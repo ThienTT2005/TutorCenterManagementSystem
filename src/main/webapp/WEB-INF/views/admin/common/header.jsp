@@ -104,8 +104,8 @@
                                     </c:choose>
                                 </c:if>
 
-                                <a href="${notiUrl}"
-                                   class="noti-item ${noti.isRead ne true ? 'unread' : ''}">
+                                <div class="noti-item ${noti.isRead ne true ? 'unread' : ''}"
+                                     onclick="handleAdminNotiClick('${noti.notificationId}', '${noti.referenceTable}', '${noti.referenceId}', '${noti.type}')">
 
                                     <h4>
                                         <c:out value="${empty noti.title ? 'Thông báo' : noti.title}" />
@@ -121,7 +121,7 @@
                                                 ${fn:substring(createdAtText, 0, 16)}
                                         </span>
                                     </c:if>
-                                </a>
+                                </div>
 
                             </c:forEach>
                         </c:when>
@@ -241,4 +241,38 @@
 
         document.addEventListener('click', closeAllMenus);
     })();
+    function handleAdminNotiClick(id, table, refId, type) {
+        fetch('${pageContext.request.contextPath}/notifications/' + id + '/read', {
+            method: 'POST'
+        }).finally(() => {
+            window.location.href = getAdminNotificationUrl(table, refId, type);
+        });
+    }
+
+    function getAdminNotificationUrl(table, refId, type) {
+        table = table || '';
+        type = type || '';
+
+        if (type === 'PAYMENT' || table === 'payments') {
+            return '${pageContext.request.contextPath}/payment/admin';
+        }
+
+        if (type === 'FEEDBACK' || table === 'feedback' || table === 'feedbacks') {
+            return '${pageContext.request.contextPath}/admin/feedback/pending';
+        }
+
+        if (type === 'ATTENDANCE' || table === 'absence_requests') {
+            return '${pageContext.request.contextPath}/admin/absence/pending';
+        }
+
+        if (table === 'classes') {
+            return '${pageContext.request.contextPath}/admin/classes/' + refId;
+        }
+
+        if (table === 'teaching_sessions') {
+            return '${pageContext.request.contextPath}/admin/classes';
+        }
+
+        return '${pageContext.request.contextPath}/notifications';
+    }
 </script>

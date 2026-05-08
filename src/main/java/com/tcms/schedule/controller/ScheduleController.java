@@ -70,24 +70,19 @@ public class ScheduleController {
     @PostMapping("/{scheduleId}/delete")
     public String deleteSchedule(@PathVariable Integer classId,
                                  @PathVariable Integer scheduleId,
-                                 HttpSession session) {
+                                 HttpSession session,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
 
         if (!isAdmin(session)) return "redirect:/login";
 
-        scheduleService.deleteSchedule(scheduleId);
+        try {
+            scheduleService.deleteSchedule(scheduleId);
+            redirectAttributes.addFlashAttribute("success", "Xóa lịch học thành công");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
 
         return "redirect:/admin/classes/" + classId + "/schedules/create";
     }
-    @PostMapping("/{scheduleId}/update")
-    public String updateSchedule(@PathVariable Integer classId,
-                                 @PathVariable Integer scheduleId,
-                                 @ModelAttribute UpdateScheduleRequest request,
-                                 HttpSession session) {
 
-        if (!isAdmin(session)) return "redirect:/login";
-
-        scheduleService.updateSchedule(scheduleId, request);
-
-        return "redirect:/admin/classes/" + classId + "/schedules/create";
-    }
 }

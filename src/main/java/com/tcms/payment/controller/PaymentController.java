@@ -147,6 +147,7 @@ public class PaymentController {
                 "payments",
                 paymentService.getAllPayments()
         );
+        model.addAttribute("approvedPaymentsCount", paymentService.countApprovedPayments());
 
         return "admin/payments";
     }

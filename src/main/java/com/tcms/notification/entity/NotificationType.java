@@ -1,7 +1,7 @@
 package com.tcms.notification.entity;
 
 public enum NotificationType {
-    ATTENDANCE,
+    ATTENDANCE, // điểm danh
     HOMEWORK,
     FEEDBACK,
     PAYMENT,

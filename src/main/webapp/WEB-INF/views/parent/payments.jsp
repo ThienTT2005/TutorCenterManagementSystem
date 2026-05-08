@@ -850,7 +850,7 @@
 
                     <div class="guide-item">
                         <span class="guide-number">2</span>
-                        <span>Chuyển khoản theo thông tin tài khoản được cung cấp trong phần chi tiết.</span>
+                        <span>Chuyển khoản theo thông tin tài khoản được cung cấp .</span>
                     </div>
 
                     <div class="guide-item">
@@ -860,34 +860,7 @@
                 </div>
             </div>
 
-            <div class="info-card">
-                <h3>
-                    <span class="material-symbols-rounded">account_balance</span>
-                    Thông tin chuyển khoản
-                </h3>
 
-                <div class="bank-grid">
-                    <div class="bank-item">
-                        <p class="bank-label">Ngân hàng</p>
-                        <p class="bank-value">Vietcombank</p>
-                    </div>
-
-                    <div class="bank-item">
-                        <p class="bank-label">Số tài khoản</p>
-                        <p class="bank-value">1023 4567 8900</p>
-                    </div>
-
-                    <div class="bank-item">
-                        <p class="bank-label">Chủ tài khoản</p>
-                        <p class="bank-value">TRUNG TAM TCMS</p>
-                    </div>
-
-                    <div class="bank-item">
-                        <p class="bank-label">Nội dung CK</p>
-                        <p class="bank-value">TCMS [ID_HOC_SINH]</p>
-                    </div>
-                </div>
-            </div>
         </section>
 
     </div>

@@ -30,6 +30,11 @@ public class User {
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = java.time.LocalDateTime.now();
+    }
+
     @OneToOne(mappedBy = "user")
     private com.tcms.tutor.entity.Tutor tutor;
 

@@ -37,12 +37,13 @@
           href="${pageContext.request.contextPath}/css/student-dashboard.css">
 
     <style>
-        .class-detail-page {
+        .parent-class-detail-page {
             padding: 2rem;
             background: #f8fafc;
             min-height: 100vh;
         }
 
+        /* HERO */
         .class-hero {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -142,16 +143,20 @@
             gap: 8px;
             padding: 0 18px;
             margin-top: 32px;
+            transition: all .25s ease;
         }
 
         .btn-back:hover {
             background: #004da8;
+            transform: translateY(-2px);
         }
 
+        /* QUICK */
         .quick-grid {
             margin-top: 1.6rem;
             padding-top: 1.6rem;
             border-top: 1px solid #eef2f7;
+
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 14px;
@@ -162,6 +167,7 @@
             border-radius: 16px;
             padding: 16px 18px;
             min-height: 84px;
+
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -180,6 +186,7 @@
             font-weight: 900;
         }
 
+        /* LAYOUT */
         .layout {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 375px;
@@ -194,6 +201,7 @@
             gap: 1rem;
         }
 
+        /* CARD */
         .card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -209,9 +217,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
+
             color: #0f172a;
             font-size: 20px;
             font-weight: 900;
+
             margin-bottom: 1.5rem;
         }
 
@@ -219,6 +229,7 @@
             color: #0057bf;
         }
 
+        /* SESSION */
         .session-list {
             display: flex;
             flex-direction: column;
@@ -227,11 +238,15 @@
 
         .session-card {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #dbeafe;
             border-radius: 24px;
+
             padding: 1.5rem;
+
             box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+
             transition: all .3s ease;
+
             display: flex;
             flex-direction: column;
             gap: 1.25rem;
@@ -239,7 +254,9 @@
 
         .session-card:hover {
             transform: translateY(-4px);
+
             box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+
             border-color: #0057bf;
         }
 
@@ -247,7 +264,6 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 1rem;
         }
 
         .session-topic {
@@ -257,9 +273,19 @@
             margin: 0 0 8px;
         }
 
+        .session-id-sub {
+            display: block;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }
+
         .session-info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
+
             gap: 12px;
             margin-bottom: 0.5rem;
         }
@@ -268,6 +294,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+
             color: #64748b;
             font-size: 13px;
             font-weight: 700;
@@ -277,127 +304,168 @@
             color: #0057bf;
         }
 
-        .session-actions-top {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .session-badge.status {
-            background: #eef2f7;
-            color: #64748b;
+        .session-badge {
             padding: 6px 12px;
             border-radius: 999px;
+
             font-size: 11px;
             font-weight: 900;
-            white-space: nowrap;
-        }
 
-        .btn-absence-top {
-            min-height: 34px;
-            padding: 0 16px;
-            border-radius: 10px;
-            background: #0057bf;
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 900;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            white-space: nowrap;
+
+            min-width: 92px;
+
+            text-transform: uppercase;
         }
 
-        .btn-absence-top:hover {
-            background: #004da8;
+        /* PLANNED */
+        .session-badge.planned {
+            background: #dcfce7;
+            color: #16a34a;
         }
 
+        /* CANCELLED */
+        .session-badge.cancelled {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* DEFAULT */
+        .session-badge.status {
+            background: #eef2f7;
+            color: #64748b;
+        }
+
+        /* ACTION BUTTONS */
         .action-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding-top: 1.25rem;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 12px;
+
+            padding-top: 1.1rem;
+
             border-top: 1px solid #f1f5f9;
         }
 
         .action-btn {
-            height: 40px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 900;
+            min-height: 46px;
+
+            border-radius: 14px;
+
+            font-size: 13px;
+            font-weight: 800;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
+
             text-decoration: none;
-            transition: all .2s ease;
+
+            transition: all .25s ease;
+
+            border: 1px solid transparent;
+
+            cursor: pointer;
         }
 
-        .btn-homework {
-            background: #f0f7ff;
-            color: #0057bf;
-            border: 1px solid #dbeafe;
+        .action-btn i {
+            font-size: 14px;
         }
 
-        .btn-homework:hover {
-            background: #0057bf;
-            color: #ffffff;
+        /* HOMEWORK */
+        .action-btn.btn-homework {
+            background: #eff6ff !important;
+            color: #2563eb !important;
+            border: 1px solid #dbeafe !important;
         }
 
-        .btn-progress {
-            background: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #dcfce7;
+        .action-btn.btn-homework:hover {
+            background: #2563eb !important;
+            color: #ffffff !important;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
         }
 
-        .btn-progress:hover {
-            background: #16a34a;
-            color: #ffffff;
+        /* PLAN */
+        .action-btn.btn-progress {
+            background: #f0fdf4 !important;
+            color: #16a34a !important;
+            border: 1px solid #dcfce7 !important;
         }
 
-        .btn-feedback {
-            background: #fff7ed;
-            color: #ea580c;
-            border: 1px solid #ffedd5;
+        .action-btn.btn-progress:hover {
+            background: #16a34a !important;
+            color: #ffffff !important;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 20px rgba(22, 163, 74, 0.18);
         }
 
-        .btn-feedback:hover {
-            background: #ea580c;
-            color: #ffffff;
+        /* FEEDBACK */
+        .action-btn.btn-feedback {
+            background: #fff7ed !important;
+            color: #ea580c !important;
+            border: 1px solid #ffedd5 !important;
         }
 
-        .btn-detail {
-            background: #f1f5f9;
-            color: #0f172a;
-            border: 1px solid #e2e8f0;
+        .action-btn.btn-feedback:hover {
+            background: #ea580c !important;
+            color: #ffffff !important;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 20px rgba(234, 88, 12, 0.18);
         }
 
-        .btn-detail:hover {
-            background: #0f172a;
-            color: #ffffff;
+        /* DISABLED */
+        .action-btn.btn-disabled {
+            background: #f8fafc !important;
+            color: #94a3b8 !important;
+            border: 1px solid #e2e8f0 !important;
+
+            cursor: not-allowed;
         }
 
+        .action-btn.btn-disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* TUTOR CARD */
         .tutor-card {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+
             padding: 1rem 0;
         }
 
         .tutor-avatar {
             width: 110px;
             height: 110px;
+
             border-radius: 30px;
+
             background: #eff6ff;
+
             margin-bottom: 1.25rem;
+
             position: relative;
+
             box-shadow: 0 10px 25px rgba(0, 87, 191, 0.1);
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             color: #0057bf;
             font-size: 36px;
         }
@@ -405,26 +473,37 @@
         .tutor-avatar img {
             width: 100%;
             height: 100%;
+
             object-fit: cover;
+
             border-radius: 30px;
         }
 
         .tutor-avatar::after {
             content: "\f058";
+
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
+
             position: absolute;
+
             bottom: -5px;
             right: -5px;
+
             background: #0057bf;
             color: #ffffff;
+
             width: 30px;
             height: 30px;
+
             border-radius: 10px;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             font-size: 14px;
+
             border: 3px solid #ffffff;
         }
 
@@ -434,21 +513,27 @@
 
         .tutor-info-header strong {
             display: block;
+
             font-size: 22px;
             font-weight: 900;
+
             color: #0f172a;
+
             margin-bottom: 6px;
         }
 
         .tutor-info-header span {
             display: block;
+
             font-size: 14px;
             font-weight: 700;
+
             color: #0057bf;
         }
 
         .tutor-contact-list {
             width: 100%;
+
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -456,14 +541,19 @@
 
         .contact-item {
             background: #f8fafc;
+
             border-radius: 16px;
+
             padding: 14px 18px;
+
             display: flex;
             align-items: center;
             gap: 12px;
+
             color: #475569;
             font-size: 14px;
             font-weight: 700;
+
             transition: all 0.2s ease;
         }
 
@@ -479,7 +569,17 @@
             color: #0f172a;
         }
 
+        /* EMPTY */
+        .empty-card {
+            padding: 2rem;
+            text-align: center;
+
+            color: #64748b;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 1100px) {
+
             .hero-top,
             .layout {
                 grid-template-columns: 1fr;
@@ -496,26 +596,80 @@
         }
 
         @media (max-width: 700px) {
-            .session-header {
-                flex-direction: column;
-            }
-
-            .session-actions-top {
-                width: 100%;
-                justify-content: space-between;
-            }
 
             .action-grid {
                 grid-template-columns: 1fr;
             }
+
+            .session-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .parent-class-detail-page {
+                padding: 1rem;
+            }
+
+            .hero-title h1 {
+                font-size: 24px;
+            }
         }
-        .session-id-sub {
-            display: block;
-            color: #64748b;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: -4px;
-            margin-bottom: 8px;
+        .btn-absence-top {
+            min-width: 120px;
+            height: 42px;
+
+            border-radius: 14px;
+
+            background: #2563eb;
+            color: #ffffff;
+
+            border: 1px solid #2563eb;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            text-decoration: none;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            transition: all .25s ease;
+        }
+
+        .btn-absence-top:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+
+            color: #ffffff;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+        }
+        .btn-absence-top.disabled {
+            background: #f1f5f9 !important;
+            color: #94a3b8 !important;
+
+            border: 1px solid #e2e8f0 !important;
+
+            cursor: not-allowed;
+
+            pointer-events: none;
+        }
+
+        .btn-absence-top.disabled i {
+            color: #94a3b8 !important;
+        }
+
+        .btn-absence-top.disabled:hover {
+            transform: none;
+            box-shadow: none;
         }
     </style>
 </head>
@@ -648,41 +802,96 @@
                                                 </div>
 
                                                 <div class="session-actions-top">
-                                                    <span class="session-badge status">
-                                                            ${empty s.status ? 'N/A' : s.status}
+                                                    <span class="session-badge
+                                                        ${s.status == 'PLANNED' ? 'planned' : ''}
+                                                        ${s.status == 'CANCELLED' ? 'cancelled' : ''}">
+                                                        ${empty s.status ? 'N/A' : s.status}
                                                     </span>
 
-                                                    <a href="${pageContext.request.contextPath}/parent/absence/create?sessionId=${s.sessionId}&studentId=${currentStudentId}"
-                                                       class="btn-absence-top">
-                                                        Xin nghỉ
-                                                    </a>
+                                                    <c:choose>
+
+                                                        <c:when test="${s.status == 'CANCELLED'}">
+
+                                                            <span class="btn-absence-top disabled">
+
+                                                                <i class="fa-solid fa-calendar-xmark"></i>
+                                                                Xin nghỉ
+
+                                                            </span>
+
+                                                        </c:when>
+
+                                                        <c:otherwise>
+
+                                                            <a href="${pageContext.request.contextPath}/parent/absence/create?sessionId=${s.sessionId}&studentId=${currentStudentId}"
+                                                               class="btn-absence-top">
+
+                                                                <i class="fa-solid fa-calendar-xmark"></i>
+                                                                Xin nghỉ
+
+                                                            </a>
+
+                                                        </c:otherwise>
+
+                                                    </c:choose>
                                                 </div>
                                             </div>
 
                                             <div class="action-grid">
-                                                <a href="#"
-                                                   class="action-btn btn-homework">
-                                                    <i class="fa-solid fa-book-open"></i>
-                                                    Bài tập
-                                                </a>
 
-                                                <a href="#"
-                                                   class="action-btn btn-progress">
-                                                    <i class="fa-solid fa-chart-line"></i>
-                                                    Tiến độ
-                                                </a>
+                                                <c:set var="sessionId" value="${s.sessionId}" />
+                                                <c:set var="homeworks" value="${homeworkMap[sessionId]}" />
+                                                <c:set var="feedback" value="${feedbackMap[sessionId]}" />
+                                                <c:set var="learningPlan" value="${learningPlanMap[sessionId]}" />
 
-                                                <a href="#"
-                                                   class="action-btn btn-feedback">
-                                                    <i class="fa-solid fa-comments"></i>
-                                                    Feedback
-                                                </a>
+                                                <c:choose>
+                                                    <c:when test="${not empty homeworks}">
+                                                        <a href="${pageContext.request.contextPath}/parent/homework/session/${s.sessionId}?studentId=${currentStudentId}"
+                                                           class="action-btn btn-homework">
+                                                            <i class="fa-solid fa-book-open"></i>
+                                                            Bài tập
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="action-btn btn-disabled">
+                                                            <i class="fa-solid fa-book-open"></i>
+                                                            Chưa có bài tập
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
 
-                                                <a href="${pageContext.request.contextPath}/parent/classes/${currentStudentId}/${empty classItem.classId ? classId : classItem.classId}"
-                                                   class="action-btn btn-detail">
-                                                    <i class="fa-solid fa-circle-info"></i>
-                                                    Chi tiết
-                                                </a>
+                                                <c:choose>
+                                                    <c:when test="${not empty learningPlan}">
+                                                        <a href="${pageContext.request.contextPath}/parent/sessions/${s.sessionId}/learning-plan"
+                                                           class="action-btn btn-progress">
+                                                            <i class="fa-solid fa-clipboard-list"></i>
+                                                            Kế hoạch
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="action-btn btn-disabled">
+                                                            <i class="fa-solid fa-clipboard-list"></i>
+                                                            Chưa có kế hoạch
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+
+                                                <c:choose>
+                                                    <c:when test="${not empty feedback}">
+                                                        <a href="${pageContext.request.contextPath}/parent/sessions/${s.sessionId}/feedback"
+                                                           class="action-btn btn-feedback">
+                                                            <i class="fa-solid fa-comments"></i>
+                                                            Feedback
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="action-btn btn-disabled">
+                                                            <i class="fa-solid fa-comments"></i>
+                                                            Chưa có feedback
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+
                                             </div>
                                         </div>
                                     </c:forEach>
@@ -712,13 +921,25 @@
                                 <c:choose>
                                     <c:when test="${not empty classItem.tutor and not empty classItem.tutor.avatar}">
                                         <c:choose>
-                                            <c:when test="${fn:startsWith(classItem.tutor.avatar, 'http')}">
-                                                <img src="${classItem.tutor.avatar}" alt="Tutor">
+
+                                            <%-- Không có avatar --%>
+                                            <c:when test="${empty classItem.tutor.avatar}">
+                                                <img src="${pageContext.request.contextPath}/images/default-avatar.png"
+                                                     alt="Tutor">
                                             </c:when>
 
+                                            <%-- Avatar là link online --%>
+                                            <c:when test="${fn:startsWith(classItem.tutor.avatar, 'http')}">
+                                                <img src="${classItem.tutor.avatar}"
+                                                     alt="Tutor">
+                                            </c:when>
+
+                                            <%-- Avatar local --%>
                                             <c:otherwise>
-                                                <img src="${pageContext.request.contextPath}/uploads/${classItem.tutor.avatar}" alt="Tutor">
+                                                <img src="${pageContext.request.contextPath}${classItem.tutor.avatar}"
+                                                     alt="Tutor">
                                             </c:otherwise>
+
                                         </c:choose>
                                     </c:when>
 

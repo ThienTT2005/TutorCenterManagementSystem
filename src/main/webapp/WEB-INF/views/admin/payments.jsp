@@ -585,12 +585,19 @@
                                 <div class="summary-card">
                                     <div class="card-header">
                                         <div class="card-icon icon-overdue">
-                                            <span class="material-symbols-rounded">history_toggle_off</span>
+                                            <span class="material-symbols-rounded">verified</span>
                                         </div>
                                     </div>
-                                    <div class="card-label">Thanh toán quá hạn</div>
-                                    <div class="card-value">03</div>
-                                    <div class="card-subtext" style="color: #ef4444;">CẦN NHẮC NHỞ</div>
+
+                                    <div class="card-label">Thanh toán đã duyệt</div>
+
+                                    <div class="card-value">
+                                        ${approvedPaymentsCount}
+                                    </div>
+
+                                    <div class="card-subtext" style="color: #16a34a;">
+                                        THÀNH CÔNG
+                                    </div>
                                 </div>
 
                                 <div class="summary-card">

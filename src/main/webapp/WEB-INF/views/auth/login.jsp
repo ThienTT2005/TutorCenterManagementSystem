@@ -253,6 +253,5 @@
         });
     </script>
 
-    <script src="${pageContext.request.contextPath}/js/auth/login.js"></script>
 </body>
 </html>

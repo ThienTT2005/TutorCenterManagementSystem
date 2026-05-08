@@ -53,19 +53,8 @@ public class ReportController {
             model.addAttribute("tutorPercent", 50);
         }
 
-        // Monthly Revenue Data
-        List<Object[]> monthlyData = reportService.getMonthlyRevenue();
-        String[] labels = new String[monthlyData.size()];
-        BigDecimal[] data = new BigDecimal[monthlyData.size()];
-        
-        for (int i = 0; i < monthlyData.size(); i++) {
-            labels[i] = "Tháng " + monthlyData.get(i)[0];
-            data[i] = (BigDecimal) monthlyData.get(i)[1];
-        }
-        
-        model.addAttribute("revenueLabels", labels);
-        model.addAttribute("revenueData", data);
 
+        
         return "admin/reports/dashboard";
     }
 }

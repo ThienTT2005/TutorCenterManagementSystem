@@ -19,262 +19,603 @@
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/student-dashboard.css">
 
-    <style>
-        .class-detail-page {
-            padding: 2rem;
-            background: #f8fafc;
-            min-height: 100vh;
+   <style>  .class-detail-page {
+    padding: 2rem;
+    background: #f8fafc;
+    min-height: 100vh;
+    }
+
+    /* HERO */
+    .class-hero {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 1.9rem;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    margin-bottom: 1.5rem;
+    }
+
+    .hero-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 265px;
+    gap: 2rem;
+    align-items: start;
+    }
+
+    .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    }
+
+    .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    }
+
+    .tag.subject {
+    background: #eff6ff;
+    color: #0057bf;
+    }
+
+    .tag.grade {
+    background: #f3e8ff;
+    color: #7e22ce;
+    }
+
+    .tag.active {
+    background: #dcfce7;
+    color: #16a34a;
+    }
+
+    .tag.inactive {
+    background: #f1f5f9;
+    color: #64748b;
+    }
+
+    .hero-title h1 {
+    color: #0f172a;
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 900;
+    margin: 0 0 12px;
+    }
+
+    .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    }
+
+    .hero-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    }
+
+    .hero-desc {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 820px;
+    margin: 0;
+    }
+
+    .btn-back {
+    min-height: 52px;
+    border-radius: 15px;
+    background: #0057bf;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 18px;
+    margin-top: 32px;
+    transition: all .25s ease;
+    }
+
+    .btn-back:hover {
+    background: #004da8;
+    transform: translateY(-2px);
+    }
+
+    /* QUICK */
+    .quick-grid {
+    margin-top: 1.6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid #eef2f7;
+
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    }
+
+    .quick-box {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 16px 18px;
+    min-height: 84px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    }
+
+    .quick-box span {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 7px;
+    }
+
+    .quick-box strong {
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 900;
+    }
+
+    /* LAYOUT */
+    .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 375px;
+    gap: 1.5rem;
+    align-items: start;
+    }
+
+    .left-column,
+    .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    }
+
+    /* CARD */
+    .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-body {
+    padding: 1.5rem;
+    }
+
+    .card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 900;
+
+    margin-bottom: 1.5rem;
+    }
+
+    .card-title i {
+    color: #0057bf;
+    }
+
+    /* SESSION */
+    .session-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    }
+
+    .session-card {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 24px;
+
+    padding: 1.5rem;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+
+    transition: all .3s ease;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    }
+
+    .session-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+
+    border-color: #0057bf;
+    }
+
+    .session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    }
+
+    .session-topic {
+    font-size: 18px;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0 0 8px;
+    }
+
+    .session-id-sub {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: -4px;
+    margin-bottom: 8px;
+    }
+
+    .session-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 12px;
+    margin-bottom: 0.5rem;
+    }
+
+    .info-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    }
+
+    .info-pill i {
+    color: #0057bf;
+    }
+
+    .session-badge.status {
+    background: #eef2f7;
+    color: #64748b;
+
+    padding: 6px 12px;
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 900;
+    }
+
+    /* ACTION BUTTONS */
+    .action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    padding-top: 1.1rem;
+
+    border-top: 1px solid #f1f5f9;
+    }
+
+    .action-btn {
+    min-height: 46px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    text-decoration: none;
+
+    transition: all .25s ease;
+
+    border: 1px solid transparent;
+
+    cursor: pointer;
+    }
+
+    .action-btn i {
+    font-size: 14px;
+    }
+
+    /* HOMEWORK */
+    .btn-homework {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #dbeafe;
+    }
+
+    .btn-homework:hover {
+    background: #2563eb;
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+    }
+
+    /* PLAN */
+    .btn-progress {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-color: #dcfce7;
+    }
+
+    .btn-progress:hover {
+    background: #16a34a;
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 20px rgba(22, 163, 74, 0.18);
+    }
+
+    /* FEEDBACK */
+    .btn-feedback {
+    background: #fff7ed;
+    color: #ea580c;
+    border-color: #ffedd5;
+    }
+
+    .btn-feedback:hover {
+    background: #ea580c;
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 20px rgba(234, 88, 12, 0.18);
+    }
+
+    /* DISABLED */
+    .btn-disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+    border: 1px solid #e2e8f0;
+
+    cursor: not-allowed;
+    }
+
+    .btn-disabled:hover {
+    transform: none;
+    box-shadow: none;
+    }
+
+    /* TUTOR CARD */
+    .tutor-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    padding: 1rem 0;
+    }
+
+    .tutor-avatar {
+    width: 110px;
+    height: 110px;
+
+    border-radius: 30px;
+
+    background: #eff6ff;
+
+    margin-bottom: 1.25rem;
+
+    position: relative;
+
+    box-shadow: 0 10px 25px rgba(0, 87, 191, 0.1);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #0057bf;
+    font-size: 36px;
+    }
+
+    .tutor-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 30px;
+    }
+
+    .tutor-avatar::after {
+    content: "\f058";
+
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+
+    position: absolute;
+
+    bottom: -5px;
+    right: -5px;
+
+    background: #0057bf;
+    color: #ffffff;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+
+    border: 3px solid #ffffff;
+    }
+
+    .tutor-info-header {
+    margin-bottom: 1.5rem;
+    }
+
+    .tutor-info-header strong {
+    display: block;
+
+    font-size: 22px;
+    font-weight: 900;
+
+    color: #0f172a;
+
+    margin-bottom: 6px;
+    }
+
+    .tutor-info-header span {
+    display: block;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #0057bf;
+    }
+
+    .tutor-contact-list {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    }
+
+    .contact-item {
+    background: #f8fafc;
+
+    border-radius: 16px;
+
+    padding: 14px 18px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+
+    transition: all 0.2s ease;
+    }
+
+    .contact-item i {
+    color: #94a3b8;
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+    }
+
+    .contact-item:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    }
+
+    /* EMPTY */
+    .empty-card {
+    padding: 2rem;
+    text-align: center;
+
+    color: #64748b;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1100px) {
+
+    .hero-top,
+    .layout {
+    grid-template-columns: 1fr;
+    }
+
+    .quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .btn-back {
+    justify-self: start;
+    margin-top: 0;
+    }
+    }
+
+    @media (max-width: 700px) {
+
+        .action-grid {
+        grid-template-columns: 1fr;
         }
 
-        .class-hero {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 24px;
-            padding: 1.9rem;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-            margin-bottom: 1.5rem;
+        .session-info-grid {
+        grid-template-columns: 1fr;
         }
-
-        .hero-top {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 265px;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 11px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .tag.subject { background: #eff6ff; color: #0057bf; }
-        .tag.grade { background: #f3e8ff; color: #7e22ce; }
-        .tag.active { background: #dcfce7; color: #16a34a; }
-        .tag.inactive { background: #f1f5f9; color: #64748b; }
-
-        .hero-title h1 {
-            color: #0f172a;
-            font-size: 32px;
-            line-height: 1.2;
-            font-weight: 900;
-            margin: 0 0 12px;
-        }
-
-        .hero-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            color: #64748b;
-            font-size: 14px;
-            font-weight: 800;
-            margin-bottom: 14px;
-        }
-
-        .hero-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .hero-desc {
-            color: #475569;
-            font-size: 14px;
-            line-height: 1.7;
-            max-width: 820px;
-            margin: 0;
-        }
-
-        .btn-back {
-            min-height: 52px;
-            border-radius: 15px;
-            background: #0057bf;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 900;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 0 18px;
-            margin-top: 32px;
-        }
-
-        .btn-back:hover { background: #004da8; }
 
         .quick-grid {
-            margin-top: 1.6rem;
-            padding-top: 1.6rem;
-            border-top: 1px solid #eef2f7;
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 14px;
+        grid-template-columns: 1fr;
         }
 
-        .quick-box {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 16px 18px;
-            min-height: 84px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        .class-detail-page {
+        padding: 1rem;
         }
 
-        .quick-box span { color: #64748b; font-size: 12px; font-weight: 800; margin-bottom: 7px; }
-        .quick-box strong { color: #0f172a; font-size: 18px; font-weight: 900; }
-
-        .layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 375px;
-            gap: 1.5rem;
-            align-items: start;
+        .hero-title h1 {
+        font-size: 24px;
         }
+    }
+   .action-btn.btn-homework {
+       background: #eff6ff !important;
+       color: #2563eb !important;
+       border: 1px solid #dbeafe !important;
+   }
 
-        .left-column, .right-column { display: flex; flex-direction: column; gap: 1rem; }
+   .action-btn.btn-homework:hover {
+       background: #2563eb !important;
+       color: #ffffff !important;
+   }
 
-        .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-        }
+   .action-btn.btn-progress {
+       background: #f0fdf4 !important;
+       color: #16a34a !important;
+       border: 1px solid #dcfce7 !important;
+   }
 
-        .card-body { padding: 1.5rem; }
-        .card-title { display: flex; align-items: center; gap: 10px; color: #0f172a; font-size: 20px; font-weight: 900; margin-bottom: 1.5rem; }
-        .card-title i { color: #0057bf; }
+   .action-btn.btn-progress:hover {
+       background: #16a34a !important;
+       color: #ffffff !important;
+   }
 
-        /* Session Cards */
-        .session-list { display: flex; flex-direction: column; gap: 16px; }
-        .session-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 24px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-            transition: all .3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-        .session-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); border-color: #0057bf; }
-        .session-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .session-topic { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0 0 8px; }
-        .session-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 0.5rem; }
-        .info-pill { display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 13px; font-weight: 700; }
-        .info-pill i { color: #0057bf; }
-        .session-badge.status { background: #eef2f7; color: #64748b; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 900; }
+   .action-btn.btn-feedback {
+       background: #fff7ed !important;
+       color: #ea580c !important;
+       border: 1px solid #ffedd5 !important;
+   }
 
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
-        .action-btn { height: 40px; border-radius: 12px; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; transition: all .2s ease; }
-        .btn-homework { background: #f0f7ff; color: #0057bf; border: 1px solid #dbeafe; }
-        .btn-homework:hover { background: #0057bf; color: #ffffff; }
-        .btn-progress { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
-        .btn-progress:hover { background: #16a34a; color: #ffffff; }
-        .btn-feedback { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
-        .btn-feedback:hover { background: #ea580c; color: #ffffff; }
-        .btn-detail { background: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; }
-        .btn-detail:hover { background: #0f172a; color: #ffffff; }
+   .action-btn.btn-feedback:hover {
+       background: #ea580c !important;
+       color: #ffffff !important;
+   }
 
-        /* Tutor Card - Vertical Layout */
-        .tutor-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 1rem 0;
-        }
-
-        .tutor-avatar {
-            width: 110px;
-            height: 110px;
-            border-radius: 30px;
-            background: #eff6ff;
-            margin-bottom: 1.25rem;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0, 87, 191, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0057bf;
-            font-size: 36px;
-        }
-
-        .tutor-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 30px;
-        }
-
-        .tutor-avatar::after {
-            content: "\f058";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            background: #0057bf;
-            color: #ffffff;
-            width: 30px;
-            height: 30px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border: 3px solid #ffffff;
-        }
-
-        .tutor-info-header { margin-bottom: 1.5rem; }
-        .tutor-info-header strong { display: block; font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 6px; }
-        .tutor-info-header span { display: block; font-size: 14px; font-weight: 700; color: #0057bf; }
-
-        .tutor-contact-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-        .contact-item {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #475569;
-            font-size: 14px;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-        .contact-item i { color: #94a3b8; font-size: 16px; width: 24px; text-align: center; }
-        .contact-item:hover { background: #f1f5f9; color: #0f172a; }
-
-        @media (max-width: 1100px) {
-            .hero-top, .layout { grid-template-columns: 1fr; }
-            .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .btn-back { justify-self: start; margin-top: 0; }
-        }
-        @media (max-width: 700px) {
-            .action-grid { grid-template-columns: 1fr; }
-        }
-        .session-id-sub {
-            display: block;
-            color: #64748b;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: -4px;
-            margin-bottom: 8px;
-        }
-    </style>
+   .action-btn.btn-disabled {
+       background: #f1f5f9 !important;
+       color: #94a3b8 !important;
+       border: 1px solid #e2e8f0 !important;
+       cursor: not-allowed;
+   }
+   </style>
 </head>
 
 <body>
@@ -350,43 +691,120 @@
                                 <div class="session-list">
                                     <c:forEach var="s" items="${sessions}">
                                         <div class="session-card">
+
                                             <div class="session-header">
                                                 <div>
                                                     <h3 class="session-topic">
                                                         <c:out value="${empty s.topic ? (empty s.lessonName ? 'Chủ đề chưa cập nhật' : s.lessonName) : s.topic}" />
                                                     </h3>
-                                                    <span class="session-id-sub">Buổi học #<c:out value="${s.sessionId}" /></span>
+
+                                                    <span class="session-id-sub">
+                    Buổi học #<c:out value="${s.sessionId}" />
+                </span>
+
                                                     <div class="session-info-grid">
+
                                                         <div class="info-pill">
                                                             <i class="fa-regular fa-calendar"></i>
-                                                            <c:out value="${s.sessionDate}" /></div>
+                                                            <c:out value="${s.sessionDate}" />
+                                                        </div>
+
                                                         <div class="info-pill">
                                                             <i class="fa-regular fa-clock"></i>
-                                                            <c:out value="${s.startTime}"/> - <c:out value="${s.endTime}"/>
+                                                            <c:out value="${s.startTime}"/>
+                                                            -
+                                                            <c:out value="${s.endTime}"/>
                                                         </div>
+
                                                     </div>
                                                 </div>
-                                                <span class="session-badge status">${empty s.status ? 'N/A' : s.status}</span>
+
+                                                <span class="session-badge status">
+                                                        ${empty s.status ? 'N/A' : s.status}
+                                                </span>
                                             </div>
+
                                             <div class="action-grid">
-<%--                                               /student/homework/detail/{id}--%>
-                                                <a href="${pageContext.request.contextPath}/student/homework?sessionId=${s.sessionId}"
-                                                   class="action-btn btn-homework">
-                                                    <i class="fa-solid fa-book-open"></i> Bài tập</a>
-                                                <a href="${pageContext.request.contextPath}/student/sessions/${s.sessionId}/learning-plan"
-                                                   class="action-btn btn-progress">
-                                                    <i class="fa-solid fa-chart-line"></i>
-                                                    Tiến độ
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/student/sessions/${s.sessionId}/feedback"
-                                                   class="action-btn btn-feedback">
-                                                    <i class="fa-solid fa-comments"></i>
-                                                    Feedback
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/student/classes/${classItem.classId}"
-                                                   class="action-btn btn-detail">
-                                                    <i class="fa-solid fa-circle-info"></i> Chi tiết</a>
+
+                                                <c:set var="sessionId" value="${s.sessionId}" />
+                                                <c:set var="homeworks" value="${homeworkMap[sessionId]}" />
+                                                <c:set var="feedback" value="${feedbackMap[sessionId]}" />
+                                                <c:set var="learningPlan" value="${learningPlanMap[sessionId]}" />
+
+                                                    <%-- HOMEWORK --%>
+                                                <c:choose>
+
+                                                    <c:when test="${not empty homeworks}">
+                                                        <a href="${pageContext.request.contextPath}/student/homework?sessionId=${s.sessionId}"
+                                                           class="action-btn btn-homework">
+
+                                                            <i class="fa-solid fa-book-open"></i>
+                                                            Bài tập
+
+                                                        </a>
+                                                    </c:when>
+
+                                                    <c:otherwise>
+                                                        <span class="action-btn btn-disabled">
+
+                                                            <i class="fa-solid fa-book-open"></i>
+                                                            Chưa có bài tập
+
+                                                        </span>
+                                                    </c:otherwise>
+
+                                                </c:choose>
+
+                                                    <%-- LEARNING PLAN --%>
+                                                <c:choose>
+
+                                                    <c:when test="${not empty learningPlan}">
+                                                        <a href="${pageContext.request.contextPath}/student/sessions/${s.sessionId}/learning-plan"
+                                                           class="action-btn btn-progress">
+
+                                                            <i class="fa-solid fa-clipboard-list"></i>
+                                                            Kế hoạch
+
+                                                        </a>
+                                                    </c:when>
+
+                                                    <c:otherwise>
+                                                        <span class="action-btn btn-disabled">
+
+                                                            <i class="fa-solid fa-clipboard-list"></i>
+                                                            Chưa có kế hoạch
+
+                                                        </span>
+                                                    </c:otherwise>
+
+                                                </c:choose>
+
+                                                    <%-- FEEDBACK --%>
+                                                <c:choose>
+
+                                                    <c:when test="${not empty feedback}">
+                                                        <a href="${pageContext.request.contextPath}/student/sessions/${s.sessionId}/feedback"
+                                                           class="action-btn btn-feedback">
+
+                                                            <i class="fa-solid fa-comments"></i>
+                                                            Feedback
+
+                                                        </a>
+                                                    </c:when>
+
+                                                    <c:otherwise>
+                                                        <span class="action-btn btn-disabled">
+
+                                                            <i class="fa-solid fa-comments"></i>
+                                                            Chưa có feedback
+
+                                                        </span>
+                                                    </c:otherwise>
+
+                                                </c:choose>
+
                                             </div>
+
                                         </div>
                                     </c:forEach>
                                 </div>

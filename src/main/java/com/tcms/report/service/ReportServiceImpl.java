@@ -47,10 +47,7 @@ public class ReportServiceImpl implements ReportService {
         return paymentRepository.sumAllPayments();
     }
 
-    @Override
-    public List<Object[]> getMonthlyRevenue() {
-        return paymentRepository.getMonthlyRevenue();
-    }
+
 
     @Override
     public List<ClassEntity> getTopClasses() {

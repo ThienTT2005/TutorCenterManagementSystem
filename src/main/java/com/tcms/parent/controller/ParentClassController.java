@@ -3,7 +3,10 @@ package com.tcms.parent.controller;
 import com.tcms.clazz.entity.Enrollment;
 import com.tcms.clazz.repository.EnrollmentRepository;
 import com.tcms.feedback.repository.FeedbackRepository;
+import com.tcms.homework.entity.Homework;
 import com.tcms.homework.repository.HomeworkRepository;
+import com.tcms.homework.service.HomeworkService;
+import com.tcms.homework.service.HomeworkSubmissionService;
 import com.tcms.learningplan.repository.LearningPlanRepository;
 import com.tcms.parent.entity.Parent;
 import com.tcms.parent.repository.ParentRepository;
@@ -34,6 +37,8 @@ public class ParentClassController {
     private final FeedbackRepository feedbackRepository;
     private final HomeworkRepository homeworkRepository;
     private final LearningPlanRepository learningPlanRepository;
+    private final HomeworkService homeworkService;
+    private final HomeworkSubmissionService submissionService;
 
     private Parent getCurrentParent(HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");

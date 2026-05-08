@@ -231,8 +231,9 @@
                         <c:choose>
                             <c:when test="${not empty notifications}">
                                 <c:forEach var="noti" items="${notifications}">
-                                    <div class="noti-full-item ${!noti.isRead ? 'unread' : ''}" 
-                                         onclick="markAsReadAndNavigate('${noti.notificationId}', '${noti.referenceTable}', '${noti.referenceId}')">
+                                    <div class="noti-full-item ${!noti.isRead ? 'unread' : ''}"
+                                         onclick="markAsReadAndNavigate('${noti.notificationId}', '${noti.referenceTable}', '${noti.referenceId}', '${noti.type}')">
+
                                         <div class="noti-icon-box">
                                             <span class="material-symbols-rounded">
                                                 <c:choose>
@@ -245,17 +246,21 @@
                                                 </c:choose>
                                             </span>
                                         </div>
+
                                         <div class="noti-content-box">
                                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                                                 <h3>${noti.title}</h3>
                                                 <span class="noti-tag">${noti.type}</span>
                                             </div>
+
                                             <p>${noti.content}</p>
+
                                             <div class="noti-meta">
                                                 <span class="noti-time">
                                                     <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: middle; margin-top: -2px;">schedule</span>
                                                     ${noti.createdAt}
                                                 </span>
+
                                                 <c:if test="${noti.isRead}">
                                                     <span class="read-status">
                                                         <span class="material-symbols-rounded" style="font-size: 14px; vertical-align: middle; margin-top: -2px; color: var(--success);">check_circle</span>
@@ -280,22 +285,134 @@
         </div>
     </main>
 
-    <script>
-        function markAsReadAndNavigate(id, table, refId) {
-            // Gửi request đánh dấu đã đọc qua AJAX
-            fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
-                method: 'POST'
-            }).then(() => {
-                // Điều hướng dựa trên reference
-                let url = '#';
-                if (table === 'teaching_sessions') url = `${pageContext.request.contextPath}/tutor/sessions/detail/${refId}`;
-                else if (table === 'absence_requests') url = `${pageContext.request.contextPath}/admin/absence/pending`;
-                else if (table === 'payments') url = `${pageContext.request.contextPath}/admin/payments/list`;
-                else if (table === 'homework_submissions') url = `${pageContext.request.contextPath}/tutor/homework/submissions/${refId}`;
-                
-                window.location.href = url !== '#' ? url : window.location.href;
-            });
+<script>
+    const contextPath = '${pageContext.request.contextPath}';
+    const role = '${role}';
+
+    function markAsReadAndNavigate(id, table, refId, type) {
+        fetch(contextPath + '/notifications/' + id + '/read', {
+            method: 'POST'
+        }).finally(() => {
+            window.location.href = getNotificationUrl(table, refId, type);
+        });
+    }
+
+    function getNotificationUrl(table, refId, type) {
+        table = table || '';
+        type = type || '';
+
+        // SCHEDULE
+        if (type === 'SCHEDULE' && table === 'teaching_sessions') {
+            if (role === 'TUTOR') {
+                return contextPath + '/tutor/classes/' + refId;
+            }
+
+            if (role === 'STUDENT') {
+                return contextPath + '/student/classes/' + refId;
+            }
+            // SAI
+            if (role === 'PARENT') {
+                return contextPath + '/parent/classes/' + refId;
+            }
+
+            if (role === 'ADMIN') {
+                return contextPath + '/admin/classes/' + refId;
+            }
         }
-    </script>
+
+        // ATTENDANCE
+        if (type === 'ATTENDANCE') {
+            if (role === 'ADMIN' && table === 'absence_requests') {
+                return contextPath + '/admin/absence/pending';
+            }
+
+            if (role === 'TUTOR') {
+                return contextPath + '/tutor/classes/' + refId;
+            }
+
+            if (role === 'STUDENT') {
+                return contextPath + '/student/classes/' + refId;
+            }
+
+            if (role === 'PARENT') {
+                return contextPath + '/parent/absence/list';
+            }
+        }
+
+        // SYSTEM
+        if (type === 'SYSTEM' && table === 'classes') {
+            if (role === 'ADMIN') {
+                return contextPath + '/admin/classes/' + refId;
+            }
+
+            if (role === 'TUTOR') {
+                return contextPath + '/tutor/classes/' + refId;
+            }
+
+            if (role === 'STUDENT') {
+                return contextPath + '/student/classes/' + refId;
+            }
+            // SAI
+            if (role === 'PARENT') {
+                return contextPath + '/parent/classes/' + refId;
+            }
+        }
+
+        // FEEDBACK
+        if (type === 'FEEDBACK') {
+            if (role === 'ADMIN') {
+                return contextPath + '/admin/feedback/pending';
+            }
+
+            if (role === 'STUDENT') {
+                return contextPath + '/student/sessions/' + refId + '/feedback';
+            }
+            // SAI
+            if (role === 'PARENT') {
+                return contextPath + '/parent/sessions/' + refId + '/feedback';
+            }
+
+            if (role === 'TUTOR') {
+                return contextPath + '/tutor/sessions/' + refId + '/feedback';
+            }
+        }
+
+        // HOMEWORK
+        if (type === 'HOMEWORK') {
+            if (role === 'STUDENT' && table === 'homework') {
+                return contextPath + '/student/homework/detail/' + refId;
+            }
+            // SAI
+            if (role === 'PARENT' && table === 'homework') {
+                return contextPath + '/parent/homework/detail/' + refId;
+            }
+
+            if (role === 'TUTOR' && table === 'homework_submissionId') {
+                return contextPath + '/tutor/homework/submissions/' + refId;
+            }
+
+            if (role === 'TUTOR' && table === 'homework_submissions') {
+                return contextPath + '/tutor/homework/submissions/' + refId;
+            }
+        }
+
+        // PAYMENT
+        if (type === 'PAYMENT' || table === 'payments') {
+            if (role === 'ADMIN') {
+                return contextPath + '/payment/admin';
+            }
+
+            if (role === 'TUTOR') {
+                return contextPath + '/payment/tutor';
+            }
+
+            if (role === 'PARENT') {
+                return contextPath + '/payment/parent';
+            }
+        }
+
+        return contextPath + '/notifications';
+    }
+</script>
 </body>
 </html>

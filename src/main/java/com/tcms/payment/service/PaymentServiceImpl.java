@@ -310,4 +310,9 @@ public class PaymentServiceImpl implements PaymentService {
                 .map(Integer::parseInt)
                 .toList();
     }
+    @Override
+    public long countApprovedPayments() {
+        return paymentRepository.countByStatus(PaymentStatus.ADMIN_APPROVED)
+                + paymentRepository.countByStatus(PaymentStatus.COMPLETED);
+    }
 }

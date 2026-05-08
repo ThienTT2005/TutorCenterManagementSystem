@@ -734,47 +734,5 @@
     </div>
 </main>
 
-<script>
-    const contextPath = '${pageContext.request.contextPath}';
-
-    async function lockUser(userId) {
-        if (!confirm('Bạn có chắc muốn khóa tài khoản này?')) return;
-
-        try {
-            const response = await fetch(contextPath + '/api/admin/users/' + userId + '/lock', {
-                method: 'PATCH'
-            });
-
-            if (!response.ok) {
-                throw new Error('Khóa tài khoản thất bại');
-            }
-
-            alert('Đã khóa tài khoản');
-            window.location.reload();
-        } catch (e) {
-            alert(e.message);
-        }
-    }
-
-    async function unlockUser(userId) {
-        if (!confirm('Bạn có chắc muốn mở khóa tài khoản này?')) return;
-
-        try {
-            const response = await fetch(contextPath + '/api/admin/users/' + userId + '/unlock', {
-                method: 'PATCH'
-            });
-
-            if (!response.ok) {
-                throw new Error('Mở khóa tài khoản thất bại');
-            }
-
-            alert('Đã mở khóa tài khoản');
-            window.location.reload();
-        } catch (e) {
-            alert(e.message);
-        }
-    }
-</script>
-
 </body>
 </html>
