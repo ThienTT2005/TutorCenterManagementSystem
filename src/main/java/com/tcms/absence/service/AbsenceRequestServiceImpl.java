@@ -48,6 +48,10 @@ public class AbsenceRequestServiceImpl implements AbsenceRequestService {
         TeachingSession session = sessionRepository.findById(request.getSessionId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy buổi học"));
 
+        if (session.getStatus() == SessionStatus.CANCELLED) {
+            throw new RuntimeException("Buổi học đã bị hủy, không thể gửi yêu cầu xin nghỉ");
+        }
+
         LocalDateTime sessionStart = LocalDateTime.of(
                 session.getSessionDate(),
                 session.getStartTime()

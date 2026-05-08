@@ -9,6 +9,9 @@ import com.tcms.schedule.dto.request.CreateScheduleRequest;
 import com.tcms.schedule.dto.request.UpdateScheduleRequest;
 import com.tcms.schedule.entity.TeachingSchedule;
 import com.tcms.schedule.repository.TeachingScheduleRepository;
+import com.tcms.session.entity.SessionStatus;
+import com.tcms.session.repository.TeachingSessionRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final TeachingScheduleRepository teachingScheduleRepository;
     private final ClassRepository classRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final TeachingSessionRepository teachingSessionRepository;
 
     @Override
     public List<TeachingSchedule> getSchedulesByClassId(Integer classId) {
@@ -142,16 +146,28 @@ public class ScheduleServiceImpl implements ScheduleService {
     private boolean isOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
         return start1.isBefore(end2) && end1.isAfter(start2);
     }
+
     @Override
+    @Transactional
     public void deleteSchedule(Integer scheduleId) {
 
         TeachingSchedule schedule = teachingScheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new BadRequestException("Lịch học không tồn tại"));
 
-        long count = teachingScheduleRepository.countByClassEntityClassId(schedule.getClassEntity().getClassId());
+        long count = teachingScheduleRepository
+                .countByClassEntityClassId(schedule.getClassEntity().getClassId());
+
         if (count <= 1) {
             throw new BadRequestException("Cần có ít nhất 1 buổi/tuần cố định");
         }
+
+        teachingSessionRepository.deleteUncompletedSessionsBySchedule(
+                schedule.getClassEntity().getClassId(),
+                schedule.getWeekday(),
+                schedule.getStartTime(),
+                schedule.getEndTime(),
+                SessionStatus.COMPLETED
+        );
 
         teachingScheduleRepository.delete(schedule);
     }

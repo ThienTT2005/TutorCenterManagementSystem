@@ -23,22 +23,22 @@ public class ReportServiceImpl implements ReportService {
     private final ParentRepository parentRepository;
 
     @Override
-    public Long countClasses() {
+    public long countClasses() {
         return classRepository.count();
     }
 
     @Override
-    public Long countStudents() {
+    public long countStudents() {
         return studentRepository.count();
     }
 
     @Override
-    public Long countTutors() {
+    public long countTutors() {
         return tutorRepository.count();
     }
 
     @Override
-    public Long countParents() {
+    public long countParents() {
         return parentRepository.count();
     }
 

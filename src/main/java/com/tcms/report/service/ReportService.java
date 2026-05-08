@@ -7,16 +7,16 @@ import java.util.List;
 
 public interface ReportService {
 
-    Long countClasses();
+    long countClasses();
 
-    Long countStudents();
+    long countStudents();
 
-    Long countTutors();
-    
-    Long countParents();
+    long countTutors();
+
+    long countParents();
 
     BigDecimal calculateRevenue();
-    
+
     List<Object[]> getMonthlyRevenue();
 
     List<ClassEntity> getTopClasses();
