@@ -53,6 +53,8 @@ public class HomeworkSubmissionServiceImpl implements HomeworkSubmissionService 
         submission.setAnswers(request.getAnswers());
         submission.setAttachmentUrl(request.getAttachmentUrl());
         submission.setStatus(SubmissionStatus.SUBMITTED);
+        submission.setScore(null);
+        submission.setGradedAt(null);
 
         if (homework.getType() == HomeworkType.MULTIPLE_CHOICE) {
             gradeMultipleChoice(homework, request, submission);

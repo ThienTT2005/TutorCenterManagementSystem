@@ -27,26 +27,11 @@ public class StudentHomeworkController {
     @GetMapping
     public String listMyHomework(HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         List<Homework> homeworks = homeworkService.getMyHomework(userId);
-
-        Map<Integer, HomeworkSubmission> submissionMap = new HashMap<>();
-
-        for (Homework homework : homeworks) {
-            HomeworkSubmission submission =
-                    submissionService.getMySubmission(userId, homework.getHomeworkId());
-
-            if (submission != null) {
-                submissionMap.put(homework.getHomeworkId(), submission);
-            }
-        }
-
         model.addAttribute("homeworks", homeworks);
-        model.addAttribute("submissionMap", submissionMap);
+        model.addAttribute("submissionMap", populateSubmissionMap(userId, homeworks));
 
         return "student/homework/list";
     }
@@ -56,38 +41,32 @@ public class StudentHomeworkController {
                                         HttpSession session,
                                         Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         List<Homework> homeworks = homeworkService.getHomeworkBySession(sessionId);
+        model.addAttribute("homeworks", homeworks);
+        model.addAttribute("submissionMap", populateSubmissionMap(userId, homeworks));
+        model.addAttribute("sessionId", sessionId);
 
+        return "student/homework/list";
+    }
+
+    private Map<Integer, HomeworkSubmission> populateSubmissionMap(Integer userId, List<Homework> homeworks) {
         Map<Integer, HomeworkSubmission> submissionMap = new HashMap<>();
-
         for (Homework homework : homeworks) {
-            HomeworkSubmission submission =
-                    submissionService.getMySubmission(userId, homework.getHomeworkId());
-
+            HomeworkSubmission submission = submissionService.getMySubmission(userId, homework.getHomeworkId());
             if (submission != null) {
                 submissionMap.put(homework.getHomeworkId(), submission);
             }
         }
-
-        model.addAttribute("homeworks", homeworks);
-        model.addAttribute("submissionMap", submissionMap);
-        model.addAttribute("sessionId", sessionId);
-
-        return "student/homework/list";
+        return submissionMap;
     }
 
     @GetMapping("/detail/{id}")
     public String viewHomework(@PathVariable Integer id,
                                HttpSession session,
                                Model model) {
-
         model.addAttribute("homework", homeworkService.getHomeworkById(id));
-
         Integer userId = (Integer) session.getAttribute("userId");
 
         if (userId != null) {
@@ -102,9 +81,7 @@ public class StudentHomeworkController {
                             new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {}
                     );
                     model.addAttribute("studentAnswers", answersMap);
-                } catch (Exception e) {
-                    // Ignore parsing errors
-                }
+                } catch (Exception ignored) {}
             }
         }
 
@@ -120,15 +97,10 @@ public class StudentHomeworkController {
                          Model model) {
         try {
             Integer userId = (Integer) session.getAttribute("userId");
-
-            if (userId == null) {
-                return "redirect:/login";
-            }
+            if (userId == null) return "redirect:/login";
 
             submissionService.submit(userId, request);
-
-            return "redirect:/student/classes";
-
+            return "redirect:/student/homework";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("homework", homeworkService.getHomeworkById(request.getHomeworkId()));
@@ -136,4 +108,4 @@ public class StudentHomeworkController {
             return "student/homework/detail";
         }
     }
-}
+}

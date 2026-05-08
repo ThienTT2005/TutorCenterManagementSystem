@@ -3,7 +3,6 @@
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <c:set var="activePage" value="homework" scope="request" />
-<c:set var="submission" value="${submissionMap[hw.homeworkId]}" />
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -208,6 +207,11 @@
         .badge-red { background: #fff5f5; color: #ef4444; border-color: #fee2e2; }
         .badge-blue { background: #eff6ff; color: #3b82f6; border-color: #dbeafe; }
         .badge-green { background: #ecfdf5; color: #10b981; border-color: #d1fae5; }
+        .badge-yellow {
+            background: #fef3c7;
+            color: #b45309;
+            border-color: #fde68a;
+        }
 
         .score-val {
             font-size: 15px;
@@ -350,10 +354,11 @@
                             <c:choose>
                                 <c:when test="${not empty homeworks}">
                                     <c:forEach var="hw" items="${homeworks}" varStatus="loop">
-                                        <c:set var="statusValue" value="${empty submissionStatusMap[hw.homeworkId] ? 'NOT_SUBMITTED' : submissionStatusMap[hw.homeworkId]}" />
-                                        <c:set var="scoreValue" value="${empty scoreMap[hw.homeworkId] ? '' : scoreMap[hw.homeworkId]}" />
+                                        <c:set var="submission" value="${not empty submissionMap ? submissionMap[hw.homeworkId] : null}" />
+                                        <c:set var="statusValue" value="${empty submission ? 'NOT_SUBMITTED' : submission.status.toString()}" />
+                                        <c:set var="scoreValue" value="${empty submission ? '' : submission.score}" />
                                         <c:set var="iconColor" value="${loop.index % 3 == 0 ? 'blue' : (loop.index % 3 == 1 ? 'orange' : 'green')}" />
-                                        <c:set var="rowStatus" value="${statusValue == 'SUBMITTED' || statusValue == 'GRADED' ? 'completed' : 'unfinished'}" />
+                                        <c:set var="rowStatus" value="${statusValue eq 'SUBMITTED' || statusValue eq 'GRADED' ? 'completed' : 'unfinished'}" />
 
                                         <tr class="hw-row" data-status="${rowStatus}" data-deadline="${hw.deadline}">
                                             <td class="col-title">
@@ -368,7 +373,12 @@
                                                     <div class="title-meta truncate">
                                                         <h3 class="truncate"><c:out value="${hw.title}" /></h3>
                                                         <span class="truncate">
-                                                            <c:out value="${not empty hw.session.classEntity ? hw.session.classEntity.subject : 'Môn học'}" />
+                                                            <c:choose>
+                                                                <c:when test="${not empty hw.session and not empty hw.session.classEntity}">
+                                                                    <c:out value="${hw.session.classEntity.subject}" />
+                                                                </c:when>
+                                                                <c:otherwise>Môn học</c:otherwise>
+                                                            </c:choose>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -376,7 +386,12 @@
 
                                             <td class="col-teacher">
                                                 <div class="teacher-info">
-                                                    <c:out value="${not empty hw.session.classEntity.tutor ? hw.session.classEntity.tutor.fullName : 'Giảng viên'}" />
+                                                    <c:choose>
+                                                        <c:when test="${not empty hw.session and not empty hw.session.classEntity and not empty hw.session.classEntity.tutor}">
+                                                            <c:out value="${hw.session.classEntity.tutor.fullName}" />
+                                                        </c:when>
+                                                        <c:otherwise>Gia sư</c:otherwise>
+                                                    </c:choose>
                                                 </div>
                                             </td>
 
@@ -390,11 +405,11 @@
 
                                             <td class="col-status">
                                                 <c:choose>
-                                                    <c:when test="${statusValue == 'GRADED'}">
+                                                    <c:when test="${statusValue eq 'GRADED'}">
                                                         <div class="status-badge-round badge-green">ĐÃ<br>CHẤM</div>
                                                     </c:when>
-                                                    <c:when test="${statusValue == 'SUBMITTED'}">
-                                                        <div class="status-badge-round badge-blue">ĐÃ<br>NỘP</div>
+                                                    <c:when test="${statusValue eq 'SUBMITTED'}">
+                                                        <div class="status-badge-round badge-yellow">ĐANG<br>CHẤM</div>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <div class="status-badge-round badge-red">CHƯA<br>NỘP</div>
@@ -411,7 +426,7 @@
                                             <td class="col-action">
                                                 <div class="action-flex">
                                                     <c:choose>
-                                                        <c:when test="${statusValue == 'NOT_SUBMITTED'}">
+                                                        <c:when test="${statusValue eq 'NOT_SUBMITTED'}">
                                                             <a href="${pageContext.request.contextPath}/student/homework/detail/${hw.homeworkId}" class="btn-submit">Nộp bài</a>
                                                         </c:when>
                                                         <c:otherwise>
@@ -438,7 +453,8 @@
 
                 <div class="section-footer">
                     <div class="results-info" id="visibleCount">
-                        Hiển thị ${fn:length(homeworks)} trên ${fn:length(homeworks)} bài tập
+                        <c:set var="hwCount" value="${not empty homeworks ? fn:length(homeworks) : 0}" />
+                        Hiển thị ${hwCount} trên ${hwCount} bài tập
                     </div>
                     <div class="pagination">
                         <div class="pg-btn"><i class="fa-solid fa-chevron-left"></i></div>
