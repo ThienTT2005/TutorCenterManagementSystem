@@ -4,13 +4,16 @@ import com.tcms.clazz.entity.ClassEntity;
 import com.tcms.clazz.repository.ClassRepository;
 import com.tcms.payment.repository.PaymentRepository;
 import com.tcms.parent.repository.ParentRepository;
+import com.tcms.schedule.repository.TeachingScheduleRepository;
 import com.tcms.student.repository.StudentRepository;
 import com.tcms.tutor.repository.TutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class ReportServiceImpl implements ReportService {
     private final TutorRepository tutorRepository;
     private final PaymentRepository paymentRepository;
     private final ParentRepository parentRepository;
+    private final TeachingScheduleRepository teachingScheduleRepository;
 
     @Override
     public long countClasses() {
@@ -47,10 +51,23 @@ public class ReportServiceImpl implements ReportService {
         return paymentRepository.sumAllPayments();
     }
 
-
-
     @Override
     public List<ClassEntity> getTopClasses() {
         return classRepository.findTop5ByOrderByClassIdDesc();
+    }
+
+    @Override
+    public Map<String, Long> getWeeklyClasses() {
+        Map<String, Long> result = new LinkedHashMap<>();
+
+        result.put("T2", teachingScheduleRepository.countByWeekday(2));
+        result.put("T3", teachingScheduleRepository.countByWeekday(3));
+        result.put("T4", teachingScheduleRepository.countByWeekday(4));
+        result.put("T5", teachingScheduleRepository.countByWeekday(5));
+        result.put("T6", teachingScheduleRepository.countByWeekday(6));
+        result.put("T7", teachingScheduleRepository.countByWeekday(7));
+        result.put("CN", teachingScheduleRepository.countByWeekday(8));
+
+        return result;
     }
 }

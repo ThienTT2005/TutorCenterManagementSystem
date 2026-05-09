@@ -312,7 +312,7 @@
             }
             // SAI
             if (role === 'PARENT') {
-                return contextPath + '/parent/classes/' + refId;
+                return contextPath + '/parent/classes/';
             }
 
             if (role === 'ADMIN') {
@@ -369,7 +369,7 @@
             }
             // SAI
             if (role === 'PARENT') {
-                return contextPath + '/parent/sessions/' + refId + '/feedback';
+                return contextPath + '/parent/classes';
             }
 
             if (role === 'TUTOR') {
@@ -384,7 +384,7 @@
             }
             // SAI
             if (role === 'PARENT' && table === 'homework') {
-                return contextPath + '/parent/homework/detail/' + refId;
+                return contextPath + '/parent/classes';
             }
 
             if (role === 'TUTOR' && table === 'homework_submissionId') {

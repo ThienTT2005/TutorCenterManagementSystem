@@ -291,8 +291,8 @@
                 data: {
                     labels: [
                         <c:choose>
-                        <c:when test="${not empty stats and not empty stats.weeklyClasses}">
-                        <c:forEach items="${stats.weeklyClasses}" var="entry" varStatus="status">
+                        <c:when test="${not empty weeklyClasses}">
+                        <c:forEach items="${weeklyClasses}" var="entry" varStatus="status">
                         '${entry.key}'${not status.last ? ',' : ''}
                         </c:forEach>
                         </c:when>
@@ -305,8 +305,8 @@
                         label: 'Số lớp trong tuần',
                         data: [
                             <c:choose>
-                            <c:when test="${not empty stats and not empty stats.weeklyClasses}">
-                            <c:forEach items="${stats.weeklyClasses}" var="entry" varStatus="status">
+                            <c:when test="${not empty weeklyClasses}">
+                            <c:forEach items="${weeklyClasses}" var="entry" varStatus="status">
                             ${entry.value}${not status.last ? ',' : ''}
                             </c:forEach>
                             </c:when>
@@ -321,7 +321,8 @@
                             'rgba(0, 87, 191, 0.15)',
                             'rgba(0, 87, 191, 0.35)',
                             'rgba(0, 87, 191, 0.25)',
-                            'rgba(0, 87, 191, 0.4)'
+                            'rgba(0, 87, 191, 0.4)',
+                            'rgba(0, 87, 191, 0.3)'
                         ],
                         borderRadius: 6,
                         borderSkipped: false,
@@ -349,8 +350,10 @@
                             }
                         },
                         y: {
-                            display: false,
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
                         }
                     }
                 }

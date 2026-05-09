@@ -76,7 +76,11 @@
                         <c:when test="${not empty notifications}">
                             <c:forEach var="noti" items="${notifications}">
                                 <div class="noti-item ${noti.isRead == false ? 'unread' : ''}"
-                                     onclick="handleTutorNotiClick('${noti.notificationId}', '${noti.referenceTable}', '${noti.referenceId}')">
+                                     onclick="handleTutorNotiClick('${noti.notificationId}',
+                                             '${noti.referenceTable}',
+                                             '${noti.referenceId}',
+                                             '${noti.type}',
+                                             this)">
                                     <h4>
                                         <c:out value="${empty noti.title ? 'Thông báo' : noti.title}" />
                                     </h4>
@@ -227,27 +231,55 @@
         document.addEventListener('click', closeAllMenus);
     })();
 
-    function handleTutorNotiClick(id, table, refId) {
+    function handleTutorNotiClick(id, table, refId, type, element) {
+
         fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
             method: 'POST'
-        }).then(() => {
-            let url = '#';
+        }).finally(() => {
 
-            if (table === 'teaching_sessions') {
-                url = `${pageContext.request.contextPath}/tutor/sessions/detail/${refId}`;
-            } else if (table === 'homework_submissions') {
+            if (element) {
+                element.classList.remove('unread');
+
+                const badge = document.querySelector('.badge');
+
+                if (badge) {
+                    let count = parseInt(badge.innerText);
+
+                    if (!isNaN(count) && count > 0) {
+                        count--;
+
+                        if (count <= 0) {
+                            badge.remove();
+                        } else {
+                            badge.innerText = count;
+                        }
+                    }
+                }
+            }
+
+            let url = `${pageContext.request.contextPath}/notifications`;
+
+            if (type === 'PAYMENT') {
+                url = `${pageContext.request.contextPath}/payment/tutor`;
+            }
+
+            else if (type === 'HOMEWORK') {
+                url = `${pageContext.request.contextPath}/tutor/classes`;
+            }
+
+            else if (type === 'FEEDBACK') {
+                url = `${pageContext.request.contextPath}/tutor/classes`;
+            }
+
+            else if (type === 'SCHEDULE') {
+                url = `${pageContext.request.contextPath}/tutor/classes`;
+            }
+
+            else if (table === 'homework_submissions') {
                 url = `${pageContext.request.contextPath}/tutor/homework/submissions/${refId}`;
-            } else if (table === 'notifications') {
-                url = `${pageContext.request.contextPath}/notifications`;
             }
 
-            if (url !== '#') {
-                window.location.href = url;
-            } else {
-                window.location.reload();
-            }
-        }).catch(() => {
-            window.location.reload();
+            window.location.href = url;
         });
     }
 </script>

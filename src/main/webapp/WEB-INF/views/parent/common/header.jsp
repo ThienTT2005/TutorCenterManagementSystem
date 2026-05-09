@@ -71,9 +71,17 @@
                     <c:choose>
                         <c:when test="${not empty notifications}">
                             <c:forEach var="noti" items="${notifications}">
-                                <div class="noti-item ${not empty noti.isRead and noti.isRead == false ? 'unread' : ''}">
+                                <div class="noti-item ${noti.isRead == false ? 'unread' : ''}"
+                                     onclick="handleParentNotiClick('${noti.notificationId}',
+                                             '${noti.referenceTable}',
+                                             '${noti.referenceId}',
+                                             '${noti.type}',
+                                             this)">
+
                                     <h4><c:out value="${noti.title}" /></h4>
+
                                     <p><c:out value="${noti.content}" /></p>
+
                                     <span class="noti-time">
                                         <c:out value="${noti.createdAt}" />
                                     </span>
@@ -188,4 +196,55 @@
 
         document.addEventListener('click', closeAllMenus);
     })();
+
+    function handleParentNotiClick(id, table, refId, type, element) {
+
+        fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
+            method: 'POST'
+        }).finally(() => {
+            if (element) {
+                element.classList.remove('unread');
+
+                const badge = document.querySelector('.badge');
+
+                if (badge) {
+                    let count = parseInt(badge.innerText);
+
+                    if (!isNaN(count) && count > 0) {
+                        count--;
+
+                        if (count <= 0) {
+                            badge.remove();
+                        } else {
+                            badge.innerText = count;
+                        }
+                    }
+                }
+            }
+
+            let url = `${pageContext.request.contextPath}/notifications`;
+
+            if (type === 'PAYMENT' || table === 'payments') {
+                url = `${pageContext.request.contextPath}/payment/parent`;
+            }
+
+            else if (type === 'HOMEWORK') {
+                url = `${pageContext.request.contextPath}/parent/classes`;
+            }
+
+            else if (type === 'FEEDBACK') {
+                url = `${pageContext.request.contextPath}/parent/classes`;
+            }
+
+            else if (type === 'ATTENDANCE') {
+                url = `${pageContext.request.contextPath}/parent/absence/list`;
+            }
+
+            else if (type === 'SCHEDULE') {
+                url = `${pageContext.request.contextPath}/parent/classes`;
+            }
+
+            window.location.href = url;
+        });
+    }
 </script>

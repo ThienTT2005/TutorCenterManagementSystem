@@ -52,15 +52,6 @@
                 Thông báo
             </a>
         </li>
-
-
-        <li>
-            <a href="${pageContext.request.contextPath}/change-password"
-               class="nav-link ${activePage == 'change-password' ? 'active' : ''}">
-                <span class="material-symbols-rounded">key</span>
-                Đổi mật khẩu
-            </a>
-        </li>
     </ul>
 
     <div class="sidebar-footer">

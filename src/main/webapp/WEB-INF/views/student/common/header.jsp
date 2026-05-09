@@ -78,11 +78,12 @@
                     <c:choose>
                         <c:when test="${not empty notifications}">
                             <c:forEach var="noti" items="${notifications}">
-                                <%--
-                                    Không dùng ${!noti.isRead} để tránh lỗi nếu Notification entity
-                                    không có property isRead.
-                                --%>
-                                <div class="noti-item">
+                                <div class="noti-item ${noti.isRead == false ? 'unread' : ''}"
+                                     onclick="handleStudentNotiClick('${noti.notificationId}',
+                                             '${noti.referenceTable}',
+                                             '${noti.referenceId}',
+                                             '${noti.type}',
+                                             this)">
                                     <h4>
                                         <c:out value="${empty noti.title ? 'Thông báo' : noti.title}" />
                                     </h4>
@@ -243,4 +244,52 @@
 
         document.addEventListener('click', closeAllMenus);
     })();
+
+    function handleStudentNotiClick(id, table, refId, type, element) {
+
+        fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
+            method: 'POST'
+        }).finally(() => {
+
+            if (element) {
+                element.classList.remove('unread');
+
+                const badge = document.querySelector('.badge');
+
+                if (badge) {
+                    let count = parseInt(badge.innerText);
+
+                    if (!isNaN(count) && count > 0) {
+                        count--;
+
+                        if (count <= 0) {
+                            badge.remove();
+                        } else {
+                            badge.innerText = count;
+                        }
+                    }
+                }
+            }
+
+            let url = `${pageContext.request.contextPath}/notifications`;
+
+            if (type === 'HOMEWORK') {
+                url = `${pageContext.request.contextPath}/student/homework`;
+            }
+
+            else if (type === 'FEEDBACK') {
+                url = `${pageContext.request.contextPath}/student/classes`;
+            }
+
+            else if (type === 'ATTENDANCE') {
+                url = `${pageContext.request.contextPath}/student/classes`;
+            }
+
+            else if (type === 'SCHEDULE') {
+                url = `${pageContext.request.contextPath}/student/classes`;
+            }
+
+            window.location.href = url;
+        });
+    }
 </script>

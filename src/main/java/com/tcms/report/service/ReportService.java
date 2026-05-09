@@ -4,6 +4,7 @@ import com.tcms.clazz.entity.ClassEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public interface ReportService {
 
@@ -17,6 +18,7 @@ public interface ReportService {
 
     BigDecimal calculateRevenue();
 
-
     List<ClassEntity> getTopClasses();
+
+    Map<String, Long> getWeeklyClasses();
 }

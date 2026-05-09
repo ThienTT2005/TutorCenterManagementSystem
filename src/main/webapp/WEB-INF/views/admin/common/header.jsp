@@ -105,7 +105,11 @@
                                 </c:if>
 
                                 <div class="noti-item ${noti.isRead ne true ? 'unread' : ''}"
-                                     onclick="handleAdminNotiClick('${noti.notificationId}', '${noti.referenceTable}', '${noti.referenceId}', '${noti.type}')">
+                                     onclick="handleAdminNotiClick('${noti.notificationId}',
+                                             '${noti.referenceTable}',
+                                             '${noti.referenceId}',
+                                             '${noti.type}',
+                                             this)">
 
                                     <h4>
                                         <c:out value="${empty noti.title ? 'Thông báo' : noti.title}" />
@@ -241,10 +245,29 @@
 
         document.addEventListener('click', closeAllMenus);
     })();
-    function handleAdminNotiClick(id, table, refId, type) {
+    function handleAdminNotiClick(id, table, refId, type, element) {
         fetch('${pageContext.request.contextPath}/notifications/' + id + '/read', {
             method: 'POST'
         }).finally(() => {
+            if (element) {
+                element.classList.remove('unread');
+
+                const badge = document.querySelector('.badge');
+
+                if (badge) {
+                    let count = parseInt(badge.innerText);
+
+                    if (!isNaN(count) && count > 0) {
+                        count--;
+
+                        if (count <= 0) {
+                            badge.remove();
+                        } else {
+                            badge.innerText = count;
+                        }
+                    }
+                }
+            }
             window.location.href = getAdminNotificationUrl(table, refId, type);
         });
     }
