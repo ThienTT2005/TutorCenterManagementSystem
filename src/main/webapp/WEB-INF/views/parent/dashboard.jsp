@@ -105,109 +105,103 @@
                         </div>
 
                         <div class="children-grid">
+                            <c:choose>
+                                <c:when test="${not empty stats.children}">
+                                    <c:forEach var="child" items="${stats.children}">
+                                        <div class="child-card">
+                                            <div class="child-avatar">
+                                                <div class="avatar-img-wrapper">
+                                                    <c:choose>
+                                                        <c:when test="${not empty child.avatar}">
+                                                            <img src="${pageContext.request.contextPath}${child.avatar}" alt="${child.fullName}">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="material-symbols-rounded">face</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                                <span class="online-dot"></span>
+                                            </div>
 
-                            <div class="child-card">
-                                <div class="child-avatar">
-                                    <span class="material-symbols-rounded">face</span>
-                                    <span class="online-dot"></span>
-                                </div>
 
-                                <div class="child-info">
-                                    <h3>Thông tin lớp của con</h3>
-                                    <p>${empty stats.totalClasses ? 0 : stats.totalClasses} lớp đang theo dõi</p>
+                                            <div class="child-info">
+                                                <h3><c:out value="${child.fullName}" /></h3>
+                                                <p>Lớp: <c:out value="${empty child.grade ? 'Chưa cập nhật' : child.grade}" /></p>
 
-                                    <div class="child-tags">
-                                        <span>TCMS</span>
-                                        <span>CLASS</span>
+                                                <div class="child-tags">
+                                                    <span>Học sinh</span>
+                                                    <span>TCMS</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="empty-state">
+                                        <p>Chưa có thông tin con.</p>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="child-card">
-                                <div class="child-avatar avatar-blue">
-                                    <span class="material-symbols-rounded">school</span>
-                                    <span class="online-dot"></span>
-                                </div>
-
-                                <div class="child-info">
-                                    <h3>Tiến độ học tập</h3>
-                                    <p>Theo dõi lịch học, feedback và thanh toán</p>
-
-                                    <div class="child-tags">
-                                        <span>FEEDBACK</span>
-                                        <span>PAYMENT</span>
-                                    </div>
-                                </div>
-                            </div>
-
+                                </c:otherwise>
+                            </c:choose>
                         </div>
+
                     </section>
 
                     <section class="parent-section">
-                        <div class="parent-section-header">
-                            <h2>
-                                <span class="material-symbols-rounded">schedule</span>
-                                Lịch học hôm nay
-                            </h2>
-
-                            <span class="section-date">Hôm nay</span>
+                        <div class="section-header">
+                            <h2>Lớp học hôm nay</h2>
+                            <a href="${pageContext.request.contextPath}/parent/classes">Xem chi tiết</a>
                         </div>
 
-                        <div class="schedule-card">
+                        <div class="content-card">
                             <c:choose>
                                 <c:when test="${not empty todaySessions}">
-                                    <c:forEach var="s" items="${todaySessions}" varStatus="loop">
-                                        <div class="schedule-item ${loop.first ? 'active' : ''}">
-
-                                            <div class="schedule-time">
-                                                <span>BẮT ĐẦU</span>
-                                                <strong><c:out value="${s.startTime}" /></strong>
+                                    <c:forEach var="s" items="${todaySessions}">
+                                        <div class="session-row">
+                                            <div class="session-icon">
+                                                <span class="material-symbols-rounded">schedule</span>
                                             </div>
 
-                                            <div class="schedule-content">
-                                                <div class="schedule-status-row">
-                                                    <c:if test="${loop.first}">
-                                                        <span class="schedule-status">ĐANG DIỄN RA</span>
-                                                    </c:if>
-                                                </div>
-
+                                            <div class="session-info">
                                                 <h3>
                                                     <c:out value="${empty s.classEntity.className ? 'Lớp học' : s.classEntity.className}" />
                                                 </h3>
-
                                                 <p>
-                                                    <span class="material-symbols-rounded">person</span>
-                                                    Gia sư:
+                                                    Học sinh:
+                                                    <c:set var="childNames" value="" />
+                                                    <c:forEach var="e" items="${stats.enrollments}">
+                                                        <c:if test="${e.classEntity.classId == s.classEntity.classId}">
+                                                            <c:set var="childNames" value="${childNames}${empty childNames ? '' : ', '}${e.student.fullName}" />
+                                                        </c:if>
+                                                    </c:forEach>
                                                     <c:choose>
-                                                        <c:when test="${not empty s.classEntity.tutor.fullName}">
-                                                            <c:out value="${s.classEntity.tutor.fullName}" />
+                                                        <c:when test="${not empty childNames}">
+                                                            <strong><c:out value="${childNames}" /></strong>
                                                         </c:when>
-                                                        <c:otherwise>Chưa có thông tin</c:otherwise>
+                                                        <c:otherwise>Con của bạn</c:otherwise>
                                                     </c:choose>
                                                 </p>
 
-                                                <small>Kết thúc lúc: <c:out value="${s.endTime}" /></small>
+
                                             </div>
 
-                                            <div class="schedule-action">
-                                                <a href="${pageContext.request.contextPath}/parent/classes">
-                                                    Theo dõi buổi học
-                                                </a>
+                                            <div class="session-time">
+                                                <strong><c:out value="${s.startTime}" /></strong>
+                                                <span>Kết thúc: <c:out value="${s.endTime}" /></span>
                                             </div>
-
                                         </div>
                                     </c:forEach>
                                 </c:when>
 
                                 <c:otherwise>
-                                    <div class="schedule-empty">
+                                    <div class="empty-card">
                                         <span class="material-symbols-rounded">event_available</span>
-                                        <p>Chưa có dữ liệu lịch học hôm nay.</p>
+                                        <p>Hôm nay các con không có buổi học nào.</p>
                                     </div>
                                 </c:otherwise>
                             </c:choose>
                         </div>
                     </section>
+
 
                 </div>
 
@@ -296,11 +290,7 @@
                             <span class="absence-badge">ĐÃ GỬI</span>
                         </div>
 
-                        <a href="${pageContext.request.contextPath}/parent/absence/create"
-                           class="create-absence-btn">
-                            <span class="material-symbols-rounded">add_circle</span>
-                            Tạo yêu cầu mới
-                        </a>
+
                     </section>
 
                 </aside>

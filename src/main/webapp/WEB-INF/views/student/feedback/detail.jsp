@@ -545,7 +545,7 @@
                         <div class="tutor-avatar">
                             <c:choose>
                                 <c:when test="${not empty feedback.session.classEntity.tutor.avatar}">
-                                    <img src="${pageContext.request.contextPath}/uploads/${feedback.session.classEntity.tutor.avatar}"
+                                    <img src="${pageContext.request.contextPath}${feedback.session.classEntity.tutor.avatar}"
                                          alt="Tutor avatar">
                                 </c:when>
                                 <c:otherwise>

@@ -293,12 +293,14 @@ public class FeedbackServiceImpl implements FeedbackService {
 
                 feedback.setStatus(FeedbackStatus.REJECTED);
 
-            try {
-                feedbackRepository.save(feedback);
-            } catch (Exception e) {
-                log.error("Approve feedback failed", e);
-                throw e;
-            }
+                try {
+                    Feedback saved = feedbackRepository.save(feedback);
+                    // Notify the tutor about rejection
+                    notifyTutorFeedbackRejected(saved);
+                } catch (Exception e) {
+                    log.error("Reject feedback failed", e);
+                    throw e;
+                }
         }
 
         private void notifyAdminsFeedbackPending(Feedback feedback, Tutor tutor) {
@@ -342,4 +344,19 @@ public class FeedbackServiceImpl implements FeedbackService {
                 }
         }
 
+    private void notifyTutorFeedbackRejected(Feedback feedback) {
+        // Retrieve tutor from session's class entity
+        if (feedback.getSession() != null && feedback.getSession().getClassEntity() != null
+                && feedback.getSession().getClassEntity().getTutor() != null
+                && feedback.getSession().getClassEntity().getTutor().getUser() != null) {
+            notificationService.createNotification(
+                    feedback.getSession().getClassEntity().getTutor().getUser().getUserId(),
+                    "Feedback bị từ chối",
+                    "Feedback bạn gửi đã bị admin từ chối."
+                            + (feedback.getRejectedReason() != null ? " Lý do: " + feedback.getRejectedReason() : ""),
+                    NotificationType.FEEDBACK,
+                    feedback.getFeedbackId(),
+                    "feedback");
+        }
+    }
 }

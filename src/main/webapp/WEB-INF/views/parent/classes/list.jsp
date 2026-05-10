@@ -55,14 +55,19 @@
                             font-weight: 600;
                         }
 
-                        .class-list-card {
+                        .class-item {
+                            padding: 1.5rem 2rem;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+
                             background: var(--card);
                             border: 1px solid var(--border);
                             border-radius: 24px;
-                            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-                            overflow: hidden;
-                        }
 
+                            transition: all 0.2s ease;
+                            margin-top: 20px;
+                        }
                         .class-item {
                             padding: 1.5rem 2rem;
                             display: flex;
@@ -116,11 +121,19 @@
                             margin: 0;
                         }
 
-                        .class-tutor {
+                        .class-tutor, .class-student {
                             font-size: 14px;
                             color: var(--text-muted);
                             font-weight: 600;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
                         }
+
+                        .class-student {
+                            color: var(--primary);
+                        }
+
 
                         .btn-action {
                             height: 46px;
@@ -207,9 +220,14 @@
 
                                                     <div class="class-tutor">
                                                         <i class="fa-solid fa-chalkboard-user"></i>
-                                                        Gia sư:
-                                                        ${empty clazz.tutor ? 'Chưa phân công' : clazz.tutor.fullName}
+                                                        Gia sư: ${empty clazz.tutor ? 'Chưa phân công' : clazz.tutor.fullName}
                                                     </div>
+
+                                                    <div class="class-student">
+                                                        <i class="fa-solid fa-user-graduate"></i>
+                                                        Học sinh: <strong><c:out value="${e.student.fullName}" /></strong>
+                                                    </div>
+
                                                 </div>
 
                                                 <a href="${pageContext.request.contextPath}/parent/classes/${e.student.studentId}/${clazz.classId}"

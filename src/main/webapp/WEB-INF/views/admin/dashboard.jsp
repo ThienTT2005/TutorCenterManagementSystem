@@ -71,13 +71,14 @@
                 <div class="stat-card">
                     <div class="stat-header">
                         <div class="stat-icon red">
-                            <span class="material-symbols-rounded">payments</span>
+                            <span class="material-symbols-rounded">menu_book</span>
                         </div>
 
                     </div>
-                    <div class="stat-title">SỐ LỚP THÁNG NÀY</div>
+                    <div class="stat-title">SỐ LỚP TRONG TUẦN NÀY</div>
                     <div class="stat-value">
-                        <fmt:formatNumber value="${empty stats.monthlyRevenue ? 0 : stats.monthlyRevenue}" pattern="#,###" />                        <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">VNĐ</span>
+                        <fmt:formatNumber value="${empty stats.totalClassesThisWeek ? 0 : stats.totalClassesThisWeek}" pattern="#,###" />
+                        <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">Lớp</span>
                     </div>
                 </div>
 

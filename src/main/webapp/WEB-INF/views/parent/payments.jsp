@@ -637,6 +637,38 @@
                 opacity: 1;
             }
         }
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-select {
+            height: 42px;
+            padding: 0 12px;
+            border: 1px solid #dbe3ef;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .filter-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #dbe3ef;
+            border-radius: 0;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+
+        .clear-filter {
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+        }
     </style>
 </head>
 <!-- Proof Modal -->
@@ -769,9 +801,41 @@
                 </h2>
 
                 <div class="table-tools">
-                    <i class="fa-solid fa-filter"></i>
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <form method="get"
+                          action="${pageContext.request.contextPath}/payment/parent"
+                          class="filter-form">
+
+                        <select name="studentId" class="filter-select">
+                            <option value="">Tất cả học sinh</option>
+                            <c:forEach items="${children}" var="child">
+                                <option value="${child.studentId}"
+                                    ${selectedStudentId == child.studentId ? 'selected' : ''}>
+                                        ${child.fullName}
+                                </option>
+                            </c:forEach>
+                        </select>
+
+                        <select name="classId" class="filter-select">
+                            <option value="">Tất cả lớp</option>
+                            <c:forEach items="${classes}" var="clazz">
+                                <option value="${clazz.classId}"
+                                    ${selectedClassId == clazz.classId ? 'selected' : ''}>
+                                        ${clazz.className}
+                                </option>
+                            </c:forEach>
+                        </select>
+
+                        <button type="submit" class="filter-btn">
+                            <i class="fa-solid fa-filter"></i>
+                        </button>
+
+                        <a href="${pageContext.request.contextPath}/payment/parent"
+                           class="clear-filter">
+                            Xóa lọc
+                        </a>
+                    </form>
                 </div>
+
             </div>
 
             <c:choose>
@@ -782,6 +846,11 @@
                 </c:when>
 
                 <c:otherwise>
+                    <c:set var="pageSize" value="5" />
+                    <c:set var="currentPage" value="${empty param.page ? 1 : param.page}" />
+                    <c:set var="startIndex" value="${(currentPage - 1) * pageSize}" />
+                    <c:set var="endIndex" value="${startIndex + pageSize}" />
+                    <c:set var="totalPages" value="${(totalCount + pageSize - 1) / pageSize}" />
                     <table>
                         <thead>
                         <tr>
@@ -797,7 +866,9 @@
 
                         <tbody>
                         <c:forEach var="payment" items="${payments}" varStatus="loop">
-                            <c:if test="${payment.status != 'PENDING'}">
+                            <c:if test="${payment.status != 'PENDING'
+                                and loop.index ge startIndex
+                                and loop.index lt endIndex}">
                             <tr>
                                 <td>
                                     <div class="student-cell">
@@ -917,19 +988,35 @@
 
                     <div class="table-footer">
                         <span>
-                            Hiển thị 1 - ${totalCount} trong số ${totalCount} kết quả
+                           Hiển thị ${startIndex + 1} -
+                                <c:choose>
+                                    <c:when test="${endIndex > totalCount}">${totalCount}</c:when>
+                                    <c:otherwise>${endIndex}</c:otherwise>
+                                </c:choose>
+                                trong số ${totalCount} kết quả
                         </span>
 
                         <div class="pagination">
-                            <a href="#" class="page-btn">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </a>
-                            <a href="#" class="page-btn active">1</a>
-                            <a href="#" class="page-btn">2</a>
-                            <a href="#" class="page-btn">
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </a>
+                            <c:if test="${currentPage > 1}">
+                                <a href="${pageContext.request.contextPath}/payment/parent?page=${currentPage - 1}${not empty selectedStudentId ? '&studentId=' += selectedStudentId : ''}${not empty selectedClassId ? '&classId=' += selectedClassId : ''}" class="page-btn">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </a>
+                            </c:if>
+
+                            <c:forEach begin="1" end="${totalPages}" var="i">
+                                <a href="${pageContext.request.contextPath}/payment/parent?page=${i}${not empty selectedStudentId ? '&studentId=' += selectedStudentId : ''}${not empty selectedClassId ? '&classId=' += selectedClassId : ''}"
+                                   class="page-btn ${i == currentPage ? 'active' : ''}">
+                                        ${i}
+                                </a>
+                            </c:forEach>
+
+                            <c:if test="${currentPage < totalPages}">
+                                <a href="${pageContext.request.contextPath}/payment/parent?page=${currentPage + 1}${not empty selectedStudentId ? '&studentId=' += selectedStudentId : ''}${not empty selectedClassId ? '&classId=' += selectedClassId : ''}" class="page-btn">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            </c:if>
                         </div>
+
                     </div>
                 </c:otherwise>
             </c:choose>

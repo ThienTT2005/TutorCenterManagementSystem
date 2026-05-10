@@ -18,5 +18,6 @@ public class AdminDashboardStats {
     private long activeClasses;
     private long pendingFeedbacks;
     private long pendingAbsenceRequests;
+    private long totalClassesThisWeek;
     private Map<String, Long> weeklyClasses;
 }

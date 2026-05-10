@@ -21,6 +21,13 @@ public interface TeachingSessionRepository extends JpaRepository<TeachingSession
             LocalDate endDate
     );
 
+    List<TeachingSession> findByClassEntityClassIdInAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(
+            List<Integer> classIds,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
+
     @Modifying
     @Query("""
         DELETE FROM TeachingSession s

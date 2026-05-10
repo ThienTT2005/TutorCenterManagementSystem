@@ -99,17 +99,17 @@
             <!-- LEFT COLUMN -->
             <div class="dashboard-left">
 
-                <!-- UPCOMING SESSIONS -->
+                <!-- TODAY SESSIONS -->
                 <div class="section-container">
                     <div class="section-header">
-                        <h2>Buổi học sắp tới</h2>
+                        <h2>Lớp học hôm nay</h2>
                         <a href="${pageContext.request.contextPath}/student/classes">Xem lớp học</a>
                     </div>
 
                     <div class="content-card">
                         <c:choose>
-                            <c:when test="${not empty upcomingSessions}">
-                                <c:forEach var="s" items="${upcomingSessions}">
+                            <c:when test="${not empty stats.upcomingSessions}">
+                                <c:forEach var="s" items="${stats.upcomingSessions}">
                                     <div class="session-row">
                                         <div class="session-icon">
                                             <span class="material-symbols-rounded">schedule</span>
@@ -119,7 +119,7 @@
                                             <h3>
                                                 <c:choose>
                                                     <c:when test="${not empty s.classEntity and not empty s.classEntity.className}">
-                                                        ${s.classEntity.className}
+                                                        <c:out value="${s.classEntity.className}" />
                                                     </c:when>
                                                     <c:otherwise>Buổi học</c:otherwise>
                                                 </c:choose>
@@ -128,7 +128,7 @@
                                             <p>
                                                 <c:choose>
                                                     <c:when test="${not empty s.topic}">
-                                                        ${s.topic}
+                                                        <c:out value="${s.topic}" />
                                                     </c:when>
                                                     <c:otherwise>Chưa cập nhật chủ đề</c:otherwise>
                                                 </c:choose>
@@ -136,8 +136,8 @@
                                         </div>
 
                                         <div class="session-time">
-                                            <strong>${empty s.sessionDate ? '' : s.sessionDate}</strong>
-                                            <span>${empty s.startTime ? '' : s.startTime} - ${empty s.endTime ? '' : s.endTime}</span>
+                                            <strong><c:out value="${empty s.sessionDate ? '' : s.sessionDate}" /></strong>
+                                            <span><c:out value="${empty s.startTime ? '' : s.startTime}" /> - <c:out value="${empty s.endTime ? '' : s.endTime}" /></span>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -146,12 +146,13 @@
                             <c:otherwise>
                                 <div class="empty-card">
                                     <span class="material-symbols-rounded">event_available</span>
-                                    <p>Chưa có dữ liệu buổi học sắp tới.</p>
+                                    <p>Hôm nay bạn không có buổi học nào.</p>
                                 </div>
                             </c:otherwise>
                         </c:choose>
                     </div>
                 </div>
+
 
                 <!-- HOMEWORK -->
                 <div class="section-container">
@@ -162,8 +163,8 @@
 
                     <div class="content-card">
                         <c:choose>
-                            <c:when test="${not empty pendingHomeworkList}">
-                                <c:forEach var="hw" items="${pendingHomeworkList}">
+                            <c:when test="${not empty stats.pendingHomeworkList}">
+                                <c:forEach var="hw" items="${stats.pendingHomeworkList}">
                                     <div class="homework-row">
                                         <div class="homework-icon">
                                             <span class="material-symbols-rounded">assignment</span>
@@ -173,7 +174,7 @@
                                             <h3>
                                                 <c:choose>
                                                     <c:when test="${not empty hw.title}">
-                                                        ${hw.title}
+                                                        <c:out value="${hw.title}" />
                                                     </c:when>
                                                     <c:otherwise>Bài tập</c:otherwise>
                                                 </c:choose>
@@ -182,7 +183,7 @@
                                             <p>
                                                 <c:choose>
                                                     <c:when test="${not empty hw.session and not empty hw.session.classEntity}">
-                                                        ${hw.session.classEntity.className}
+                                                        <c:out value="${hw.session.classEntity.className}" />
                                                     </c:when>
                                                     <c:otherwise>Lớp học</c:otherwise>
                                                 </c:choose>
@@ -200,16 +201,13 @@
                             <c:otherwise>
                                 <div class="empty-card">
                                     <span class="material-symbols-rounded">assignment_turned_in</span>
-                                    <p>
-                                        Hiện có
-                                        <strong>${empty stats.pendingHomework ? 0 : stats.pendingHomework}</strong>
-                                        bài tập cần làm.
-                                    </p>
+                                    <p>Tuyệt vời! Bạn đã hoàn thành tất cả bài tập.</p>
                                 </div>
                             </c:otherwise>
                         </c:choose>
                     </div>
                 </div>
+
 
                 <!-- FEEDBACK -->
                 <div class="section-container">
@@ -219,26 +217,26 @@
 
                     <div class="content-card">
                         <c:choose>
-                            <c:when test="${not empty latestFeedbackList}">
-                                <c:forEach var="fb" items="${latestFeedbackList}">
+                            <c:when test="${not empty stats.latestFeedbackList}">
+                                <c:forEach var="fb" items="${stats.latestFeedbackList}">
                                     <div class="feedback-card">
                                         <div class="feedback-top">
                                             <h3>
                                                 <c:choose>
                                                     <c:when test="${not empty fb.session and not empty fb.session.classEntity}">
-                                                        ${fb.session.classEntity.className}
+                                                        <c:out value="${fb.session.classEntity.className}" />
                                                     </c:when>
                                                     <c:otherwise>Feedback học tập</c:otherwise>
                                                 </c:choose>
                                             </h3>
 
-                                            <span>${empty fb.submittedAt ? '' : fb.submittedAt}</span>
+                                            <span><c:out value="${empty fb.submittedAt ? '' : fb.submittedAt}" /></span>
                                         </div>
 
                                         <p>
                                             <c:choose>
                                                 <c:when test="${not empty fb.comment}">
-                                                    ${fb.comment}
+                                                    <c:out value="${fb.comment}" />
                                                 </c:when>
                                                 <c:otherwise>Chưa có nội dung feedback.</c:otherwise>
                                             </c:choose>
@@ -250,16 +248,13 @@
                             <c:otherwise>
                                 <div class="empty-card">
                                     <span class="material-symbols-rounded">rate_review</span>
-                                    <p>
-                                        Có
-                                        <strong>${empty stats.latestFeedback ? 0 : stats.latestFeedback}</strong>
-                                        feedback gần đây.
-                                    </p>
+                                    <p>Chưa có feedback nào gần đây.</p>
                                 </div>
                             </c:otherwise>
                         </c:choose>
                     </div>
                 </div>
+
 
             </div>
 

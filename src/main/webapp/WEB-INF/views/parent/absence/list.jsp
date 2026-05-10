@@ -252,7 +252,36 @@
             font-size: 1.25rem;
             color: var(--text-muted);
         }
+
+        .btn-create {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            background: #0057bf;
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.875rem;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9375rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 87, 191, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-create:hover {
+            background: #004da8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 87, 191, 0.3);
+            color: white;
+        }
+
+        .btn-create i {
+            font-size: 1.1rem;
+        }
     </style>
+
 </head>
 <body class="theme-blue">
 
@@ -267,7 +296,14 @@
                 <h1>Lịch sử xin nghỉ</h1>
                 <p>Theo dõi trạng thái các yêu cầu xin nghỉ đã gửi đến trung tâm.</p>
             </div>
+            <div class="header-right">
+                <a href="${pageContext.request.contextPath}/parent/absence/create" class="btn-create">
+                    <i class="fa-solid fa-plus"></i>
+                    Tạo đơn mới
+                </a>
+            </div>
         </header>
+
 
         <c:set var="total" value="0" />
         <c:set var="pending" value="0" />
@@ -395,7 +431,14 @@
                             <span class="material-symbols-rounded">history</span>
                             <h3>Bạn chưa gửi đơn xin nghỉ nào</h3>
                             <p>Các đơn xin nghỉ bạn gửi sẽ xuất hiện tại đây.</p>
+                            <div style="margin-top: 1.5rem;">
+                                <a href="${pageContext.request.contextPath}/parent/absence/create" class="btn-create">
+                                    <i class="fa-solid fa-plus"></i>
+                                    Tạo đơn xin nghỉ ngay
+                                </a>
+                            </div>
                         </div>
+
                     </c:otherwise>
                 </c:choose>
             </div>

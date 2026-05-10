@@ -32,9 +32,13 @@ import java.time.DayOfWeek;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import com.tcms.feedback.entity.Feedback;
+
 
 @Service
 @RequiredArgsConstructor
@@ -76,13 +80,15 @@ public class DashboardServiceImpl implements DashboardService {
         weeklyClasses.put("T7", 0L);
         weeklyClasses.put("CN", 0L);
 
-        classRepository.findAll().stream()
+        List<ClassEntity> classesThisWeek = classRepository.findAll().stream()
                 .filter(c -> c.getCreatedAt() != null)
                 .filter(c -> {
                     LocalDate createdDate = c.getCreatedAt().toLocalDate();
                     return !createdDate.isBefore(monday) && !createdDate.isAfter(sunday);
                 })
-                .forEach(c -> {
+                .toList();
+
+        classesThisWeek.forEach(c -> {
                     String key = switch (c.getCreatedAt().getDayOfWeek()) {
                         case MONDAY -> "T2";
                         case TUESDAY -> "T3";
@@ -95,6 +101,8 @@ public class DashboardServiceImpl implements DashboardService {
 
                     weeklyClasses.put(key, weeklyClasses.get(key) + 1);
                 });
+
+        long totalClassesThisWeek = classesThisWeek.size();
 
         return AdminDashboardStats.builder()
                 .totalStudents(studentRepository.count())
@@ -110,6 +118,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .pendingAbsenceRequests(absenceRequestRepository
                         .findByStatusOrderByRequestedAtDesc(AbsenceRequestStatus.PENDING)
                         .size())
+                .totalClassesThisWeek(totalClassesThisWeek)
                 .weeklyClasses(weeklyClasses)
                 .build();
     }
@@ -166,16 +175,69 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<TeachingSession> getTodaySessions(Integer tutorUserId) {
-        Tutor tutor = tutorRepository.findByUserUserId(tutorUserId).orElse(null);
-        if (tutor == null) return List.of();
+    public List<TeachingSession> getTodaySessions(Integer userId) {
         LocalDate today = LocalDate.now();
-        return teachingSessionRepository.findAll().stream()
-                .filter(s -> s.getClassEntity() != null && s.getClassEntity().getTutor() != null)
-                .filter(s -> s.getClassEntity().getTutor().getTutorId().equals(tutor.getTutorId()))
-                .filter(s -> today.equals(s.getSessionDate()))
-                .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
-                .toList();
+
+        // 1. Kiểm tra nếu là Tutor
+        Tutor tutor = tutorRepository.findByUserUserId(userId).orElse(null);
+        if (tutor != null) {
+            return teachingSessionRepository.findAll().stream()
+                    .filter(s -> s.getClassEntity() != null && s.getClassEntity().getTutor() != null)
+                    .filter(s -> s.getClassEntity().getTutor().getTutorId().equals(tutor.getTutorId()))
+                    .filter(s -> today.equals(s.getSessionDate()))
+                    .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
+                    .toList();
+        }
+
+        // 2. Kiểm tra nếu là Parent
+        Parent parent = parentRepository.findByUserUserId(userId).orElse(null);
+        if (parent != null) {
+            List<Student> children = studentRepository.findAll().stream()
+                    .filter(s -> s.getParent() != null && s.getParent().getParentId().equals(parent.getParentId()))
+                    .toList();
+
+            List<Integer> childIds = children.stream().map(Student::getStudentId).toList();
+
+            List<Enrollment> enrollments = enrollmentRepository.findAll().stream()
+                    .filter(e -> e.getStudent() != null && childIds.contains(e.getStudent().getStudentId()))
+                    .filter(e -> Boolean.TRUE.equals(e.getStatus()))
+                    .toList();
+
+            List<Integer> classIds = enrollments.stream()
+                    .filter(e -> e.getClassEntity() != null)
+                    .map(e -> e.getClassEntity().getClassId())
+                    .distinct()
+                    .toList();
+
+            return teachingSessionRepository.findAll().stream()
+                    .filter(s -> today.equals(s.getSessionDate()))
+                    .filter(s -> s.getClassEntity() != null && classIds.contains(s.getClassEntity().getClassId()))
+                    .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
+                    .toList();
+        }
+
+        // 3. Kiểm tra nếu là Student
+        Student student = studentRepository.findByUserUserId(userId).orElse(null);
+        if (student != null) {
+            List<Enrollment> enrollments = enrollmentRepository.findAll().stream()
+                    .filter(e -> e.getStudent() != null && e.getStudent().getStudentId().equals(student.getStudentId()))
+                    .filter(e -> Boolean.TRUE.equals(e.getStatus()))
+                    .toList();
+
+            List<Integer> classIds = enrollments.stream()
+                    .filter(e -> e.getClassEntity() != null)
+                    .map(e -> e.getClassEntity().getClassId())
+                    .distinct()
+                    .toList();
+
+            return teachingSessionRepository.findAll().stream()
+                    .filter(s -> today.equals(s.getSessionDate()))
+                    .filter(s -> s.getClassEntity() != null && classIds.contains(s.getClassEntity().getClassId()))
+                    .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
+                    .toList();
+        }
+
+        return List.of();
     }
 
     @Override
@@ -281,7 +343,11 @@ public class DashboardServiceImpl implements DashboardService {
                 .latestFeedback(latestFeedback)
                 .pendingPayments(pendingPayments)
                 .absenceRequests(absenceRequests)
+                .children(children)
+                .enrollments(enrollments)
                 .build();
+
+
     }
 
     @Override
@@ -323,13 +389,36 @@ public class DashboardServiceImpl implements DashboardService {
                 .filter(a -> a.getStudent().getStudentId().equals(student.getStudentId()))
                 .count();
 
+        List<TeachingSession> upcomingSessions = teachingSessionRepository.findAll().stream()
+                .filter(s -> today.equals(s.getSessionDate()))
+                .filter(s -> s.getClassEntity() != null)
+                .filter(s -> enrollments.stream().anyMatch(e ->
+                        e.getClassEntity().getClassId().equals(s.getClassEntity().getClassId())))
+                .filter(s -> s.getStatus() != SessionStatus.CANCELLED)
+                .sorted(Comparator.comparing(TeachingSession::getStartTime))
+                .toList();
+
+        List<Homework> pendingHomeworkList = getPendingHomeworkForStudent(student.getStudentId());
+
+        List<Feedback> latestFeedbackList = feedbackRepository.findAll().stream()
+                .filter(f -> f.getStudent() != null)
+                .filter(f -> f.getStudent().getStudentId().equals(student.getStudentId()))
+                .filter(f -> f.getStatus() == FeedbackStatus.APPROVED)
+                .sorted(Comparator.comparing(Feedback::getSubmittedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(2)
+                .toList();
+
         return StudentDashboardStats.builder()
                 .totalClasses(totalClasses)
                 .todaySessions(todaySessions)
                 .pendingHomework(pendingHomework)
                 .latestFeedback(latestFeedback)
                 .absenceRequests(absenceRequests)
+                .upcomingSessions(upcomingSessions)
+                .pendingHomeworkList(pendingHomeworkList)
+                .latestFeedbackList(latestFeedbackList)
                 .build();
+
     }
 
     private long countPendingHomeworkForStudents(List<Integer> studentIds) {
@@ -364,4 +453,34 @@ public class DashboardServiceImpl implements DashboardService {
 
         return count;
     }
-}
+
+    private List<Homework> getPendingHomeworkForStudent(Integer studentId) {
+
+        List<Homework> homeworkList = homeworkRepository.findAll();
+        List<Homework> pending = new ArrayList<>();
+
+        for (Homework homework : homeworkList) {
+            if (homework.getSession() == null || homework.getSession().getClassEntity() == null) continue;
+
+            List<Enrollment> enrollments = enrollmentRepository
+                    .findByClassEntityClassIdAndStatusTrue(
+                            homework.getSession().getClassEntity().getClassId()
+                    );
+
+            for (Enrollment enrollment : enrollments) {
+                if (enrollment.getStudent() == null) continue;
+
+                if (!enrollment.getStudent().getStudentId().equals(studentId)) continue;
+
+                boolean submitted = homeworkSubmissionRepository
+                        .findByHomeworkHomeworkIdAndStudentStudentId(homework.getHomeworkId(), studentId)
+                        .isPresent();
+
+                if (!submitted) {
+                    pending.add(homework);
+                }
+            }
+        }
+        return pending;
+    }
+}

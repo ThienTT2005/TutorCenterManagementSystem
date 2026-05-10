@@ -1,5 +1,6 @@
 package com.tcms.homework.controller;
 
+import com.tcms.homework.dto.request.CreateHomeworkQuestionRequest;
 import com.tcms.homework.dto.request.CreateHomeworkRequest;
 import com.tcms.homework.service.HomeworkService;
 import com.tcms.session.entity.TeachingSession;
@@ -142,9 +143,32 @@ public class TutorHomeworkController {
             return "redirect:/login";
         }
 
-        model.addAttribute("homework", homeworkService.getHomeworkById(homeworkId));
-        model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(homeworkId));
-        model.addAttribute("request", new CreateHomeworkRequest());
+        com.tcms.homework.entity.Homework homework = homeworkService.getHomeworkById(homeworkId);
+        java.util.List<com.tcms.homework.entity.HomeworkQuestion> questions = homeworkService.getQuestionsByHomeworkId(homeworkId);
+
+        CreateHomeworkRequest request = new CreateHomeworkRequest();
+        request.setSessionId(homework.getSession().getSessionId());
+        request.setTitle(homework.getTitle());
+        request.setType(homework.getType().name());
+        request.setContent(homework.getContent());
+        request.setAttachmentUrl(homework.getAttachmentUrl());
+        request.setDeadline(homework.getDeadline());
+
+        for (com.tcms.homework.entity.HomeworkQuestion q : questions) {
+            CreateHomeworkQuestionRequest qr = new CreateHomeworkQuestionRequest();
+            qr.setQuestionText(q.getQuestionText());
+            qr.setOptionA(q.getOptionA());
+            qr.setOptionB(q.getOptionB());
+            qr.setOptionC(q.getOptionC());
+            qr.setOptionD(q.getOptionD());
+            qr.setCorrectAnswer(q.getCorrectAnswer());
+            request.getQuestions().add(qr);
+        }
+
+        model.addAttribute("homework", homework);
+        model.addAttribute("sessionItem", homework.getSession());
+        model.addAttribute("questions", questions);
+        model.addAttribute("request", request);
 
         return "tutor/homework/edit";
     }

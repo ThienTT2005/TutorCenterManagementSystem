@@ -559,7 +559,16 @@
             background: #f1f5f9 !important;
             color: #94a3b8 !important;
             border: 1px solid #e2e8f0;
+            pointer-events: none;
+            cursor: not-allowed;
         }
+
+        .session-action.gray {
+            background: #f8fafc;
+            color: #94a3b8;
+            border: 1px solid #e2e8f0;
+        }
+
 
         .session-action:hover {
             filter: brightness(.97);
@@ -670,6 +679,54 @@
                 width: 100%;
                 max-width: none;
             }
+        }
+        /* FILTER */
+        .session-filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #475569;
+        }
+
+        .weekday-filter {
+            min-width: 220px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid #dbe2ea;
+            background: #ffffff;
+            padding: 0 14px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+            outline: none;
+            transition: all .2s ease;
+        }
+
+        .weekday-filter:focus {
+            border-color: #0057bf;
+            box-shadow: 0 0 0 4px rgba(0,87,191,.08);
+        }
+
+        .no-result-row {
+            text-align: center;
+            padding: 2rem !important;
+            color: #94a3b8;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -975,6 +1032,11 @@
                                         </tr>
                                     </c:otherwise>
                                 </c:choose>
+                                <tr id="noSessionResult" style="display:none;">
+                                    <td colspan="6" class="no-result-row">
+                                        Không có buổi học nào trong ngày đã chọn.
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -989,11 +1051,31 @@
                             </div>
 
                             <span class="section-count-badge">
-                <i class="fa-solid fa-calendar-days"></i>
-                ${empty sessions ? 0 : fn:length(sessions)} buổi học
-            </span>
+                                <i class="fa-solid fa-calendar-days"></i>
+                                ${empty sessions ? 0 : fn:length(sessions)} buổi học
+                            </span>
                         </div>
+                        <div class="session-filter-bar">
 
+                            <div class="filter-left">
+                                <span class="filter-label">
+                                    <i class="fa-solid fa-filter"></i>
+                                    Lọc theo thứ:
+                                </span>
+
+                                <select id="weekdayFilter" class="weekday-filter">
+                                    <option value="all">Tất cả</option>
+                                    <option value="1">Thứ 2</option>
+                                    <option value="2">Thứ 3</option>
+                                    <option value="3">Thứ 4</option>
+                                    <option value="4">Thứ 5</option>
+                                    <option value="5">Thứ 6</option>
+                                    <option value="6">Thứ 7</option>
+                                    <option value="0">Chủ nhật</option>
+                                </select>
+                            </div>
+
+                        </div>
                         <div class="session-table-wrap">
                             <table class="session-table">
                                 <thead>
@@ -1001,7 +1083,6 @@
                                     <th>Ngày học</th>
                                     <th>Thời gian</th>
                                     <th>Chủ đề</th>
-                                    <th>Mã điểm danh</th>
                                     <th>Trạng thái</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -1011,21 +1092,22 @@
                                 <c:choose>
                                     <c:when test="${not empty sessions}">
                                         <c:forEach var="s" items="${sessions}">
-                                            <tr>
+                                            <tr class="session-row"
+                                                data-date="${s.sessionDate}">
                                                 <td>
-                                    <span class="badge subject">
-                                        <i class="fa-regular fa-calendar"></i>
-                                        <c:out value="${empty s.sessionDate ? 'Chưa có ngày' : s.sessionDate}" />
-                                    </span>
+                                                    <span class="badge subject">
+                                                        <i class="fa-regular fa-calendar"></i>
+                                                        <c:out value="${empty s.sessionDate ? 'Chưa có ngày' : s.sessionDate}" />
+                                                    </span>
                                                 </td>
 
                                                 <td>
-                                    <span class="session-code">
-                                        <i class="fa-regular fa-clock"></i>
-                                        <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
-                                        -
-                                        <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
-                                    </span>
+                                                    <span class="session-code">
+                                                        <i class="fa-regular fa-clock"></i>
+                                                        <c:out value="${empty s.startTime ? '--:--' : s.startTime}" />
+                                                        -
+                                                        <c:out value="${empty s.endTime ? '--:--' : s.endTime}" />
+                                                    </span>
                                                 </td>
 
                                                 <td>
@@ -1034,46 +1116,63 @@
                                                             <c:out value="${empty s.topic ? (empty s.lessonName ? 'Chưa cập nhật chủ đề' : s.lessonName) : s.topic}" />
                                                         </strong>
                                                         <span>
-                                            Buổi học #<c:out value="${s.sessionId}" />
-                                        </span>
+                                                            Buổi học #<c:out value="${s.sessionId}" />
+                                                        </span>
                                                     </div>
                                                 </td>
 
                                                 <td>
-                                    <span class="session-code">
-                                        <i class="fa-solid fa-key"></i>
-                                        <c:out value="${empty s.attendanceCode ? 'Chưa có' : s.attendanceCode}" />
-                                    </span>
-                                                </td>
+                                                    <c:choose>
+                                                        <c:when test="${s.status == 'COMPLETED'}">
+                                                            <span class="badge active">
+                                                                <i class="fa-solid fa-circle-check"></i>
+                                                                Đã hoàn thành
+                                                            </span>
+                                                        </c:when>
+                                                        <c:when test="${s.status == 'CANCELLED'}">
+                                                            <span class="badge inactive">
+                                                                <i class="fa-solid fa-circle-xmark"></i>
+                                                                Đã hủy
+                                                            </span>
+                                                        </c:when>
+                                                        <c:when test="${s.status == 'PLANNED'}">
+                                                            <span class="badge orange">
+                                                                <i class="fa-solid fa-clock"></i>
+                                                                Sắp diễn ra
+                                                            </span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge subject">
+                                                                <i class="fa-solid fa-circle-info"></i>
+                                                                <c:out value="${s.status}" />
+                                                            </span>
+                                                        </c:otherwise>
+                                                    </c:choose>
 
-                                                <td>
-                                    <span class="badge gray">
-                                        <i class="fa-solid fa-circle-info"></i>
-                                        <c:out value="${empty s.status ? 'Chưa cập nhật' : s.status}" />
-                                    </span>
                                                 </td>
 
                                                 <td>
                                                     <div class="session-action-table">
-                                                        <a class="session-action blue"
+                                                        <c:set var="sid" value="${s.sessionId}" />
+                                                        <a class="session-action ${s.status == 'COMPLETED' ? 'green' : 'blue'}"
                                                            href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/attendance">
                                                             <i class="fa-solid fa-user-check"></i>
                                                             Điểm danh
                                                         </a>
 
-                                                        <a class="session-action green"
+                                                        <a class="session-action ${feedbackMap[sid] ? 'green' : 'disabled'}"
                                                            href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/feedback">
                                                             <i class="fa-solid fa-comment-dots"></i>
                                                             Feedback
                                                         </a>
 
-                                                        <a class="session-action purple"
+                                                        <a class="session-action <c:choose><c:when test="${learningPlanMap[sid]}">purple</c:when><c:when test="${s.status == 'PLANNED'}">gray</c:when><c:otherwise>disabled</c:otherwise></c:choose>"
                                                            href="${pageContext.request.contextPath}/tutor/sessions/${s.sessionId}/learning-plan">
                                                             <i class="fa-solid fa-clipboard-list"></i>
                                                             Kế hoạch
                                                         </a>
 
-                                                        <a class="session-action orange"
+                                                        <a class="session-action ${homeworkMap[sid] ? 'orange' : 'disabled'}"
                                                            href="${pageContext.request.contextPath}/tutor/homework/session/${s.sessionId}">
                                                             <i class="fa-solid fa-book-open-reader"></i>
                                                             Bài tập
@@ -1160,5 +1259,38 @@
 
     </main>
 </div>
+<script>
+    const weekdayFilter = document.getElementById("weekdayFilter");
+    const sessionRows = document.querySelectorAll(".session-row");
+    const noResultRow = document.getElementById("noSessionResult");
+
+    weekdayFilter.addEventListener("change", function () {
+
+        const selected = this.value;
+        let visibleCount = 0;
+
+        sessionRows.forEach(row => {
+
+            const dateStr = row.dataset.date;
+
+            if (!dateStr) {
+                row.style.display = "none";
+                return;
+            }
+
+            const date = new Date(dateStr);
+            const weekday = date.getDay();
+
+            if (selected === "all" || weekday.toString() === selected) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        noResultRow.style.display = visibleCount === 0 ? "" : "none";
+    });
+</script>
 </body>
 </html>

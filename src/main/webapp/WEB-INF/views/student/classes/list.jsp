@@ -52,12 +52,18 @@
             font-weight: 600;
         }
 
-        .class-list-card {
+        .class-item {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-            overflow: hidden;
+
+            transition: all 0.2s ease;
+            margin-top: 20px;
         }
 
         .class-item {

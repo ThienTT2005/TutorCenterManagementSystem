@@ -403,69 +403,120 @@
                       action="${pageContext.request.contextPath}/parent/absence/create"
                       method="post">
 
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-regular fa-user"></i>
-                            Chọn học sinh
-                        </label>
-
-                        <div class="select-like">
-                            <span>
-                                <c:choose>
-                                    <c:when test="${not empty student and not empty student.fullName}">
-                                        <c:out value="${student.fullName}" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        Mã học sinh: <c:out value="${request.studentId}" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-
-                        <input type="hidden"
-                               name="studentId"
-                               value="${request.studentId}">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fa-regular fa-calendar"></i>
-                            Chọn buổi học
-                        </label>
-
-                        <div class="session-row-wrap">
-                            <div class="readonly-field">
-                                <span>
-                                    <c:choose>
-                                        <c:when test="${not empty sessionItem}">
-                                            <c:choose>
-                                                <c:when test="${not empty sessionItem.classEntity.className}">
-                                                    <c:out value="${sessionItem.classEntity.className}" />
-                                                    -
-                                                </c:when>
-                                            </c:choose>
-                                            <c:out value="${sessionItem.sessionDate}" />
-                                            -
-                                            <c:out value="${sessionItem.startTime}" />
-                                        </c:when>
-                                        <c:otherwise>
-                                            Mã buổi học: <c:out value="${request.sessionId}" />
-                                        </c:otherwise>
-                                    </c:choose>
-                                </span>
-                                <i class="fa-regular fa-clock"></i>
+                    <c:choose>
+                        <c:when test="${not empty selectedSession and not empty selectedStudent}">
+                            <%-- THÔNG TIN ĐÃ CÓ SẴN (Từ trang chi tiết lớp học) --%>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fa-regular fa-user"></i>
+                                    Học sinh
+                                </label>
+                                <div class="readonly-field">
+                                    <span><strong><c:out value="${selectedStudent.fullName}" /></strong></span>
+                                    <i class="fa-solid fa-check-circle" style="color: #16a34a;"></i>
+                                </div>
+                                <input type="hidden" name="studentId" value="${selectedStudent.studentId}">
                             </div>
 
-                            <div class="session-note">
-                                Lưu ý: Bạn chỉ có thể chọn các buổi học trong vòng 7 ngày tới.
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    Lớp học
+                                </label>
+                                <div class="readonly-field">
+                                    <span>
+                                        #<c:out value="${selectedSession.classEntity.classId}" /> - 
+                                        <strong><c:out value="${selectedSession.classEntity.className}" /></strong>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <input type="hidden"
-                               name="sessionId"
-                               value="${request.sessionId}">
-                    </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fa-regular fa-calendar-check"></i>
+                                    Buổi học xin nghỉ
+                                </label>
+                                <div class="readonly-field">
+                                    <span>
+                                        <c:out value="${selectedSession.sessionDate}" /> 
+                                        (<c:out value="${selectedSession.startTime}" /> - <c:out value="${selectedSession.endTime}" />)
+                                    </span>
+                                    <i class="fa-regular fa-clock"></i>
+                                </div>
+                                <input type="hidden" name="sessionId" value="${selectedSession.sessionId}">
+                            </div>
+                        </c:when>
+
+                        <c:otherwise>
+                            <%-- CHẾ ĐỘ CHỌN THỦ CÔNG --%>
+                            <div class="form-group">
+                                <label class="form-label" for="studentSelect">
+                                    <i class="fa-regular fa-user"></i>
+                                    Chọn học sinh
+                                </label>
+                                <select id="studentSelect" name="studentId" class="select-like" style="appearance: auto;" required>
+                                    <option value="">-- Chọn con --</option>
+                                    <c:forEach var="c" items="${children}">
+                                        <option value="${c.studentId}" ${request.studentId == c.studentId ? 'selected' : ''}>
+                                            <c:out value="${c.fullName}" />
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="classSelect">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    Chọn lớp học
+                                </label>
+                                <select id="classSelect" class="select-like" style="appearance: auto;" required>
+                                    <option value="">-- Chọn lớp học --</option>
+                                    <c:forEach var="e" items="${enrollments}">
+                                        <option value="${e.classEntity.classId}" 
+                                                data-student="${e.student.studentId}">
+                                            <c:out value="${e.classEntity.className}" />
+                                        </option>
+                                    </c:forEach>
+                                </select>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label class="form-label" for="sessionSelect">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    Chọn buổi học (trong 7 ngày tới)
+                                </label>
+                                <select id="sessionSelect" name="sessionId" class="select-like" style="appearance: auto;" required>
+                                    <option value="">-- Chọn buổi học --</option>
+                                    <c:forEach var="s" items="${upcomingSessions}">
+                                        <%-- Tập hợp tất cả studentId của các con trong lớp này --%>
+                                        <c:set var="studentIds" value="" />
+                                        <c:set var="displayNames" value="" />
+                                        <c:forEach var="e" items="${enrollments}">
+                                            <c:if test="${e.classEntity.classId == s.classEntity.classId}">
+                                                <c:set var="studentIds" value="${studentIds}${empty studentIds ? '' : ','}${e.student.studentId}" />
+                                                <c:set var="displayNames" value="${displayNames}${empty displayNames ? '' : ', '}${e.student.fullName}" />
+                                            </c:if>
+                                        </c:forEach>
+                                        
+                                        <option value="${s.sessionId}" 
+                                                data-students="${studentIds}"
+                                                data-class="${s.classEntity.classId}"
+                                                ${request.sessionId == s.sessionId ? 'selected' : ''}>
+                                            <c:out value="${s.sessionDate}" /> (${s.startTime})
+                                        </option>
+
+                                    </c:forEach>
+                                </select>
+
+                                <div class="session-note" style="margin-top: 10px;">
+                                    Lưu ý: Chỉ hiển thị các buổi học trong vòng 7 ngày tới.
+                                </div>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+
 
                     <div class="form-group">
                         <label for="reason" class="form-label">
@@ -527,5 +578,70 @@
     </main>
 </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentSelect = document.getElementById('studentSelect');
+            const classSelect = document.getElementById('classSelect');
+            const sessionSelect = document.getElementById('sessionSelect');
+            
+            if (studentSelect && classSelect && sessionSelect) {
+                // Lưu lại tất cả các option ban đầu (trừ option mặc định)
+                const allClassOptions = Array.from(classSelect.options).slice(1);
+                const allSessionOptions = Array.from(sessionSelect.options).slice(1);
+                
+                // Hàm xóa sạch các option cũ
+                function clearSelect(select) {
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                }
+
+                // Xóa dữ liệu lúc mới load trang nếu chưa chọn học sinh
+                if (!studentSelect.value) {
+                    clearSelect(classSelect);
+                    clearSelect(sessionSelect);
+                }
+                
+                // Khi chọn học sinh -> Lọc lớp học
+                studentSelect.addEventListener('change', function() {
+                    const selectedStudentId = this.value;
+                    
+                    clearSelect(classSelect);
+                    clearSelect(sessionSelect);
+                    
+                    if (selectedStudentId) {
+                        const filteredClasses = allClassOptions.filter(opt => opt.getAttribute('data-student') == selectedStudentId);
+                        filteredClasses.forEach(opt => {
+                            // Clone để tránh lỗi tham chiếu khi add/remove nhiều lần
+                            const newOpt = opt.cloneNode(true);
+                            classSelect.add(newOpt);
+                        });
+                    }
+                });
+                
+                // Khi chọn lớp học -> Lọc buổi học
+                classSelect.addEventListener('change', function() {
+                    const selectedClassId = this.value;
+                    const selectedStudentId = studentSelect.value;
+                    
+                    clearSelect(sessionSelect);
+                    
+                    if (selectedClassId && selectedStudentId) {
+                        const filteredSessions = allSessionOptions.filter(opt => {
+                            const isCorrectClass = opt.getAttribute('data-class') == selectedClassId;
+                            const studentIds = opt.getAttribute('data-students').split(',');
+                            return isCorrectClass && studentIds.includes(selectedStudentId);
+                        });
+                        filteredSessions.forEach(opt => {
+                            const newOpt = opt.cloneNode(true);
+                            sessionSelect.add(newOpt);
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
+

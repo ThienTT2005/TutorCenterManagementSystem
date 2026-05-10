@@ -448,6 +448,7 @@
                             grid-template-columns: 1fr;
                         }
                     }
+
                 </style>
             </head>
 
@@ -578,6 +579,8 @@
                                     </div>
                                 </div>
 
+
+
                                 <c:choose>
                                     <c:when test="${not empty homeworks}">
                                         <div class="homework-list">
@@ -633,9 +636,14 @@
                                                             <span>Câu hỏi</span>
                                                             <strong>
                                                                 <c:choose>
-                                                                    <c:when test="${not empty questionCountMap}">
-                                                                        ${empty questionCountMap[hw.homeworkId] ? 0 :
-                                                                        questionCountMap[hw.homeworkId]}
+                                                                    <c:when test="${hw.type == 'ESSAY'}">1</c:when>
+                                                                    <c:when test="${hw.type == 'MULTIPLE_CHOICE'}">
+                                                                        <c:choose>
+                                                                            <c:when test="${not empty questionCountMap}">
+                                                                                ${empty questionCountMap[hw.homeworkId] ? 0 : questionCountMap[hw.homeworkId]}
+                                                                            </c:when>
+                                                                            <c:otherwise>0</c:otherwise>
+                                                                        </c:choose>
                                                                     </c:when>
                                                                     <c:otherwise>---</c:otherwise>
                                                                 </c:choose>
@@ -650,7 +658,7 @@
                                                                         ${empty submissionCountMap[hw.homeworkId] ? 0 :
                                                                         submissionCountMap[hw.homeworkId]}
                                                                     </c:when>
-                                                                    <c:otherwise>---</c:otherwise>
+                                                                    <c:otherwise>0</c:otherwise>
                                                                 </c:choose>
                                                             </strong>
                                                         </div>

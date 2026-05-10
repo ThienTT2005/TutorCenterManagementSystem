@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <c:set var="activePage" value="homework" scope="request" />
 
@@ -724,8 +725,14 @@
         }
     }
 
-    function addQuestion() {
+    function addQuestion(data = null) {
         const index = questionIndex++;
+        const qText = data ? (data.questionText || '') : '';
+        const optA = data ? (data.optionA || '') : '';
+        const optB = data ? (data.optionB || '') : '';
+        const optC = data ? (data.optionC || '') : '';
+        const optD = data ? (data.optionD || '') : '';
+        const correct = data ? (data.correctAnswer || '') : '';
 
         const card = document.createElement('div');
         card.className = 'question-card';
@@ -744,7 +751,7 @@
             '<textarea data-field="questionText" ' +
             'name="questions[' + index + '].questionText" ' +
             'class="form-textarea" ' +
-            'placeholder="Nhập nội dung câu hỏi..."></textarea>' +
+            'placeholder="Nhập nội dung câu hỏi...">' + qText + '</textarea>' +
             '</div>' +
 
             '<div class="option-grid">' +
@@ -753,7 +760,7 @@
             '<input data-field="optionA" ' +
             'type="text" ' +
             'name="questions[' + index + '].optionA" ' +
-            'class="form-control">' +
+            'class="form-control" value="' + optA + '">' +
             '</div>' +
 
             '<div class="form-group">' +
@@ -761,7 +768,7 @@
             '<input data-field="optionB" ' +
             'type="text" ' +
             'name="questions[' + index + '].optionB" ' +
-            'class="form-control">' +
+            'class="form-control" value="' + optB + '">' +
             '</div>' +
 
             '<div class="form-group">' +
@@ -769,7 +776,7 @@
             '<input data-field="optionC" ' +
             'type="text" ' +
             'name="questions[' + index + '].optionC" ' +
-            'class="form-control">' +
+            'class="form-control" value="' + optC + '">' +
             '</div>' +
 
             '<div class="form-group">' +
@@ -777,7 +784,7 @@
             '<input data-field="optionD" ' +
             'type="text" ' +
             'name="questions[' + index + '].optionD" ' +
-            'class="form-control">' +
+            'class="form-control" value="' + optD + '">' +
             '</div>' +
 
             '<div class="form-group">' +
@@ -786,10 +793,10 @@
             'name="questions[' + index + '].correctAnswer" ' +
             'class="form-select">' +
             '<option value="">-- Chọn đáp án --</option>' +
-            '<option value="A">A</option>' +
-            '<option value="B">B</option>' +
-            '<option value="C">C</option>' +
-            '<option value="D">D</option>' +
+            '<option value="A" ' + (correct === 'A' ? 'selected' : '') + '>A</option>' +
+            '<option value="B" ' + (correct === 'B' ? 'selected' : '') + '>B</option>' +
+            '<option value="C" ' + (correct === 'C' ? 'selected' : '') + '>C</option>' +
+            '<option value="D" ' + (correct === 'D' ? 'selected' : '') + '>D</option>' +
             '</select>' +
             '</div>' +
             '</div>';
@@ -884,6 +891,18 @@
             }
         }
     });
+
+    // Load existing questions
+    <c:forEach var="q" items="${request.questions}">
+        addQuestion({
+            questionText: `${fn:escapeXml(q.questionText)}`,
+            optionA: `${fn:escapeXml(q.optionA)}`,
+            optionB: `${fn:escapeXml(q.optionB)}`,
+            optionC: `${fn:escapeXml(q.optionC)}`,
+            optionD: `${fn:escapeXml(q.optionD)}`,
+            correctAnswer: `${fn:escapeXml(q.correctAnswer)}`
+        });
+    </c:forEach>
 
     toggleQuestionSection();
 </script>

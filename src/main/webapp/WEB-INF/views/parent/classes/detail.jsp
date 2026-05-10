@@ -671,6 +671,52 @@
             transform: none;
             box-shadow: none;
         }
+        .attendance-code-box{
+            margin-top: 14px;
+
+            background: linear-gradient(135deg,#eff6ff,#f8fafc);
+
+            border: 1px dashed #93c5fd;
+
+            border-radius: 16px;
+
+            padding: 14px 16px;
+
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+
+            gap:16px;
+        }
+
+        .attendance-label{
+            display:flex;
+            align-items:center;
+            gap:8px;
+
+            color:#2563eb;
+
+            font-size:13px;
+            font-weight:800;
+        }
+
+        .attendance-code{
+            padding:10px 18px;
+
+            background:#2563eb;
+            color:#ffffff;
+
+            border-radius:12px;
+
+            font-size:20px;
+            font-weight:900;
+
+            letter-spacing:3px;
+
+            font-family:monospace;
+
+            box-shadow:0 8px 20px rgba(37,99,235,.18);
+        }
     </style>
 </head>
 
@@ -798,6 +844,18 @@
                                                             <i class="fa-regular fa-clock"></i>
                                                             <c:out value="${s.startTime}"/> - <c:out value="${s.endTime}"/>
                                                         </div>
+                                                        <c:if test="${not empty s.attendanceCode}">
+                                                            <div class="attendance-code-box">
+                                                                <span class="attendance-label">
+                                                                    <i class="fa-solid fa-qrcode"></i>
+                                                                    Mã điểm danh
+                                                                </span>
+
+                                                                <div class="attendance-code">
+                                                                        ${s.attendanceCode}
+                                                                </div>
+                                                            </div>
+                                                        </c:if>
                                                     </div>
                                                 </div>
 
@@ -810,9 +868,10 @@
 
                                                     <c:choose>
 
-                                                        <c:when test="${s.status == 'CANCELLED'}">
+                                                        <c:when test="${s.status == 'CANCELLED' || s.status == 'ONGOING' || s.status == 'COMPLETED'}">
 
-                                                            <span class="btn-absence-top disabled">
+                                                            <span class="btn-absence-top disabled" title="Không thể xin nghỉ cho buổi học này">
+
 
                                                                 <i class="fa-solid fa-calendar-xmark"></i>
                                                                 Xin nghỉ

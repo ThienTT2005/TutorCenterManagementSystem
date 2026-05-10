@@ -13,4 +13,5 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     List<Enrollment> findByClassEntityClassId(Integer classId);
 
     List<Enrollment> findByStudentStudentIdAndStatusTrue(Integer studentId);
-}
+    List<Enrollment> findByStudentStudentIdInAndStatusTrue(List<Integer> studentIds);
+}

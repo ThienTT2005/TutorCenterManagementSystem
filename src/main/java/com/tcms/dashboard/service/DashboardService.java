@@ -11,7 +11,7 @@ public interface DashboardService {
 
     TutorDashboardStats getTutorStats(Integer tutorUserId);
 
-    java.util.List<com.tcms.session.entity.TeachingSession> getTodaySessions(Integer tutorUserId);
+    java.util.List<com.tcms.session.entity.TeachingSession> getTodaySessions(Integer userId);
 
     java.util.List<com.tcms.feedback.entity.Feedback> getPendingFeedbacks(Integer tutorUserId);
 
