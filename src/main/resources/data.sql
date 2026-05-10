@@ -365,7 +365,8 @@ CREATE TABLE session_validity_log (
                                       FOREIGN KEY (payment_id) REFERENCES payments(payment_id) ON DELETE SET NULL,
                                       INDEX idx_validity_session (session_id),
                                       INDEX idx_validity_student (student_id),
-                                      INDEX idx_validity_paid (is_paid)
+                                      INDEX idx_validity_paid (is_paid),
+                                      UNIQUE KEY uk_validity_session_student (session_id, student_id)
 );
 
 -- Dữ liệu cho bảng roles
@@ -456,7 +457,7 @@ BEGIN
 
     IF NEW.submitted_at > v_feedback_deadline THEN
         SET NEW.is_late = TRUE;
-        SET NEW.penalty_rate = 25;
+        SET NEW.penalty_rate = 0.25;
     ELSE
         SET NEW.is_late = FALSE;
         SET NEW.penalty_rate = 0;
@@ -491,45 +492,7 @@ BEGIN
     END IF;
 END//
 
--- TRIGGER 4: Tạo thông báo khi có feedback mới
-CREATE TRIGGER trg_notification_on_feedback
-    AFTER INSERT ON feedback
-    FOR EACH ROW
-BEGIN
-    DECLARE v_user_id INT;
-    DECLARE v_student_name VARCHAR(100);
-    DECLARE v_session_date DATE;
-    DECLARE v_parent_user_id INT;
 
-    SELECT s.full_name, ses.session_date, s.user_id
-    INTO v_student_name, v_session_date, v_user_id
-    FROM students s
-             JOIN teaching_sessions ses ON ses.session_id = NEW.session_id
-    WHERE s.student_id = NEW.student_id;
-
-    SELECT u.user_id INTO v_parent_user_id
-    FROM parents p
-             JOIN users u ON p.user_id = u.user_id
-    WHERE p.parent_id = (SELECT parent_id FROM students WHERE student_id = NEW.student_id);
-
-    IF v_parent_user_id IS NOT NULL THEN
-        INSERT INTO notifications (user_id, title, content, type, reference_id, reference_table)
-        VALUES (v_parent_user_id,
-                'Feedback mới',
-                CONCAT('Học sinh ', v_student_name, ' đã có feedback cho buổi học ngày ', v_session_date),
-                'FEEDBACK',
-                NEW.feedback_id,
-                'feedback');
-    END IF;
-
-    INSERT INTO notifications (user_id, title, content, type, reference_id, reference_table)
-    VALUES (v_user_id,
-            'Feedback mới',
-            CONCAT('Bạn đã có feedback cho buổi học ngày ', v_session_date),
-            'FEEDBACK',
-            NEW.feedback_id,
-            'feedback');
-END//
 
 -- TRIGGER 5: Tạo thông báo khi có bài tập mới
 CREATE TRIGGER trg_notification_on_homework
@@ -688,7 +651,7 @@ BEGIN
         WHERE s.session_id = NEW.session_id;
 
         IF v_attendance_valid = TRUE THEN
-            SET v_calculated_amount = v_tuition_fee * (100 - NEW.penalty_rate) / 100;
+            SET v_calculated_amount = v_tuition_fee * (1 - NEW.penalty_rate);
         ELSE
             SET v_calculated_amount = 0;
         END IF;
@@ -698,7 +661,14 @@ BEGIN
                                           feedback_submitted_at, calculated_amount)
         VALUES (NEW.session_id, NEW.student_id, v_attendance_valid,
                 IF(NEW.is_late = TRUE, 'LATE', 'ON_TIME'),
-                NEW.penalty_rate, NEW.submitted_at, v_calculated_amount);
+                NEW.penalty_rate, NEW.submitted_at, v_calculated_amount)
+        ON DUPLICATE KEY UPDATE
+            attendance_valid = v_attendance_valid,
+            feedback_status = IF(NEW.is_late = TRUE, 'LATE', 'ON_TIME'),
+            feedback_penalty = NEW.penalty_rate,
+            feedback_submitted_at = NEW.submitted_at,
+            calculated_amount = v_calculated_amount,
+            calculated_at = CURRENT_TIMESTAMP;
     END IF;
 END//
 
@@ -766,7 +736,7 @@ BEGIN
     WHERE session_id = p_session_id AND student_id = p_student_id AND status = 'APPROVED';
 
     IF v_attendance_valid = TRUE AND v_feedback_status IS NOT NULL THEN
-        SET v_calculated_amount = v_tuition_fee * (100 - v_feedback_penalty) / 100;
+        SET v_calculated_amount = v_tuition_fee * (1 - v_feedback_penalty);
     ELSE
         SET v_calculated_amount = 0;
     END IF;
@@ -821,47 +791,85 @@ CREATE PROCEDURE sp_generate_sessions_from_schedule(
 BEGIN
     DECLARE v_current_date DATE;
     DECLARE v_weekday INT;
+
     DECLARE v_schedule_weekday INT;
     DECLARE v_start_time TIME;
     DECLARE v_end_time TIME;
+
     DECLARE done INT DEFAULT FALSE;
 
     DECLARE cur CURSOR FOR
         SELECT weekday, start_time, end_time
         FROM teaching_schedules
-        WHERE class_id = p_class_id;
+        WHERE class_id = p_class_id
+        ORDER BY weekday, start_time;
 
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     SET v_current_date = p_start_date;
 
     WHILE v_current_date <= p_end_date DO
+
             SET v_weekday = DAYOFWEEK(v_current_date);
+            -- Ánh xạ Chủ nhật từ 1 (MySQL) sang 8 (Hệ thống)
+            IF v_weekday = 1 THEN SET v_weekday = 8; END IF;
+
+            -- QUAN TRỌNG
+            SET done = FALSE;
 
             OPEN cur;
+
             read_loop: LOOP
-                FETCH cur INTO v_schedule_weekday, v_start_time, v_end_time;
+
+                FETCH cur INTO
+                    v_schedule_weekday,
+                    v_start_time,
+                    v_end_time;
+
                 IF done THEN
-                    SET done = FALSE;
                     LEAVE read_loop;
                 END IF;
 
                 IF v_weekday = v_schedule_weekday THEN
+
                     IF NOT EXISTS (
-                        SELECT 1 FROM teaching_sessions
-                        WHERE class_id = p_class_id AND session_date = v_current_date
+                        SELECT 1
+                        FROM teaching_sessions
+                        WHERE class_id = p_class_id
+                          AND session_date = v_current_date
+                          AND start_time = v_start_time
+                          AND end_time = v_end_time
                     ) THEN
-                        INSERT INTO teaching_sessions (class_id, session_date, start_time, end_time, status)
-                        VALUES (p_class_id, v_current_date, v_start_time, v_end_time, 'PLANNED');
+
+                        INSERT INTO teaching_sessions (
+                            class_id,
+                            session_date,
+                            start_time,
+                            end_time,
+                            status
+                        )
+                        VALUES (
+                                   p_class_id,
+                                   v_current_date,
+                                   v_start_time,
+                                   v_end_time,
+                                   'PLANNED'
+                               );
+
                     END IF;
+
                 END IF;
+
             END LOOP;
+
             CLOSE cur;
 
-            SET v_current_date = DATE_ADD(v_current_date, INTERVAL 1 DAY);
-        END WHILE;
-END//
+            SET v_current_date =
+                    DATE_ADD(v_current_date, INTERVAL 1 DAY);
 
+        END WHILE;
+
+END//
 -- PROCEDURE 4: Tính validity cho tất cả lớp
 CREATE PROCEDURE sp_calculate_all_classes_validity()
 BEGIN
@@ -1674,45 +1682,7 @@ BEGIN
     END IF;
 END//
 
--- TRIGGER 4: Tạo thông báo khi có feedback mới
-CREATE TRIGGER trg_notification_on_feedback
-    AFTER INSERT ON feedback
-    FOR EACH ROW
-BEGIN
-    DECLARE v_user_id INT;
-    DECLARE v_student_name VARCHAR(100);
-    DECLARE v_session_date DATE;
-    DECLARE v_parent_user_id INT;
 
-    SELECT s.full_name, ses.session_date, s.user_id
-    INTO v_student_name, v_session_date, v_user_id
-    FROM students s
-             JOIN teaching_sessions ses ON ses.session_id = NEW.session_id
-    WHERE s.student_id = NEW.student_id;
-
-    SELECT u.user_id INTO v_parent_user_id
-    FROM parents p
-             JOIN users u ON p.user_id = u.user_id
-    WHERE p.parent_id = (SELECT parent_id FROM students WHERE student_id = NEW.student_id);
-
-    IF v_parent_user_id IS NOT NULL THEN
-        INSERT INTO notifications (user_id, title, content, type, reference_id, reference_table)
-        VALUES (v_parent_user_id,
-                'Feedback mới',
-                CONCAT('Học sinh ', v_student_name, ' đã có feedback cho buổi học ngày ', v_session_date),
-                'FEEDBACK',
-                NEW.feedback_id,
-                'feedback');
-    END IF;
-
-    INSERT INTO notifications (user_id, title, content, type, reference_id, reference_table)
-    VALUES (v_user_id,
-            'Feedback mới',
-            CONCAT('Bạn đã có feedback cho buổi học ngày ', v_session_date),
-            'FEEDBACK',
-            NEW.feedback_id,
-            'feedback');
-END//
 
 -- TRIGGER 5: Tạo thông báo khi có bài tập mới
 CREATE TRIGGER trg_notification_on_homework
@@ -2020,6 +1990,8 @@ BEGIN
 
     WHILE v_current_date <= p_end_date DO
             SET v_weekday = DAYOFWEEK(v_current_date);
+            -- Ánh xạ Chủ nhật từ 1 (MySQL) sang 8 (Hệ thống)
+            IF v_weekday = 1 THEN SET v_weekday = 8; END IF;
 
             OPEN cur;
             read_loop: LOOP
@@ -2030,9 +2002,13 @@ BEGIN
                 END IF;
 
                 IF v_weekday = v_schedule_weekday THEN
+                    -- Sửa lỗi: Kiểm tra cả start_time và end_time để cho phép nhiều buổi cùng ngày
                     IF NOT EXISTS (
                         SELECT 1 FROM teaching_sessions
-                        WHERE class_id = p_class_id AND session_date = v_current_date
+                        WHERE class_id = p_class_id 
+                          AND session_date = v_current_date
+                          AND start_time = v_start_time
+                          AND end_time = v_end_time
                     ) THEN
                         INSERT INTO teaching_sessions (class_id, session_date, start_time, end_time, status)
                         VALUES (p_class_id, v_current_date, v_start_time, v_end_time, 'PLANNED');

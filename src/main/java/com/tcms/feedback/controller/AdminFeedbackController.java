@@ -20,11 +20,36 @@ public class AdminFeedbackController {
         return "ADMIN".equalsIgnoreCase(role);
     }
 
-    @GetMapping("/pending")
-    public String pendingFeedbacks(HttpSession session, Model model) {
+    @GetMapping("")
+    public String allFeedbacks(@RequestParam(required = false) String keyword,
+                               @RequestParam(required = false) String className,
+                               @RequestParam(required = false) String status,
+                               HttpSession session,
+                               Model model) {
         if (!isAdmin(session)) return "redirect:/login";
 
-        model.addAttribute("feedbacks", feedbackService.getPendingFeedbacks());
+        model.addAttribute("feedbacks", feedbackService.getFeedbacks(keyword, className, status));
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("className", className);
+        model.addAttribute("status", status);
+
+        return "admin/feedback/pending";
+    }
+
+    @GetMapping({"/pending"})
+    public String pendingFeedbacks(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String className,
+            @RequestParam(required = false) String status,
+            HttpSession session,
+            Model model) {
+        if (!isAdmin(session)) return "redirect:/login";
+
+        model.addAttribute("feedbacks", feedbackService.getPendingFeedbacks(keyword, className, status));
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("className", className);
+        model.addAttribute("status", status);
+
         return "admin/feedback/pending";
     }
 

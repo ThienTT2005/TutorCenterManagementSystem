@@ -23,12 +23,15 @@ import com.tcms.user.entity.User;
 import com.tcms.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +47,11 @@ public class PaymentServiceImpl implements PaymentService {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
 
+    private static final String UPLOAD_DIR =
+            System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+
     @Override
+    @Transactional
     public void createPayment(Integer tutorUserId, CreatePaymentRequest request) {
 
         if (request.getClassId() == null || request.getStudentId() == null) {
@@ -74,7 +81,8 @@ public class PaymentServiceImpl implements PaymentService {
                         .filter(log -> log.getSession().getStatus() == SessionStatus.COMPLETED)
                         .filter(log -> !log.getSession().getSessionDate().isAfter(LocalDate.now()))
                         .filter(log -> Boolean.TRUE.equals(log.getAttendanceValid()))
-                        .filter(log -> "APPROVED".equals(log.getFeedbackStatus()))
+                        .filter(log -> Arrays.asList("APPROVED", "ON_TIME", "LATE")
+                                .contains(log.getFeedbackStatus()))
                         .filter(log -> log.getCalculatedAmount() != null)
                         .filter(log -> log.getCalculatedAmount().compareTo(BigDecimal.ZERO) > 0)
                         .collect(Collectors.toList());
@@ -104,12 +112,18 @@ public class PaymentServiceImpl implements PaymentService {
                 .status(PaymentStatus.PENDING)
                 .requestDate(LocalDateTime.now())
                 .build();
+
         Payment saved = paymentRepository.save(payment);
-        if (student.getParent() != null && student.getParent().getUser() != null) {
+
+        List<User> admins = userRepository.findByRoleRoleName("ADMIN");
+
+        for (User admin : admins) {
             notificationService.createNotification(
-                    student.getParent().getUser().getUserId(),
-                    "Yêu cầu thanh toán mới",
-                    "Gia sư đã tạo yêu cầu thanh toán cho học sinh " + student.getFullName(),
+                    admin.getUserId(),
+                    "Yêu cầu thanh toán mới cần duyệt",
+                    "Gia sư " + tutor.getFullName()
+                            + " đã tạo yêu cầu thanh toán cho lớp "
+                            + classEntity.getClassName(),
                     NotificationType.PAYMENT,
                     saved.getPaymentId(),
                     "payments"
@@ -120,7 +134,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void uploadProof(Integer parentUserId, UploadPaymentProofRequest request) {
 
-        if (request.getPaymentId() == null || request.getProofUrl() == null || request.getProofUrl().isBlank()) {
+        if (request.getPaymentId() == null) {
+            throw new RuntimeException("Thiếu thông tin thanh toán");
+        }
+        
+        boolean hasFile = request.getProofFile() != null && !request.getProofFile().isEmpty();
+        boolean hasUrl = request.getProofUrl() != null && !request.getProofUrl().isBlank();
+        
+        if (!hasFile && !hasUrl) {
             throw new RuntimeException("Thiếu thông tin minh chứng thanh toán");
         }
 
@@ -130,19 +151,41 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(request.getPaymentId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy yêu cầu thanh toán"));
 
-        if (payment.getStudent() == null ||
-                payment.getStudent().getParent() == null ||
-                !payment.getStudent().getParent().getParentId().equals(parent.getParentId())) {
-            throw new RuntimeException("Bạn không có quyền upload minh chứng cho thanh toán này");
+        if (payment.getStudent() == null
+                || payment.getStudent().getParent() == null
+                || !payment.getStudent().getParent().getParentId()
+                .equals(parent.getParentId())) {
+            throw new RuntimeException("Bạn không có quyền upload minh chứng");
         }
 
-        if (payment.getStatus() != PaymentStatus.PENDING) {
-            throw new RuntimeException("Payment không ở trạng thái chờ upload minh chứng");
+        if (payment.getStatus() != PaymentStatus.ADMIN_APPROVED) {
+            throw new RuntimeException("Payment chưa được admin duyệt");
         }
 
-        payment.setProofUrl(request.getProofUrl());
+        if (request.getProofFile() != null && !request.getProofFile().isEmpty()) {
+            try {
+                File dir = new File(UPLOAD_DIR);
+                if (!dir.exists()) dir.mkdirs();
+
+                String originalName = request.getProofFile().getOriginalFilename();
+                String fileName = UUID.randomUUID() + "_" + (originalName != null ? originalName.replaceAll("\\s+", "_") : "proof");
+                File dest = new File(UPLOAD_DIR + fileName);
+                request.getProofFile().transferTo(dest);
+
+                payment.setProofUrl("/uploads/" + fileName);
+            } catch (Exception e) {
+                throw new RuntimeException("Lỗi khi tải ảnh lên: " + e.getMessage());
+            }
+        } else if (request.getProofUrl() != null && !request.getProofUrl().isBlank()) {
+            payment.setProofUrl(request.getProofUrl());
+        } else {
+            throw new RuntimeException("Thiếu thông tin minh chứng thanh toán");
+        }
+
         payment.setStatus(PaymentStatus.PROOF_UPLOADED);
+
         Payment saved = paymentRepository.save(payment);
+
         if (saved.getTutor() != null && saved.getTutor().getUser() != null) {
             notificationService.createNotification(
                     saved.getTutor().getUser().getUserId(),
@@ -166,11 +209,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy gia sư"));
 
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy yêu cầu thanh toán"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment"));
 
-        if (payment.getTutor() == null ||
-                !payment.getTutor().getTutorId().equals(tutor.getTutorId())) {
-            throw new RuntimeException("Bạn không có quyền xác nhận thanh toán này");
+        if (payment.getTutor() == null
+                || !payment.getTutor().getTutorId().equals(tutor.getTutorId())) {
+            throw new RuntimeException("Bạn không có quyền xác nhận");
         }
 
         if (payment.getStatus() != PaymentStatus.PROOF_UPLOADED) {
@@ -188,7 +231,7 @@ public class PaymentServiceImpl implements PaymentService {
             notificationService.createNotification(
                     admin.getUserId(),
                     "Thanh toán chờ admin duyệt",
-                    "Gia sư đã xác nhận nhận tiền, cần admin duyệt thanh toán.",
+                    "Gia sư đã xác nhận nhận tiền, cần admin duyệt.",
                     NotificationType.PAYMENT,
                     saved.getPaymentId(),
                     "payments"
@@ -204,30 +247,51 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy yêu cầu thanh toán"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment"));
 
-        if (payment.getStatus() != PaymentStatus.TUTOR_CONFIRMED) {
-            throw new RuntimeException("Gia sư chưa xác nhận đã nhận tiền");
-        }
+        if (payment.getStatus() == PaymentStatus.PENDING) {
 
-        List<Integer> sessionIds = parseSessionIds(payment.getSessionIds());
+            payment.setStatus(PaymentStatus.ADMIN_APPROVED);
+            payment.setAdminApprovedAt(LocalDateTime.now());
 
-        List<SessionValidityLog> logs =
-                validityLogRepository.findByStudentStudentIdAndSessionSessionIdIn(
-                        payment.getStudent().getStudentId(),
-                        sessionIds
+            if (payment.getStudent().getParent() != null
+                    && payment.getStudent().getParent().getUser() != null) {
+
+                notificationService.createNotification(
+                        payment.getStudent().getParent().getUser().getUserId(),
+                        "Yêu cầu thanh toán mới",
+                        "Admin đã duyệt yêu cầu thanh toán cho lớp "
+                                + payment.getClassEntity().getClassName(),
+                        NotificationType.PAYMENT,
+                        payment.getPaymentId(),
+                        "payments"
                 );
-
-        for (SessionValidityLog log : logs) {
-            if (!Boolean.TRUE.equals(log.getIsPaid())) {
-                log.setIsPaid(true);
-                log.setPayment(payment);
-                validityLogRepository.save(log);
             }
-        }
 
-        payment.setStatus(PaymentStatus.COMPLETED);
-        payment.setAdminApprovedAt(LocalDateTime.now());
+        } else if (payment.getStatus() == PaymentStatus.TUTOR_CONFIRMED) {
+
+            List<Integer> sessionIds = parseSessionIds(payment.getSessionIds());
+
+            List<SessionValidityLog> logs =
+                    validityLogRepository.findByStudentStudentIdAndSessionSessionIdIn(
+                            payment.getStudent().getStudentId(),
+                            sessionIds
+                    );
+
+            for (SessionValidityLog log : logs) {
+                if (!Boolean.TRUE.equals(log.getIsPaid())) {
+                    log.setIsPaid(true);
+                    log.setPayment(payment);
+                    validityLogRepository.save(log);
+                }
+            }
+
+            payment.setStatus(PaymentStatus.COMPLETED);
+            payment.setAdminApprovedAt(LocalDateTime.now());
+
+        } else {
+            throw new RuntimeException("Trạng thái không cho phép duyệt");
+        }
 
         paymentRepository.save(payment);
     }
@@ -235,17 +299,21 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void adminReject(RejectPaymentRequest request) {
 
-        if (request.getPaymentId() == null || request.getReason() == null || request.getReason().isBlank()) {
-            throw new RuntimeException("Thiếu thông tin từ chối thanh toán");
+        if (request.getPaymentId() == null
+                || request.getReason() == null
+                || request.getReason().isBlank()) {
+            throw new RuntimeException("Thiếu thông tin từ chối");
         }
 
         Payment payment = paymentRepository.findById(request.getPaymentId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy yêu cầu thanh toán"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment"));
 
         if (payment.getStatus() != PaymentStatus.PENDING
                 && payment.getStatus() != PaymentStatus.PROOF_UPLOADED
-                && payment.getStatus() != PaymentStatus.TUTOR_CONFIRMED) {
-            throw new RuntimeException("Không thể từ chối payment ở trạng thái này");
+                && payment.getStatus() != PaymentStatus.TUTOR_CONFIRMED
+                && payment.getStatus() != PaymentStatus.ADMIN_APPROVED) {
+
+            throw new RuntimeException("Không thể từ chối payment");
         }
 
         payment.setStatus(PaymentStatus.REJECTED);
@@ -257,20 +325,23 @@ public class PaymentServiceImpl implements PaymentService {
             notificationService.createNotification(
                     saved.getTutor().getUser().getUserId(),
                     "Thanh toán bị từ chối",
-                    "Admin đã từ chối thanh toán. Lý do: " + request.getReason(),
+                    "Admin đã từ chối thanh toán. Lý do: "
+                            + request.getReason(),
                     NotificationType.PAYMENT,
                     saved.getPaymentId(),
                     "payments"
             );
         }
 
-        if (saved.getStudent() != null &&
-                saved.getStudent().getParent() != null &&
-                saved.getStudent().getParent().getUser() != null) {
+        if (saved.getStudent() != null
+                && saved.getStudent().getParent() != null
+                && saved.getStudent().getParent().getUser() != null) {
+
             notificationService.createNotification(
                     saved.getStudent().getParent().getUser().getUserId(),
                     "Thanh toán bị từ chối",
-                    "Admin đã từ chối thanh toán. Lý do: " + request.getReason(),
+                    "Admin đã từ chối thanh toán. Lý do: "
+                            + request.getReason(),
                     NotificationType.PAYMENT,
                     saved.getPaymentId(),
                     "payments"
@@ -280,18 +351,24 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> getTutorPayments(Integer tutorUserId) {
+
         Tutor tutor = tutorRepository.findByUserUserId(tutorUserId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy gia sư"));
 
-        return paymentRepository.findByTutorTutorIdOrderByRequestDateDesc(tutor.getTutorId());
+        return paymentRepository.findByTutorTutorIdOrderByRequestDateDesc(
+                tutor.getTutorId()
+        );
     }
 
     @Override
     public List<Payment> getParentPayments(Integer parentUserId) {
+
         Parent parent = parentRepository.findByUserUserId(parentUserId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phụ huynh"));
 
-        return paymentRepository.findByStudentParentParentIdOrderByRequestDateDesc(parent.getParentId());
+        return paymentRepository.findByStudentParentParentIdOrderByRequestDateDesc(
+                parent.getParentId()
+        );
     }
 
     @Override
@@ -300,6 +377,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private List<Integer> parseSessionIds(String sessionIds) {
+
         if (sessionIds == null || sessionIds.isBlank()) {
             throw new RuntimeException("Payment không có danh sách buổi học");
         }
@@ -310,8 +388,10 @@ public class PaymentServiceImpl implements PaymentService {
                 .map(Integer::parseInt)
                 .toList();
     }
+
     @Override
     public long countApprovedPayments() {
+
         return paymentRepository.countByStatus(PaymentStatus.ADMIN_APPROVED)
                 + paymentRepository.countByStatus(PaymentStatus.COMPLETED);
     }

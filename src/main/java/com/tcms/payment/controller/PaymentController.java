@@ -109,7 +109,6 @@ public class PaymentController {
         // Ban đầu chưa chọn lớp nên chưa load học sinh
         var classes = tutorclass.getMyClasses(tutorUserId);
 
-        model.addAttribute("classes", classes);
 
         if (classes != null && !classes.isEmpty()) {
             Integer firstClassId = classes.get(0).getClassId();

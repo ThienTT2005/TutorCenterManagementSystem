@@ -63,13 +63,26 @@ public class SessionValidityServiceImpl implements SessionValidityService {
                 .findBySessionSessionIdAndStudentStudentId(sessionId, studentId)
                 .orElse(null);
 
-        Feedback feedback = feedbackRepository
-                .findBySessionSessionIdAndStudentStudentId(sessionId, studentId)
-                .orElse(null);
+        List<Feedback> feedbacks = feedbackRepository
+                .findBySessionSessionIdAndStudentStudentId(
+                        sessionId,
+                        student.getStudentId()
+                );
+
+        Feedback feedback = feedbacks.isEmpty()
+                ? null
+                : feedbacks.get(0);
 
         Boolean attendanceValid = attendance != null && Boolean.TRUE.equals(attendance.getIsValid());
 
-        String feedbackStatus = feedback == null ? "MISSING" : feedback.getStatus().name();
+        String feedbackStatus = "MISSING";
+        if (feedback != null) {
+            if (FeedbackStatus.APPROVED.equals(feedback.getStatus())) {
+                feedbackStatus = Boolean.TRUE.equals(feedback.getIsLate()) ? "LATE" : "ON_TIME";
+            } else {
+                feedbackStatus = feedback.getStatus().name();
+            }
+        }
 
         BigDecimal feedbackPenalty = feedback == null || feedback.getPenaltyRate() == null
                 ? BigDecimal.ZERO
@@ -85,9 +98,12 @@ public class SessionValidityServiceImpl implements SessionValidityService {
                 feedback
         );
 
-        SessionValidityLog log = validityLogRepository
-                .findBySessionSessionIdAndStudentStudentId(sessionId, studentId)
-                .orElse(new SessionValidityLog());
+        List<SessionValidityLog> existingLogs = validityLogRepository
+                .findBySessionSessionIdAndStudentStudentId(sessionId, studentId);
+
+        SessionValidityLog log = existingLogs.isEmpty()
+                ? new SessionValidityLog()
+                : existingLogs.get(0);
 
         log.setSession(session);
         log.setStudent(student);

@@ -91,7 +91,7 @@
                                         </c:when>
 
                                         <c:when test="${refTable eq 'feedbacks' or refTable eq 'feedback'}">
-                                            <c:set var="notiUrl" value="${pageContext.request.contextPath}/admin/feedbacks" />
+                                            <c:set var="notiUrl" value="${pageContext.request.contextPath}/admin/feedback/pending" />
                                         </c:when>
 
                                         <c:when test="${refTable eq 'homeworks' or refTable eq 'homework'}">

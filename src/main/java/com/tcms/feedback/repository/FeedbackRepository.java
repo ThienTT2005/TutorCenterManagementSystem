@@ -13,5 +13,9 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
     List<Feedback> findByStatus(FeedbackStatus status);
 
-    Optional<Feedback> findBySessionSessionIdAndStudentStudentId(Integer sessionId, Integer studentId);
+    List<Feedback> findBySessionSessionIdAndStatus(Integer sessionId, FeedbackStatus status);
+
+    List <Feedback> findBySessionSessionIdAndStudentStudentId(Integer sessionId, Integer studentId);
+
+    List<Feedback> findBySessionSessionIdAndStudentStudentIdAndStatus(Integer sessionId, Integer studentId, FeedbackStatus status);
 }

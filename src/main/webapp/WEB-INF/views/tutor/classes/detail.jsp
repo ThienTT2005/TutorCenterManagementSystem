@@ -273,6 +273,7 @@
             border-radius: 22px;
             box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
             padding: 1.5rem;
+            margin-top: 20px;
         }
 
         .detail-section-header {
@@ -901,9 +902,9 @@
                             </div>
 
                             <span class="section-count-badge">
-                <i class="fa-solid fa-users"></i>
-                ${empty enrollments ? 0 : fn:length(enrollments)} học sinh
-            </span>
+                                <i class="fa-solid fa-users"></i>
+                                ${empty enrollments ? 0 : fn:length(enrollments)} học sinh
+                            </span>
                         </div>
 
                         <div class="student-table-wrap">

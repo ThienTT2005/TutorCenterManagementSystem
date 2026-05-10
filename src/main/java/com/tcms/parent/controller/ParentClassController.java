@@ -2,6 +2,7 @@ package com.tcms.parent.controller;
 
 import com.tcms.clazz.entity.Enrollment;
 import com.tcms.clazz.repository.EnrollmentRepository;
+import com.tcms.feedback.entity.Feedback;
 import com.tcms.feedback.repository.FeedbackRepository;
 import com.tcms.homework.entity.Homework;
 import com.tcms.homework.repository.HomeworkRepository;
@@ -105,8 +106,16 @@ public class ParentClassController {
         for (TeachingSession sessionItem : sessions) {
             Integer sessionId = sessionItem.getSessionId();
 
-            feedbackRepository.findBySessionSessionIdAndStudentStudentId(sessionId, studentId)
-                    .ifPresent(feedback -> feedbackMap.put(sessionId, feedback));
+            List<Feedback> feedbacks =
+                    feedbackRepository.findBySessionSessionIdAndStudentStudentIdAndStatus(
+                            sessionId,
+                            studentId,
+                            com.tcms.feedback.entity.FeedbackStatus.APPROVED
+                    );
+
+            if (!feedbacks.isEmpty()) {
+                feedbackMap.put(sessionId, feedbacks.get(0));
+            }
 
             homeworkMap.put(
                     sessionId,

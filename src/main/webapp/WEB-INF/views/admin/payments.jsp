@@ -644,16 +644,16 @@
                                         <select id="paymentStatus" name="status">
                                             <option value="">Trạng thái</option>
                                             <option value="PENDING" ${param.status == 'PENDING' ? 'selected' : ''}>
-                                                Chờ thanh toán
-                                            </option>
-                                            <option value="PROOF_UPLOADED" ${param.status == 'PROOF_UPLOADED' ? 'selected' : ''}>
-                                                Đã gửi minh chứng
-                                            </option>
-                                            <option value="TUTOR_CONFIRMED" ${param.status == 'TUTOR_CONFIRMED' ? 'selected' : ''}>
                                                 Chờ Admin duyệt
                                             </option>
                                             <option value="ADMIN_APPROVED" ${param.status == 'ADMIN_APPROVED' ? 'selected' : ''}>
-                                                Đã duyệt
+                                                Chờ Phụ huynh TT
+                                            </option>
+                                            <option value="PROOF_UPLOADED" ${param.status == 'PROOF_UPLOADED' ? 'selected' : ''}>
+                                                Chờ GS xác nhận
+                                            </option>
+                                            <option value="TUTOR_CONFIRMED" ${param.status == 'TUTOR_CONFIRMED' ? 'selected' : ''}>
+                                                Chờ Admin xác nhận
                                             </option>
                                             <option value="COMPLETED" ${param.status == 'COMPLETED' ? 'selected' : ''}>
                                                 Hoàn tất
@@ -716,8 +716,13 @@
                                                     <td>
                                                         <div class="payment-id">
                                                             #PAY-${payment.paymentId}
-                                                            <span class="material-symbols-rounded"
-                                                                style="font-size: 14px; color: #94a3b8;">history</span>
+                                                        </div>
+                                                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">
+                                                            <fmt:parseDate value="${fn:substring(payment.requestDate, 0, 16)}"
+                                                                pattern="yyyy-MM-dd'T'HH:mm" var="reqDate"
+                                                                type="both" />
+                                                            <fmt:formatDate value="${reqDate}"
+                                                                pattern="dd/MM/yyyy HH:mm" />
                                                         </div>
                                                     </td>
                                                     <td>
@@ -756,7 +761,7 @@
                                                             <p>
                                                                 ${payment.totalSessions} buổi học<br>
                                                                 <span style="font-size: 11px; color: #94a3b8;">(Mã:
-                                                                    <c:out value="${payment.classEntity.classCode}" />)
+                                                                    <c:out value="#${payment.classEntity.classId}" />)
                                                                 </span>
                                                             </p>
                                                         </div>
@@ -770,12 +775,12 @@
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${not empty payment.proofUrl}">
-                                                                <a href="${payment.proofUrl}" target="_blank"
-                                                                    class="btn-proof">
+                                                                <button type="button" onclick="openProofModal('${payment.proofUrl}')"
+                                                                    class="btn-proof" style="border: none; cursor: pointer;">
                                                                     <span class="material-symbols-rounded"
                                                                         style="font-size: 16px;">image</span>
                                                                     Xem minh chứng
-                                                                </a>
+                                                                </button>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <span
@@ -787,23 +792,19 @@
                                                     <td>
                                                         <span class="badge status-${fn:toLowerCase(payment.status)}">
                                                             <c:choose>
-                                                                <c:when test="${payment.status == 'PENDING'}">Chờ thanh
-                                                                    toán</c:when>
-                                                                <c:when test="${payment.status == 'TUTOR_CONFIRMED'}">
-                                                                    Chờ Admin duyệt</c:when>
-                                                                <c:when test="${payment.status == 'ADMIN_APPROVED'}">Đã
-                                                                    duyệt</c:when>
-                                                                <c:when test="${payment.status == 'COMPLETED'}">Hoàn tất
-                                                                </c:when>
-                                                                <c:when test="${payment.status == 'REJECTED'}">Từ chối
-                                                                </c:when>
+                                                                <c:when test="${payment.status == 'PENDING'}">Chờ Admin duyệt</c:when>
+                                                                <c:when test="${payment.status == 'ADMIN_APPROVED'}">Chờ Phụ huynh TT</c:when>
+                                                                <c:when test="${payment.status == 'PROOF_UPLOADED'}">Chờ GS xác nhận</c:when>
+                                                                <c:when test="${payment.status == 'TUTOR_CONFIRMED'}">Chờ Admin xác nhận</c:when>
+                                                                <c:when test="${payment.status == 'COMPLETED'}">Hoàn tất</c:when>
+                                                                <c:when test="${payment.status == 'REJECTED'}">Từ chối</c:when>
                                                                 <c:otherwise>${payment.status}</c:otherwise>
                                                             </c:choose>
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <div class="action-btns">
-                                                            <c:if test="${payment.status == 'TUTOR_CONFIRMED'}">
+                                                            <c:if test="${payment.status == 'TUTOR_CONFIRMED' || payment.status == 'PENDING'}">
                                                                 <form
                                                                     action="${pageContext.request.contextPath}/payment/admin-approve"
                                                                     method="post" style="margin:0">
@@ -814,6 +815,8 @@
                                                                         <i class="fa-solid fa-check"></i>
                                                                     </button>
                                                                 </form>
+                                                            </c:if>
+                                                            <c:if test="${payment.status == 'PENDING' || payment.status == 'ADMIN_APPROVED' || payment.status == 'PROOF_UPLOADED' || payment.status == 'TUTOR_CONFIRMED'}">
                                                                 <button type="button" class="btn-action btn-reject"
                                                                     onclick="openRejectModal('${payment.paymentId}', '${payment.tutor.fullName}')"
                                                                     title="Từ chối">
@@ -825,7 +828,7 @@
                                                                     style="background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; cursor: default;">
                                                                     <span class="material-symbols-rounded"
                                                                         style="font-size: 16px;">notifications_active</span>
-                                                                    Nhắc nhở
+                                                                    Chưa xử lý
                                                                 </button>
                                                             </c:if>
                                                             <c:if
@@ -833,11 +836,11 @@
                                                                 <div
                                                                     style="font-size: 0.7rem; color: #94a3b8; line-height: 1.2;">
                                                                     Đã xử lý lúc<br>
-                                                                    <fmt:parseDate value="${payment.adminApprovedAt}"
+                                                                    <fmt:parseDate value="${fn:substring(payment.adminApprovedAt, 0, 16)}"
                                                                         pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"
                                                                         type="both" />
                                                                     <fmt:formatDate value="${parsedDate}"
-                                                                        pattern="HH:mm dd/MM" />
+                                                                        pattern="HH:mm dd/MM/yyyy" />
                                                                 </div>
                                                             </c:if>
                                                         </div>
@@ -864,6 +867,25 @@
                                         <a href="#" class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proof Modal -->
+                    <div id="proofModal" class="modal">
+                        <div class="modal-content" style="max-width: 600px;">
+                            <div class="modal-header">
+                                <h3>Minh chứng thanh toán</h3>
+                            </div>
+                            <div class="modal-body" style="text-align: center; margin: 1.5rem 0;">
+                                <img id="proofImage" src="" alt="Minh chứng" style="max-width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain;">
+                            </div>
+                            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                                <a id="proofLink" href="#" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.875rem;">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    Mở trong thẻ mới
+                                </a>
+                                <button type="button" class="btn-cancel" onclick="closeProofModal()">Đóng</button>
                             </div>
                         </div>
                     </div>
@@ -899,6 +921,29 @@
                     </div>
 
                     <script>
+                        function openProofModal(url) {
+                            const proofImage = document.getElementById('proofImage');
+                            const proofLink = document.getElementById('proofLink');
+                            const proofModal = document.getElementById('proofModal');
+
+                            if (proofImage && url) {
+                                proofImage.src = url;
+                            }
+                            if (proofLink && url) {
+                                proofLink.href = url;
+                            }
+                            if (proofModal) {
+                                proofModal.classList.add('active');
+                            }
+                        }
+
+                        function closeProofModal() {
+                            const proofModal = document.getElementById('proofModal');
+                            if (proofModal) {
+                                proofModal.classList.remove('active');
+                            }
+                        }
+
                         function openRejectModal(id, tutorName) {
                             const rejectPaymentId = document.getElementById('rejectPaymentId');
                             const rejectTutorName = document.getElementById('rejectTutorName');
@@ -1067,10 +1112,14 @@
                             }
 
                             document.addEventListener('click', function (event) {
-                                const modal = document.getElementById('rejectModal');
+                                const rejectModal = document.getElementById('rejectModal');
+                                const proofModal = document.getElementById('proofModal');
 
-                                if (modal && event.target === modal) {
+                                if (rejectModal && event.target === rejectModal) {
                                     closeRejectModal();
+                                }
+                                if (proofModal && event.target === proofModal) {
+                                    closeProofModal();
                                 }
                             });
                         });

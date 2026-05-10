@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <c:set var="activePage" value="payments" scope="request" />
 
@@ -570,9 +571,93 @@
                 gap: 12px;
             }
         }
+        /* ===== Proof Modal ===== */
+
+        .proof-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .proof-modal.show {
+            display: flex;
+        }
+
+        .proof-modal-content {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            animation: popupFade 0.25s ease;
+        }
+
+        .proof-modal-content img {
+            width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            display: block;
+            background: #f8fafc;
+        }
+
+        .proof-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.7);
+            color: #ffffff;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .proof-close:hover {
+            background: #ef4444;
+        }
+
+        @keyframes popupFade {
+            from {
+                transform: scale(0.92);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
+<!-- Proof Modal -->
+<div class="proof-modal" id="proofModal">
+    <div class="proof-modal-content" style="max-width: 600px; padding: 24px;">
+        <h2 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 800; color: #0f172a;">Minh chứng thanh toán</h2>
+        <p style="margin: 0 0 20px; font-size: 0.875rem; color: #64748b;">Ảnh chụp minh chứng giao dịch đã tải lên hệ thống.</p>
 
+        <div style="text-align: center; margin: 15px 0;">
+            <img id="proofImage" src="" alt="Minh chứng" style="max-width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <a id="proofLink" href="#" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; color: #2563eb; font-weight: 800; text-decoration: none; font-size: 14px;">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                Mở trong thẻ mới
+            </a>
+            <button type="button" style="min-height: 40px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; padding: 0 16px; font-weight: 800; cursor: pointer; color: #334155;" onclick="closeProofModal()">Đóng</button>
+        </div>
+    </div>
+</div>
 <body>
 
 <jsp:include page="common/sidebar.jsp" />
@@ -583,18 +668,20 @@
 <c:set var="completedCount" value="0" />
 
 <c:forEach var="payment" items="${payments}">
-    <c:set var="totalCount" value="${totalCount + 1}" />
+    <c:if test="${payment.status != 'PENDING'}">
+        <c:set var="totalCount" value="${totalCount + 1}" />
 
-    <c:if test="${payment.status == 'PENDING'}">
-        <c:set var="pendingCount" value="${pendingCount + 1}" />
-    </c:if>
+        <c:if test="${payment.status == 'ADMIN_APPROVED'}">
+            <c:set var="pendingCount" value="${pendingCount + 1}" />
+        </c:if>
 
-    <c:if test="${payment.status == 'PROOF_UPLOADED' or payment.status == 'TUTOR_CONFIRMED'}">
-        <c:set var="processingCount" value="${processingCount + 1}" />
-    </c:if>
+        <c:if test="${payment.status == 'PROOF_UPLOADED' or payment.status == 'TUTOR_CONFIRMED'}">
+            <c:set var="processingCount" value="${processingCount + 1}" />
+        </c:if>
 
-    <c:if test="${payment.status == 'COMPLETED' or payment.status == 'ADMIN_APPROVED'}">
-        <c:set var="completedCount" value="${completedCount + 1}" />
+        <c:if test="${payment.status == 'COMPLETED'}">
+            <c:set var="completedCount" value="${completedCount + 1}" />
+        </c:if>
     </c:if>
 </c:forEach>
 
@@ -710,6 +797,7 @@
 
                         <tbody>
                         <c:forEach var="payment" items="${payments}" varStatus="loop">
+                            <c:if test="${payment.status != 'PENDING'}">
                             <tr>
                                 <td>
                                     <div class="student-cell">
@@ -754,14 +842,22 @@
 
                                 <td>
                                     <span class="amount">
-                                        <c:out value="${payment.amount}"/>đ
+                                        <fmt:formatNumber value="${payment.amount}" type="number" pattern="#,###"/>đ
                                     </span>
                                 </td>
 
                                 <td>
                                     <span class="status-badge status-${payment.status}">
                                         <span>●</span>
-                                        <c:out value="${payment.status}"/>
+                                        <c:choose>
+                                            <c:when test="${payment.status == 'PENDING'}">Chờ Admin duyệt</c:when>
+                                            <c:when test="${payment.status == 'ADMIN_APPROVED'}">Chờ thanh toán</c:when>
+                                            <c:when test="${payment.status == 'PROOF_UPLOADED'}">Đã nộp minh chứng</c:when>
+                                            <c:when test="${payment.status == 'TUTOR_CONFIRMED'}">Gia sư đã xác nhận</c:when>
+                                            <c:when test="${payment.status == 'COMPLETED'}">Đã hoàn tất</c:when>
+                                            <c:when test="${payment.status == 'REJECTED'}">Đã bị từ chối</c:when>
+                                            <c:otherwise>${payment.status}</c:otherwise>
+                                        </c:choose>
                                     </span>
 
                                     <c:if test="${payment.status == 'REJECTED' and not empty payment.rejectionReason}">
@@ -773,33 +869,36 @@
 
                                 <td style="text-align: right;">
                                     <c:choose>
-                                        <c:when test="${payment.status == 'PENDING'}">
+                                        <c:when test="${payment.status == 'ADMIN_APPROVED'}">
                                             <form action="${pageContext.request.contextPath}/payment/upload-proof"
                                                   method="post"
-                                                  class="proof-form">
+                                                  class="proof-form"
+                                                  enctype="multipart/form-data">
                                                 <input type="hidden"
                                                        name="paymentId"
                                                        value="${payment.paymentId}">
 
-                                                <input type="text"
-                                                       name="proofUrl"
+                                                <input type="file"
+                                                       name="proofFile"
                                                        class="proof-input"
-                                                       placeholder="Tải ảnh lên"
+                                                       accept="image/*"
+                                                       style="width: 100%; border: 1px dashed #2563eb; padding: 4px; font-size: 11px;"
                                                        required>
 
                                                 <button type="submit" class="send-btn">
-                                                    Gửi
+                                                    Tải lên
                                                 </button>
                                             </form>
                                         </c:when>
 
                                         <c:when test="${not empty payment.proofUrl}">
-                                            <a href="${payment.proofUrl}"
-                                               target="_blank"
-                                               class="proof-link">
+                                            <button type="button"
+                                                    class="proof-link"
+                                                    onclick="openProofModal('${payment.proofUrl}')"
+                                                    style="border: none; background: transparent; cursor: pointer;">
                                                 Xem minh chứng
                                                 <i class="fa-solid fa-chevron-right"></i>
-                                            </a>
+                                            </button>
                                         </c:when>
 
                                         <c:otherwise>
@@ -811,6 +910,7 @@
                                     </c:choose>
                                 </td>
                             </tr>
+                            </c:if>
                         </c:forEach>
                         </tbody>
                     </table>
@@ -865,6 +965,34 @@
 
     </div>
 </main>
+<script>
 
+    function openProofModal(imageUrl) {
+        if (!imageUrl || imageUrl === 'null' || imageUrl.trim() === '') {
+            alert('Chưa có minh chứng thanh toán.');
+            return;
+        }
+
+        document.getElementById("proofImage").src = imageUrl;
+        document.getElementById("proofLink").href = imageUrl;
+        document.getElementById("proofModal").classList.add("show");
+    }
+
+    function closeProofModal() {
+
+        document.getElementById("proofModal")
+            .classList.remove("show");
+    }
+
+    window.addEventListener("click", function (e) {
+
+        const modal = document.getElementById("proofModal");
+
+        if (e.target === modal) {
+            closeProofModal();
+        }
+    });
+
+</script>
 </body>
 </html>

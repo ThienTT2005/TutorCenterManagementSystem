@@ -7,6 +7,7 @@ import com.tcms.student.repository.StudentRepository;
 import com.tcms.user.entity.User;
 import com.tcms.feedback.repository.FeedbackRepository;
 import com.tcms.homework.repository.HomeworkRepository;
+import com.tcms.feedback.entity.FeedbackStatus;
 import com.tcms.learningplan.repository.LearningPlanRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -58,8 +59,8 @@ public class StudentClassController {
 
     @GetMapping("/{classId}")
     public String classDetail(@PathVariable Integer classId,
-                              HttpSession session,
-                              Model model) {
+                               HttpSession session,
+                               Model model) {
 
         Student student = getCurrentStudent(session);
 
@@ -91,7 +92,7 @@ public class StudentClassController {
             }
 
             var feedback =
-                    feedbackRepository.findBySessionSessionId(sessionId);
+                    feedbackRepository.findBySessionSessionIdAndStatus(sessionId, FeedbackStatus.APPROVED);
 
             if (feedback != null && !feedback.isEmpty()) {
                 feedbackMap.put(sessionId, feedback);

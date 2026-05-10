@@ -170,9 +170,7 @@
                                             <span class="badge-card badge-orange">CHƯA CẬP NHẬT</span>
                                         </div>
                                         <p class="card-desc">${empty f.comment ? 'Cần cập nhật feedback sau buổi học.' : f.comment}</p>
-                                        <a class="btn-action" href="${pageContext.request.contextPath}/tutor/feedback">
-                                            <i class="fa-solid fa-pen-to-square"></i> Cập nhật ngay
-                                        </a>
+
                                     </div>
                                 </c:forEach>
                             </c:when>

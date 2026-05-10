@@ -55,9 +55,16 @@ public class StudentSessionController {
         Student student = studentRepository.findByUserUserId(studentUserId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy học sinh"));
 
-        Feedback feedback = feedbackRepository
-                .findBySessionSessionIdAndStudentStudentId(sessionId, student.getStudentId())
-                .orElse(null);
+        List<Feedback> feedbacks = feedbackRepository
+                .findBySessionSessionIdAndStudentStudentIdAndStatus(
+                        sessionId,
+                        student.getStudentId(),
+                        com.tcms.feedback.entity.FeedbackStatus.APPROVED
+                );
+
+        Feedback feedback = feedbacks.isEmpty()
+                ? null
+                : feedbacks.get(0);
 
         model.addAttribute("student", student);
         model.addAttribute("feedback", feedback);

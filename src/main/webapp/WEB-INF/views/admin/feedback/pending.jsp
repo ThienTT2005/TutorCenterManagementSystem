@@ -534,6 +534,11 @@
                             grid-template-columns: 1fr;
                         }
                     }
+                    .page-btn:disabled {
+                        opacity: 0.45;
+                        cursor: not-allowed;
+                        background: #f1f5f9;
+                    }
                 </style>
             </head>
 
@@ -560,10 +565,7 @@
                                 </p>
                             </div>
 
-                            <button type="button" class="export-btn">
-                                <i class="fa-solid fa-download"></i>
-                                Xuất báo cáo
-                            </button>
+
                         </div>
 
                         <div class="summary-grid">
@@ -610,16 +612,16 @@
 
                         <div class="feedback-table-card">
 
-                            <form action="${pageContext.request.contextPath}/admin/feedback/pending"
+                            <form action="${pageContext.request.contextPath}/admin/feedback"
                                   method="GET"
                                   class="filters-toolbar"
                                   id="feedbackFilterForm">
 
                                 <div class="filter-group" style="flex: 2;">
                                     <div class="filter-input">
-            <span class="material-symbols-rounded" style="color: var(--text-muted);">
-                search
-            </span>
+                                        <span class="material-symbols-rounded" style="color: var(--text-muted);">
+                                            search
+                                        </span>
 
                                         <input type="text"
                                                id="feedbackKeyword"
@@ -635,7 +637,10 @@
                                             <option value="">Lớp</option>
 
                                             <c:forEach var="feedback" items="${feedbacks}">
-                                                <c:set var="currentClassName" value="${feedback.session.classEntity.className}" />
+                                                <c:set var="currentClassName"
+                                                       value="${not empty feedback.session
+                                                        and not empty feedback.session.classEntity
+                                                        ? feedback.session.classEntity.className : ''}" />
 
                                                 <c:if test="${not empty currentClassName}">
                                                     <option value="${currentClassName}"
@@ -672,7 +677,7 @@
                                     <span class="material-symbols-rounded">filter_list</span>
                                 </button>
 
-                                <a href="${pageContext.request.contextPath}/admin/feedback/pending"
+                                <a href="${pageContext.request.contextPath}/admin/feedback"
                                    id="clearFeedbackFilter"
                                    style="color: var(--primary); font-size: 13px; font-weight: 700; text-decoration: none;">
                                     Xóa lọc
@@ -705,7 +710,9 @@
                                         <c:forEach var="feedback" items="${feedbacks}" varStatus="loop">
                                             <tr class="feedback-row"
                                                 data-status="${feedback.status}"
-                                                data-class="${feedback.session.classEntity.className}">
+                                                data-class="${not empty feedback.session
+                                                      and not empty feedback.session.classEntity
+                                                      ? feedback.session.classEntity.className : ''}">
                                                     <td>
                                                         <div class="tutor-cell">
                                                             <div class="avatar ${loop.index % 2 == 0 ? '' : 'purple'}">
@@ -721,8 +728,10 @@
 
                                                             <div>
                                                                 <p class="name-main">
-                                                                    <c:out
-                                                                        value="${feedback.session.classEntity.tutor.fullName}" />
+                                                                    <c:out value="${not empty feedback.session
+                                                                        and not empty feedback.session.classEntity
+                                                                        and not empty feedback.session.classEntity.tutor
+                                                                        ? feedback.session.classEntity.tutor.fullName : 'Chưa có gia sư'}" />
                                                                 </p>
                                                                 <p class="name-sub">
                                                                     ID:
@@ -736,7 +745,9 @@
 
                                                     <td>
                                                         <span class="class-badge">
-                                                            <c:out value="${feedback.session.classEntity.className}" />
+                                                            <c:out value="${not empty feedback.session
+                                                                and not empty feedback.session.classEntity
+                                                                ? feedback.session.classEntity.className : 'Chưa có lớp'}"  />
                                                         </span>
                                                     </td>
 
@@ -744,19 +755,37 @@
                                                         <div class="student-cell">
                                                             <span class="material-symbols-rounded"
                                                                 style="font-size: 20px; color: #94a3b8;">person</span>
-                                                            <c:out value="${feedback.student.fullName}" />
-                                                        </div>
+                                                            <c:out value="${not empty feedback.student ? feedback.student.fullName : 'Chưa có học sinh'}" />                                                        </div>
                                                     </td>
 
                                                     <td>
                                                         <div class="feedback-content">
                                                             <div class="rating-line">
+                                                                <c:choose>
+                                                                    <c:when test="${feedback.rating == 'Xuất sắc'}">
+                                                                        <c:set var="ratingNumber" value="5" />
+                                                                    </c:when>
+                                                                    <c:when test="${feedback.rating == 'Giỏi'}">
+                                                                        <c:set var="ratingNumber" value="4" />
+                                                                    </c:when>
+                                                                    <c:when test="${feedback.rating == 'Khá'}">
+                                                                        <c:set var="ratingNumber" value="3" />
+                                                                    </c:when>
+                                                                    <c:when test="${feedback.rating == 'Trung bình'}">
+                                                                        <c:set var="ratingNumber" value="2" />
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <c:set var="ratingNumber" value="1" />
+                                                                    </c:otherwise>
+                                                                </c:choose>
+
                                                                 <c:forEach begin="1" end="5" var="i">
                                                                     <i class="fa-solid fa-star"
-                                                                        style="color: ${i <= feedback.rating ? '#fbbf24' : '#e2e8f0'}"></i>
+                                                                       style="color: ${i <= ratingNumber ? '#fbbf24' : '#e2e8f0'}"></i>
                                                                 </c:forEach>
+
                                                                 <span>
-                                                                    <c:out value="${feedback.rating}" />/5
+                                                                    <c:out value="${feedback.rating}" />
                                                                 </span>
                                                             </div>
 
@@ -812,16 +841,22 @@
                                             Hiển thị 1 - ${pendingCount} trên tổng số ${pendingCount} feedback
                                         </span>
 
-                                        <div class="pagination">
-                                            <a href="#" class="page-btn">
+                                        <div class="pagination" id="feedbackPagination">
+
+                                            <button type="button" class="page-btn" id="prevPage">
                                                 <i class="fa-solid fa-chevron-left" style="font-size: 12px;"></i>
-                                            </a>
-                                            <a href="#" class="page-btn active">1</a>
-                                            <a href="#" class="page-btn">2</a>
-                                            <a href="#" class="page-btn">3</a>
-                                            <a href="#" class="page-btn">
+                                            </button>
+
+                                            <div id="pageNumbers" style="display: flex; gap: 8px;"></div>
+
+                                            <span id="currentPageText"
+                                                  style="display:flex;align-items:center;font-weight:600;color:#334155;">
+                                            </span>
+
+                                            <button type="button" class="page-btn" id="nextPage">
                                                 <i class="fa-solid fa-chevron-right" style="font-size: 12px;"></i>
-                                            </a>
+                                            </button>
+
                                         </div>
                                     </div>
                                 </c:otherwise>
@@ -872,7 +907,14 @@
                         const noResultRow = document.getElementById('noFeedbackResultRow');
                         const pageInfo = document.getElementById('feedbackPageInfo');
 
-                        const totalRows = rows.length;
+                        const prevPageBtn = document.getElementById('prevPage');
+                        const nextPageBtn = document.getElementById('nextPage');
+                        const pageNumbers = document.getElementById('pageNumbers');
+                        const currentPageText = document.getElementById('currentPageText');
+
+                        const pageSize = 5;
+                        let currentPage = 1;
+                        let filteredRows = [...rows];
 
                         function normalizeText(value) {
                             return (value || '')
@@ -883,88 +925,127 @@
                                 .trim();
                         }
 
-                        function getInputValue(element) {
-                            return element ? element.value : '';
-                        }
-
-                        function updatePageInfo(visibleCount) {
-                            if (!pageInfo) {
-                                return;
-                            }
-
-                            if (visibleCount === totalRows) {
-                                pageInfo.innerText = 'Hiển thị 1 - ' + totalRows + ' trên tổng số ' + totalRows + ' feedback';
-                            } else {
-                                pageInfo.innerText = 'Hiển thị ' + visibleCount + ' / ' + totalRows + ' feedback';
-                            }
-                        }
-
                         function applyFeedbackFilter() {
-                            const keyword = normalizeText(getInputValue(keywordInput));
-                            const selectedClass = normalizeText(getInputValue(classSelect));
-                            const selectedStatus = getInputValue(statusSelect);
+                            const keyword = normalizeText(keywordInput ? keywordInput.value : '');
+                            const selectedClass = normalizeText(classSelect ? classSelect.value : '');
+                            const selectedStatus = statusSelect ? statusSelect.value : '';
 
-                            let visibleCount = 0;
-
-                            rows.forEach(function (row) {
+                            filteredRows = rows.filter(function (row) {
                                 const rowText = normalizeText(row.innerText);
                                 const rowClass = normalizeText(row.getAttribute('data-class') || '');
                                 const rowStatus = row.getAttribute('data-status') || '';
 
-                                const matchKeyword = keyword === '' || rowText.includes(keyword);
-                                const matchClass = selectedClass === '' || rowClass === selectedClass;
-                                const matchStatus = selectedStatus === '' || rowStatus === selectedStatus;
-
-                                if (matchKeyword && matchClass && matchStatus) {
-                                    row.style.display = '';
-                                    visibleCount++;
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                                return (keyword === '' || rowText.includes(keyword))
+                                    && (selectedClass === '' || rowClass === selectedClass)
+                                    && (selectedStatus === '' || rowStatus === selectedStatus);
                             });
 
-                            if (noResultRow) {
-                                noResultRow.style.display = visibleCount === 0 ? '' : 'none';
-                            }
-
-                            updatePageInfo(visibleCount);
+                            currentPage = 1;
+                            renderPagination();
                         }
 
-                        function clearFeedbackFilter(event) {
-                            if (event) {
-                                event.preventDefault();
-                            }
-
-                            if (keywordInput) {
-                                keywordInput.value = '';
-                            }
-
-                            if (classSelect) {
-                                classSelect.value = '';
-                            }
-
-                            if (statusSelect) {
-                                statusSelect.value = '';
-                            }
-
+                        function renderPagination() {
                             rows.forEach(function (row) {
+                                row.style.display = 'none';
+                            });
+
+                            const totalRows = filteredRows.length;
+                            const totalPages = Math.ceil(totalRows / pageSize);
+
+                            if (currentPageText) {
+                                currentPageText.innerText = totalPages === 0
+                                    ? 'Trang 0 / 0'
+                                    : 'Trang ' + currentPage + ' / ' + totalPages;
+                            }
+
+                            if (noResultRow) {
+                                noResultRow.style.display = totalRows === 0 ? '' : 'none';
+                            }
+
+                            if (totalRows === 0) {
+                                if (pageInfo) {
+                                    pageInfo.innerText = 'Hiển thị 0 / ' + rows.length + ' feedback';
+                                }
+
+                                if (pageNumbers) {
+                                    pageNumbers.innerHTML = '';
+                                }
+
+                                if (prevPageBtn) prevPageBtn.disabled = true;
+                                if (nextPageBtn) nextPageBtn.disabled = true;
+
+                                return;
+                            }
+
+                            if (currentPage > totalPages) {
+                                currentPage = totalPages;
+                            }
+
+                            const startIndex = (currentPage - 1) * pageSize;
+                            const endIndex = Math.min(startIndex + pageSize, totalRows);
+
+                            filteredRows.slice(startIndex, endIndex).forEach(function (row) {
                                 row.style.display = '';
                             });
 
-                            if (noResultRow) {
-                                noResultRow.style.display = 'none';
+                            if (pageInfo) {
+                                pageInfo.innerText = 'Hiển thị ' + (startIndex + 1) + ' - ' + endIndex
+                                    + ' trên tổng số ' + totalRows + ' feedback';
                             }
 
-                            updatePageInfo(totalRows);
+                            renderPageButtons(totalPages);
 
-                            if (keywordInput) {
-                                keywordInput.focus();
+                            if (prevPageBtn) {
+                                prevPageBtn.disabled = currentPage <= 1;
                             }
 
-                            if (window.history && window.history.replaceState) {
-                                const cleanUrl = window.location.origin + window.location.pathname;
-                                window.history.replaceState({}, document.title, cleanUrl);
+                            if (nextPageBtn) {
+                                nextPageBtn.disabled = currentPage >= totalPages;
                             }
+
+                            if (currentPageText) {
+                                currentPageText.innerText = 'Trang ' + currentPage + ' / ' + totalPages;
+                            }
+                        }
+
+                        function renderPageButtons(totalPages) {
+                            if (!pageNumbers) return;
+
+                            pageNumbers.innerHTML = '';
+
+                            for (let i = 1; i <= totalPages; i++) {
+                                const btn = document.createElement('button');
+                                btn.type = 'button';
+                                btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+                                btn.innerText = i;
+
+                                btn.addEventListener('click', function () {
+                                    currentPage = i;
+                                    renderPagination();
+                                });
+
+                                pageNumbers.appendChild(btn);
+                            }
+                        }
+
+                        if (prevPageBtn) {
+                            prevPageBtn.addEventListener('click', function () {
+                                if (currentPage > 1) {
+                                    currentPage--;
+                                    renderPagination();
+                                }
+                            });
+                        }
+
+                        if (nextPageBtn) {
+                            nextPageBtn.addEventListener('click', function () {
+                                const totalPages = Math.ceil(filteredRows.length / pageSize);
+
+                                if (currentPage < totalPages) {
+                                    currentPage++;
+                                    renderPagination();
+                                }
+                            });
                         }
 
                         if (filterForm) {
@@ -982,7 +1063,17 @@
                         }
 
                         if (clearButton) {
-                            clearButton.addEventListener('click', clearFeedbackFilter);
+                            clearButton.addEventListener('click', function (event) {
+                                event.preventDefault();
+
+                                if (keywordInput) keywordInput.value = '';
+                                if (classSelect) classSelect.value = '';
+                                if (statusSelect) statusSelect.value = '';
+
+                                filteredRows = [...rows];
+                                currentPage = 1;
+                                renderPagination();
+                            });
                         }
 
                         if (keywordInput) {
@@ -1000,6 +1091,8 @@
                         if (statusSelect) {
                             statusSelect.addEventListener('change', applyFeedbackFilter);
                         }
+
+                        renderPagination();
                     });
                 </script>
             </body>

@@ -17,7 +17,11 @@ public interface SessionValidityLogRepository extends JpaRepository<SessionValid
             List<Integer> sessionIds
     );
 
-    Optional<SessionValidityLog> findBySessionSessionIdAndStudentStudentId(
+    List<SessionValidityLog> findBySessionSessionIdAndStudentStudentId(
+            Integer sessionId,
+            Integer studentId
+    );
+    Optional<SessionValidityLog> findTopBySessionSessionIdAndStudentStudentIdOrderByLogIdDesc(
             Integer sessionId,
             Integer studentId
     );

@@ -63,7 +63,7 @@ public class SessionServiceImpl implements SessionService {
                 .setParameter("endDate", endDate)
                 .executeUpdate();
 
-        limitSessionsByRequiredSessionsPerMonth(request.getClassId(), startDate, endDate);
+//        limitSessionsByRequiredSessionsPerMonth(request.getClassId(), startDate, endDate);
 
         List<TeachingSession> generatedSessions = teachingSessionRepository
                 .findByClassEntityClassIdAndSessionDateBetweenOrderBySessionDateAscStartTimeAsc(

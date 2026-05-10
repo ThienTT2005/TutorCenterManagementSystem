@@ -40,7 +40,7 @@
 
         
         <li>
-            <a href="${pageContext.request.contextPath}/admin/feedback/pending" class="nav-link ${activePage == 'feedback' ? 'active' : ''}">
+            <a href="${pageContext.request.contextPath}/admin/feedback" class="nav-link ${activePage == 'feedback' ? 'active' : ''}">
                 <span class="material-symbols-rounded">chat</span>
                 Feedback chờ duyệt
             </a>

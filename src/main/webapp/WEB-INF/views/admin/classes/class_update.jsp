@@ -629,9 +629,15 @@
                         <input type="hidden" name="tutorId" id="tutorId" value="${tutor.tutorId}">
 
                         <div id="currentTutorBox" class="tutor-selected" style="align-items: flex-start; gap: 16px; padding: 16px;">
-                            <img id="tutorAvatar" class="avatar" style="width: 60px; height: 60px; border-radius: 12px;"
-                                 src="${not empty tutor.avatar ? (tutor.avatar.startsWith('http') ? tutor.avatar : (pageContext.request.contextPath.concat('/uploads/').concat(tutor.avatar))) : (pageContext.request.contextPath.concat('/images/default-avatar.png'))}">
-
+                            <img id="tutorAvatar"
+                                 class="avatar"
+                                 style="width: 60px; height: 60px; border-radius: 12px;"
+                                 src="${not empty tutor.avatar
+                                        ? (tutor.avatar.startsWith('http')
+                                            ? tutor.avatar
+                                            : pageContext.request.contextPath.concat(tutor.avatar))
+                                        : pageContext.request.contextPath.concat('/images/default-avatar.png')}"
+                                 alt="Tutor Avatar">
                             <div style="flex:1;">
                                 <div class="tutor-name" id="currentTutorName" style="font-size: 15px; margin-bottom: 2px;">
                                     ${empty tutor.fullName ? 'Chưa có gia sư' : tutor.fullName}

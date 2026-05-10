@@ -663,10 +663,10 @@
                                                         name="ratings[${e.student.studentId}]"
                                                         class="rating-select">
                                                     <option value="">-- Chọn đánh giá --</option>
-                                                    <option value="Xuất_sắc">Xuất sắc</option>
+                                                    <option value="Xuất sắc">Xuất sắc</option>
                                                     <option value="Giỏi">Giỏi</option>
                                                     <option value="Khá">Khá</option>
-                                                    <option value="Trung_bình">Trung bình</option>
+                                                    <option value="Trung bình">Trung bình</option>
                                                     <option value="Yếu">Yếu</option>
                                                 </select>
 

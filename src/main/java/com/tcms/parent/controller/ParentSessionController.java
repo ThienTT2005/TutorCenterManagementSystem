@@ -72,7 +72,9 @@ public class ParentSessionController {
         model.addAttribute(
                 "feedback",
                 feedbackRepository
-                        .findBySessionSessionIdAndStudentStudentId(sessionId, studentId)
+                        .findBySessionSessionIdAndStudentStudentIdAndStatus(sessionId, studentId, com.tcms.feedback.entity.FeedbackStatus.APPROVED)
+                        .stream()
+                        .findFirst()
                         .orElse(null)
         );
 
