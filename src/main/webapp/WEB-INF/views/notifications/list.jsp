@@ -298,40 +298,51 @@
     }
 
     function getNotificationUrl(table, refId, type) {
-        table = table || '';
-        type = type || '';
+
+        table = (table || '').toLowerCase();
+        type = (type || '').toUpperCase();
 
         // SCHEDULE
-        if (type === 'SCHEDULE' && table === 'teaching_sessions') {
+        if (
+            type === 'SCHEDULE' ||
+            table === 'teaching_sessions' ||
+            table === 'schedules'
+        ) {
+
             if (role === 'TUTOR') {
-                return contextPath + '/tutor/classes/' + refId;
+                return contextPath + '/tutor/classes';
             }
 
             if (role === 'STUDENT') {
-                return contextPath + '/student/classes/' + refId;
+                return contextPath + '/student/classes';
             }
-            // SAI
+
             if (role === 'PARENT') {
-                return contextPath + '/parent/classes/';
+                return contextPath + '/parent/classes';
             }
 
             if (role === 'ADMIN') {
-                return contextPath + '/admin/classes/' + refId;
+                return contextPath + '/admin/classes';
             }
         }
 
         // ATTENDANCE
-        if (type === 'ATTENDANCE') {
-            if (role === 'ADMIN' && table === 'absence_requests') {
+        if (
+            type === 'ATTENDANCE' ||
+            table === 'absence_requests' ||
+            table === 'attendance'
+        ) {
+
+            if (role === 'ADMIN') {
                 return contextPath + '/admin/absence/pending';
             }
 
             if (role === 'TUTOR') {
-                return contextPath + '/tutor/classes/' + refId;
+                return contextPath + '/tutor/classes';
             }
 
             if (role === 'STUDENT') {
-                return contextPath + '/student/classes/' + refId;
+                return contextPath + '/student/classes';
             }
 
             if (role === 'PARENT') {
@@ -340,64 +351,88 @@
         }
 
         // SYSTEM
-        if (type === 'SYSTEM' && table === 'classes') {
+        if (
+            type === 'SYSTEM' ||
+            table === 'classes' ||
+            table === 'class'
+        ) {
+
             if (role === 'ADMIN') {
                 return contextPath + '/admin/classes/' + refId;
             }
 
             if (role === 'TUTOR') {
-                return contextPath + '/tutor/classes/' + refId;
+                return contextPath + '/tutor/classes';
             }
 
             if (role === 'STUDENT') {
-                return contextPath + '/student/classes/' + refId;
+                return contextPath + '/student/classes';
             }
-            // SAI
+
             if (role === 'PARENT') {
-                return contextPath + '/parent/classes/' + refId;
+                return contextPath + '/parent/classes';
             }
         }
 
         // FEEDBACK
-        if (type === 'FEEDBACK') {
+        if (
+            type === 'FEEDBACK' ||
+            table === 'feedback' ||
+            table === 'feedbacks'
+        ) {
+
             if (role === 'ADMIN') {
                 return contextPath + '/admin/feedback/pending';
             }
 
             if (role === 'STUDENT') {
-                return contextPath + '/student/sessions/' + refId + '/feedback';
+                return contextPath + '/student/classes';
             }
-            // SAI
+
             if (role === 'PARENT') {
                 return contextPath + '/parent/classes';
             }
 
             if (role === 'TUTOR') {
-                return contextPath + '/tutor/sessions/' + refId + '/feedback';
+                return contextPath + '/tutor/classes';
             }
         }
 
         // HOMEWORK
-        if (type === 'HOMEWORK') {
-            if (role === 'STUDENT' && table === 'homework') {
-                return contextPath + '/student/homework/detail/' + refId;
+        if (
+            type === 'HOMEWORK' ||
+            table === 'homework' ||
+            table === 'homeworks'
+        ) {
+
+            if (role === 'STUDENT') {
+                return contextPath + '/student/homework';
             }
-            // SAI
-            if (role === 'PARENT' && table === 'homework') {
+
+            if (role === 'PARENT') {
                 return contextPath + '/parent/classes';
             }
 
-            if (role === 'TUTOR' && table === 'homework_submissionId') {
-                return contextPath + '/tutor/homework/submissions/' + refId;
+            if (role === 'TUTOR') {
+                return contextPath + '/tutor/classes';
             }
+        }
 
-            if (role === 'TUTOR' && table === 'homework_submissions') {
+        // HOMEWORK SUBMISSION
+        if (table === 'homework_submissions') {
+
+            if (role === 'TUTOR') {
                 return contextPath + '/tutor/homework/submissions/' + refId;
             }
         }
 
         // PAYMENT
-        if (type === 'PAYMENT' || table === 'payments') {
+        if (
+            type === 'PAYMENT' ||
+            table === 'payments' ||
+            table === 'payment'
+        ) {
+
             if (role === 'ADMIN') {
                 return contextPath + '/payment/admin';
             }
