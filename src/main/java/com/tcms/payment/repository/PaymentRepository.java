@@ -4,6 +4,7 @@ import com.tcms.payment.entity.Payment;
 import com.tcms.payment.entity.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,4 +25,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     BigDecimal sumAllPayments();
 
     long countByStatus(PaymentStatus status);
+
+    @Query("""
+    SELECT SUM(p.amount)
+    FROM Payment p
+    WHERE p.status = 'COMPLETED'
+    AND FUNCTION('MONTH', p.requestDate) = :month
+    """)
+    BigDecimal sumRevenueByMonth(@Param("month") int month);
 }

@@ -21,4 +21,8 @@ public interface ReportService {
     List<ClassEntity> getTopClasses();
 
     Map<String, Long> getWeeklyClasses();
+
+    List<String> getRevenueLabels();
+
+    List<BigDecimal> getRevenueData();
 }

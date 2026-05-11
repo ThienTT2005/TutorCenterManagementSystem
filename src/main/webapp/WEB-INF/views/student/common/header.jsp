@@ -247,7 +247,7 @@
 
     function handleStudentNotiClick(id, table, refId, type, element) {
 
-        fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
+        fetch('${pageContext.request.contextPath}/notifications/' + id + '/read', {
             method: 'POST'
         }).finally(() => {
 
@@ -257,9 +257,11 @@
                 const badge = document.querySelector('.badge');
 
                 if (badge) {
+
                     let count = parseInt(badge.innerText);
 
                     if (!isNaN(count) && count > 0) {
+
                         count--;
 
                         if (count <= 0) {
@@ -271,25 +273,52 @@
                 }
             }
 
-            let url = `${pageContext.request.contextPath}/notifications`;
-
-            if (type === 'HOMEWORK') {
-                url = `${pageContext.request.contextPath}/student/homework`;
-            }
-
-            else if (type === 'FEEDBACK') {
-                url = `${pageContext.request.contextPath}/student/classes`;
-            }
-
-            else if (type === 'ATTENDANCE') {
-                url = `${pageContext.request.contextPath}/student/classes`;
-            }
-
-            else if (type === 'SCHEDULE') {
-                url = `${pageContext.request.contextPath}/student/classes`;
-            }
-
-            window.location.href = url;
+            window.location.href =
+                getStudentNotificationUrl(table, refId, type);
         });
+    }
+
+    function getStudentNotificationUrl(table, refId, type) {
+
+        table = (table || '').toLowerCase();
+        type = (type || '').toUpperCase();
+
+        // HOMEWORK
+        if (
+            type === 'HOMEWORK' ||
+            table === 'homeworks' ||
+            table === 'homework'
+        ) {
+            return '${pageContext.request.contextPath}/student/homework';
+        }
+
+        // FEEDBACK
+        if (
+            type === 'FEEDBACK' ||
+            table === 'feedbacks' ||
+            table === 'feedback'
+        ) {
+            return '${pageContext.request.contextPath}/student/classes';
+        }
+
+        // ATTENDANCE
+        if (
+            type === 'ATTENDANCE' ||
+            table === 'attendance' ||
+            table === 'absence_requests'
+        ) {
+            return '${pageContext.request.contextPath}/student/classes';
+        }
+
+        // SCHEDULE
+        if (
+            type === 'SCHEDULE' ||
+            table === 'teaching_sessions' ||
+            table === 'schedules'
+        ) {
+            return '${pageContext.request.contextPath}/student/classes';
+        }
+
+        return '${pageContext.request.contextPath}/notifications';
     }
 </script>

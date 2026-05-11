@@ -51,7 +51,6 @@ public class ParentAbsenceController {
             model.addAttribute("selectedStudent", s);
         }
 
-        // For selection mode
         List<Student> children = studentRepository.findByParentParentId(parent.getParentId());
         model.addAttribute("children", children);
 

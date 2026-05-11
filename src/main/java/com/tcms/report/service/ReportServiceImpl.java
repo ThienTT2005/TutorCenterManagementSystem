@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,5 +70,29 @@ public class ReportServiceImpl implements ReportService {
         result.put("CN", teachingScheduleRepository.countByWeekday(8));
 
         return result;
+    }
+
+    @Override
+    public List<String> getRevenueLabels() {
+        return List.of(
+                "T1","T2","T3","T4","T5","T6",
+                "T7","T8","T9","T10","T11","T12"
+        );
+    }
+
+    @Override
+    public List<BigDecimal> getRevenueData() {
+
+        List<BigDecimal> data = new ArrayList<>();
+
+        for (int month = 1; month <= 12; month++) {
+
+            BigDecimal revenue =
+                    paymentRepository.sumRevenueByMonth(month);
+
+            data.add(revenue != null ? revenue : BigDecimal.ZERO);
+        }
+
+        return data;
     }
 }

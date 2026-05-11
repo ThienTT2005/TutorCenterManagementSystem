@@ -233,7 +233,7 @@
 
     function handleTutorNotiClick(id, table, refId, type, element) {
 
-        fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
+        fetch('${pageContext.request.contextPath}/notifications/' + id + '/read', {
             method: 'POST'
         }).finally(() => {
 
@@ -257,29 +257,35 @@
                 }
             }
 
-            let url = `${pageContext.request.contextPath}/notifications`;
-
-            if (type === 'PAYMENT') {
-                url = `${pageContext.request.contextPath}/payment/tutor`;
-            }
-
-            else if (type === 'HOMEWORK') {
-                url = `${pageContext.request.contextPath}/tutor/classes`;
-            }
-
-            else if (type === 'FEEDBACK') {
-                url = `${pageContext.request.contextPath}/tutor/classes`;
-            }
-
-            else if (type === 'SCHEDULE') {
-                url = `${pageContext.request.contextPath}/tutor/classes`;
-            }
-
-            else if (table === 'homework_submissions') {
-                url = `${pageContext.request.contextPath}/tutor/homework/submissions/${refId}`;
-            }
-
-            window.location.href = url;
+            window.location.href = getTutorNotificationUrl(table, refId, type);
         });
+    }
+
+    function getTutorNotificationUrl(table, refId, type) {
+
+        table = table || '';
+        type = type || '';
+
+        if (type === 'PAYMENT' || table === 'payments') {
+            return '${pageContext.request.contextPath}/payment/tutor';
+        }
+
+        if (type === 'HOMEWORK' || table === 'homeworks') {
+            return '${pageContext.request.contextPath}/tutor/classes';
+        }
+
+        if (type === 'FEEDBACK' || table === 'feedbacks') {
+            return '${pageContext.request.contextPath}/tutor/classes';
+        }
+
+        if (type === 'SCHEDULE' || table === 'teaching_sessions') {
+            return '${pageContext.request.contextPath}/tutor/classes';
+        }
+
+        if (table === 'homework_submissions') {
+            return '${pageContext.request.contextPath}/tutor/homework/submissions/' + refId;
+        }
+
+        return '${pageContext.request.contextPath}/notifications';
     }
 </script>

@@ -199,18 +199,28 @@
 
     function handleParentNotiClick(id, table, refId, type, element) {
 
-        fetch(`${pageContext.request.contextPath}/notifications/${id}/read`, {
-            method: 'POST'
-        }).finally(() => {
+        fetch(
+            '${pageContext.request.contextPath}/notifications/' + id + '/read',
+            {
+                method: 'POST'
+            }
+        ).finally(() => {
+
+            // remove unread
             if (element) {
+
                 element.classList.remove('unread');
 
-                const badge = document.querySelector('.badge');
+                const badge =
+                    document.querySelector('.badge');
 
                 if (badge) {
-                    let count = parseInt(badge.innerText);
+
+                    let count =
+                        parseInt(badge.innerText);
 
                     if (!isNaN(count) && count > 0) {
+
                         count--;
 
                         if (count <= 0) {
@@ -222,29 +232,61 @@
                 }
             }
 
-            let url = `${pageContext.request.contextPath}/notifications`;
-
-            if (type === 'PAYMENT' || table === 'payments') {
-                url = `${pageContext.request.contextPath}/payment/parent`;
-            }
-
-            else if (type === 'HOMEWORK') {
-                url = `${pageContext.request.contextPath}/parent/classes`;
-            }
-
-            else if (type === 'FEEDBACK') {
-                url = `${pageContext.request.contextPath}/parent/classes`;
-            }
-
-            else if (type === 'ATTENDANCE') {
-                url = `${pageContext.request.contextPath}/parent/absence/list`;
-            }
-
-            else if (type === 'SCHEDULE') {
-                url = `${pageContext.request.contextPath}/parent/classes`;
-            }
-
-            window.location.href = url;
+            window.location.href =
+                getParentNotificationUrl(table, refId, type);
         });
+    }
+
+    function getParentNotificationUrl(table, refId, type) {
+
+        table = (table || '').toLowerCase();
+        type = (type || '').toUpperCase();
+
+        // PAYMENT
+        if (
+            type === 'PAYMENT' ||
+            table === 'payments' ||
+            table === 'payment'
+        ) {
+            return '${pageContext.request.contextPath}/payment/parent';
+        }
+
+        // FEEDBACK
+        if (
+            type === 'FEEDBACK' ||
+            table === 'feedback' ||
+            table === 'feedbacks'
+        ) {
+            return '${pageContext.request.contextPath}/parent/classes';
+        }
+
+        // HOMEWORK
+        if (
+            type === 'HOMEWORK' ||
+            table === 'homework' ||
+            table === 'homeworks'
+        ) {
+            return '${pageContext.request.contextPath}/parent/classes';
+        }
+
+        // ATTENDANCE
+        if (
+            type === 'ATTENDANCE' ||
+            table === 'attendance' ||
+            table === 'absence_requests'
+        ) {
+            return '${pageContext.request.contextPath}/parent/absence/list';
+        }
+
+        // SCHEDULE
+        if (
+            type === 'SCHEDULE' ||
+            table === 'schedules' ||
+            table === 'teaching_sessions'
+        ) {
+            return '${pageContext.request.contextPath}/parent/classes';
+        }
+
+        return '${pageContext.request.contextPath}/notifications';
     }
 </script>

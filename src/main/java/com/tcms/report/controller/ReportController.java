@@ -53,8 +53,8 @@ public class ReportController {
             model.addAttribute("tutorPercent", 50);
         }
 
-
-        
+        model.addAttribute("revenueLabels", reportService.getRevenueLabels());
+        model.addAttribute("revenueData", reportService.getRevenueData());
         return "admin/reports/dashboard";
     }
 }

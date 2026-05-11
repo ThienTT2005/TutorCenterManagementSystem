@@ -180,34 +180,6 @@
                         </c:choose>
                     </div>
                 </div>
-
-                <!-- Progress Section -->
-                <div class="section-container">
-                    <div class="section-header">
-                        <h2>Tiến độ học tập chưa cập nhật</h2>
-                    </div>
-                    <div class="card-row">
-                        <c:choose>
-                            <c:when test="${not empty pendingProgress}">
-                                <c:forEach var="s" items="${pendingProgress}">
-                                    <div class="info-card purple">
-                                        <div class="card-top">
-                                            <h3>${s.classEntity.className}</h3>
-                                            <span class="badge-card badge-purple">CHƯA CẬP NHẬT</span>
-                                        </div>
-                                        <p class="card-desc">Buổi học ngày ${s.sessionDate} chưa có báo cáo tiến độ học tập.</p>
-                                        <a class="btn-action btn-purple" href="${pageContext.request.contextPath}/tutor/progress">
-                                            <i class="fa-solid fa-chart-line"></i> Cập nhật ngay
-                                        </a>
-                                    </div>
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="empty-card" style="grid-column: span 2;">Không có tiến độ cần cập nhật.</div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
             </div>
 
             <!-- RIGHT COLUMN -->
@@ -269,7 +241,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <a href="${pageContext.request.contextPath}/tutor/payment/${p.paymentId}" class="btn-outline-widget">Xem chi tiết</a>
+                                        <a href="${pageContext.request.contextPath}/payment/tutor" class="btn-outline-widget">
+                                            Xem chi tiết
+                                        </a>
                                     </div>
                                 </c:forEach>
                             </c:when>
