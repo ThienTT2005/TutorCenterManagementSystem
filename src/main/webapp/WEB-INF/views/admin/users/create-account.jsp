@@ -7,8 +7,7 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Tạo Tài Khoản Mới | TCMS Admin</title>
-            <link rel="stylesheet"
-                href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
             <link rel="stylesheet"
                 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -147,6 +146,35 @@
                         opacity: 1;
                         transform: translateY(0);
                     }
+                }
+
+                .password-wrapper {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .password-wrapper .form-input {
+                    padding-right: 45px;
+                }
+
+                .toggle-password {
+                    position: absolute;
+                    right: 15px;
+                    color: #64748b;
+                    cursor: pointer;
+                    font-size: 18px;
+                    transition: color 0.2s;
+                    background: none;
+                    border: none;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .toggle-password:hover {
+                    color: var(--primary);
                 }
 
                 .profile-section {
@@ -359,8 +387,10 @@
                         <p>Vui lòng điền đầy đủ thông tin để cấp quyền truy cập hệ thống.</p>
                     </div>
 
-                    <form id="registrationForm" action="${pageContext.request.contextPath}/admin/users/create" method="POST">
-                        <div class="registration-grid" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
+                    <form id="registrationForm" action="${pageContext.request.contextPath}/admin/users/create"
+                        method="POST">
+                        <div class="registration-grid"
+                            style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
 
                             <!-- Account Info -->
                             <div class="form-card" id="accountCard">
@@ -382,26 +412,43 @@
 
                                 <div class="form-group">
                                     <label>Mật khẩu</label>
-                                    <input type="password" name="password" id="password" class="form-input"
-                                        placeholder="••••••••" required>
+                                    <div class="password-wrapper">
+                                        <input type="password" name="password" id="password" class="form-input"
+                                            placeholder="••••••••" required>
+                                        <button type="button" class="toggle-password"
+                                            onclick="togglePasswordVisibility('password', this)">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
                                     <small id="passwordError" class="error-message"></small>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Xác nhận mật khẩu</label>
-                                    <input type="password" name="confirmPassword" id="confirmPassword"
-                                        class="form-input" placeholder="••••••••" required>
+                                    <div class="password-wrapper">
+                                        <input type="password" name="confirmPassword" id="confirmPassword"
+                                            class="form-input" placeholder="••••••••" required>
+                                        <button type="button" class="toggle-password"
+                                            onclick="togglePasswordVisibility('confirmPassword', this)">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
                                     <small id="confirmPasswordError" class="error-message"></small>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Vai trò</label>
                                     <select name="role" id="roleSelect" class="form-select" required>
-                                        <option value="" disabled ${empty request.role ? 'selected' : ''}>Chọn vai trò...</option>
-                                        <option value="TUTOR" ${request.role == 'TUTOR' ? 'selected' : ''}>Gia sư</option>
-                                        <option value="PARENT" ${request.role == 'PARENT' ? 'selected' : ''}>Phụ huynh</option>
-                                        <option value="STUDENT" ${request.role == 'STUDENT' ? 'selected' : ''}>Học sinh</option>
-                                        <option value="ADMIN" ${request.role == 'ADMIN' ? 'selected' : ''}>Quản trị viên</option>
+                                        <option value="" disabled ${empty request.role ? 'selected' : '' }>Chọn vai
+                                            trò...</option>
+                                        <option value="TUTOR" ${request.role=='TUTOR' ? 'selected' : '' }>Gia sư
+                                        </option>
+                                        <option value="PARENT" ${request.role=='PARENT' ? 'selected' : '' }>Phụ huynh
+                                        </option>
+                                        <option value="STUDENT" ${request.role=='STUDENT' ? 'selected' : '' }>Học sinh
+                                        </option>
+                                        <option value="ADMIN" ${request.role=='ADMIN' ? 'selected' : '' }>Quản trị viên
+                                        </option>
                                     </select>
                                     <small id="roleError" class="error-message"></small>
                                 </div>
@@ -441,6 +488,21 @@
                         el.textContent = '';
                         el.classList.remove('active');
                     });
+                }
+
+                function togglePasswordVisibility(inputId, button) {
+                    const input = document.getElementById(inputId);
+                    const icon = button.querySelector('i');
+
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
                 }
 
                 registrationForm.addEventListener('submit', function (e) {

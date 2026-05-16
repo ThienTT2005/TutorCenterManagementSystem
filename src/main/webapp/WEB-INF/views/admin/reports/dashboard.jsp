@@ -97,7 +97,7 @@
             <div class="stat-card">
                 <div class="stat-label">Tổng doanh thu</div>
                 <div class="stat-value" style="color: #10b981;">
-                    <fmt:formatNumber value="${totalRevenue}" type="number" />đ
+                    <fmt:formatNumber value="${totalRevenue}" type="number" /> nghìn đồng
                 </div>
             </div>
         </div>
@@ -185,7 +185,7 @@
                             <td><strong>${clazz.className}</strong><br><small style="color: #94a3b8">ID: CL-${clazz.classId}</small></td>
                             <td>${clazz.subject} - ${clazz.grade}</td>
                             <td>${not empty clazz.tutor ? clazz.tutor.fullName : 'Chưa phân công'}</td>
-                            <td><fmt:formatNumber value="${clazz.tuitionFeePerSession}" type="number" />đ</td>
+                            <td><fmt:formatNumber value="${clazz.tuitionFeePerSession}" type="number" /> nghìn đồng</td>
                             <td>
                                 <span class="status-badge ${clazz.status ? 'status-active' : 'status-inactive'}">
                                     ${clazz.status ? 'Hoạt động' : 'Tạm dừng'}
@@ -230,7 +230,7 @@
                 scales: { 
                     y: { 
                         beginAtZero: true,
-                        ticks: { callback: (val) => new Intl.NumberFormat('vi-VN').format(val) + 'đ' }
+                        ticks: { callback: (val) => new Intl.NumberFormat('vi-VN').format(val) + ' nghìn đồng' }
                     }
                 }
             }
