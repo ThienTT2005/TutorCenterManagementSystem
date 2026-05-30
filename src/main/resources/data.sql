@@ -2005,7 +2005,7 @@ BEGIN
                     -- Sửa lỗi: Kiểm tra cả start_time và end_time để cho phép nhiều buổi cùng ngày
                     IF NOT EXISTS (
                         SELECT 1 FROM teaching_sessions
-                        WHERE class_id = p_class_id 
+                        WHERE class_id = p_class_id
                           AND session_date = v_current_date
                           AND start_time = v_start_time
                           AND end_time = v_end_time
