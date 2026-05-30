@@ -1,0 +1,111 @@
+package com.tcms.homework.controller;
+
+import com.tcms.homework.dto.request.SubmitHomeworkRequest;
+import com.tcms.homework.entity.Homework;
+import com.tcms.homework.entity.HomeworkSubmission;
+import com.tcms.homework.service.HomeworkService;
+import com.tcms.homework.service.HomeworkSubmissionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/student/homework")
+public class StudentHomeworkController {
+
+    private final HomeworkService homeworkService;
+    private final HomeworkSubmissionService submissionService;
+
+    @GetMapping
+    public String listMyHomework(HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        List<Homework> homeworks = homeworkService.getMyHomework(userId);
+        model.addAttribute("homeworks", homeworks);
+        model.addAttribute("submissionMap", populateSubmissionMap(userId, homeworks));
+
+        return "student/homework/list";
+    }
+
+    @GetMapping("/session/{sessionId}")
+    public String listHomeworkBySession(@PathVariable Integer sessionId,
+                                        HttpSession session,
+                                        Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        List<Homework> homeworks = homeworkService.getHomeworkBySession(sessionId);
+        model.addAttribute("homeworks", homeworks);
+        model.addAttribute("submissionMap", populateSubmissionMap(userId, homeworks));
+        model.addAttribute("sessionId", sessionId);
+
+        return "student/homework/list";
+    }
+
+    private Map<Integer, HomeworkSubmission> populateSubmissionMap(Integer userId, List<Homework> homeworks) {
+        Map<Integer, HomeworkSubmission> submissionMap = new HashMap<>();
+        for (Homework homework : homeworks) {
+            HomeworkSubmission submission = submissionService.getMySubmission(userId, homework.getHomeworkId());
+            if (submission != null) {
+                submissionMap.put(homework.getHomeworkId(), submission);
+            }
+        }
+        return submissionMap;
+    }
+
+    @GetMapping("/detail/{id}")
+    public String viewHomework(@PathVariable Integer id,
+                               HttpSession session,
+                               Model model) {
+        model.addAttribute("homework", homeworkService.getHomeworkById(id));
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        if (userId != null) {
+            HomeworkSubmission submission = submissionService.getMySubmission(userId, id);
+            model.addAttribute("submission", submission);
+
+            if (submission != null && submission.getAnswers() != null) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, String> answersMap = mapper.readValue(
+                            submission.getAnswers(),
+                            new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {}
+                    );
+                    model.addAttribute("studentAnswers", answersMap);
+                } catch (Exception ignored) {}
+            }
+        }
+
+        model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(id));
+        model.addAttribute("request", new SubmitHomeworkRequest());
+
+        return "student/homework/detail";
+    }
+
+    @PostMapping("/submit")
+    public String submit(@ModelAttribute SubmitHomeworkRequest request,
+                         HttpSession session,
+                         Model model) {
+        try {
+            Integer userId = (Integer) session.getAttribute("userId");
+            if (userId == null) return "redirect:/login";
+
+            submissionService.submit(userId, request);
+            return "redirect:/student/homework";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("homework", homeworkService.getHomeworkById(request.getHomeworkId()));
+            model.addAttribute("questions", homeworkService.getQuestionsByHomeworkId(request.getHomeworkId()));
+            return "student/homework/detail";
+        }
+    }
+}
