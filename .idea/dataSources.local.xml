@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-261.24374.151">
+  <component name="dataSourceStorageLocal" created-in="IU-252.23892.409">
     <data-source name="tcms@localhost" uuid="d3d951a9-1e3a-4556-8291-ff2d6a2b2e0f">
-      <database-info product="MySQL" version="8.0.44" jdbc-version="4.2" driver-name="Amazon Web Services (AWS) Advanced JDBC Wrapper" driver-version="Amazon Web Services (AWS) Advanced JDBC Wrapper 3.3.0 ( Revision: 095ec1b6f33b49aaa04d8c06c9e1a95227d24445 )" dbms="MYSQL" exact-version="8.0.44" exact-driver-version="3.3">
-        <extra-name-characters>$</extra-name-characters>
+      <database-info product="MySQL" version="9.6.0" jdbc-version="4.2" driver-name="Amazon Web Services (AWS) Advanced JDBC Wrapper" driver-version="Amazon Web Services (AWS) Advanced JDBC Wrapper 2.3.7 ( Revision: 7591851e8da4e1c705ba232a8bd07824a5cfd276 )" dbms="MYSQL" exact-version="9.6.0" exact-driver-version="2.3">
+        <extra-name-characters>#@</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
+        <jdbc-catalog-is-schema>true</jdbc-catalog-is-schema>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
       <secret-storage>master_key</secret-storage>

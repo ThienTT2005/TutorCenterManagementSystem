@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebContextManager">
+    <option name="state">
+      <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/accounts/account-detail.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/accounts" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/accounts/account_list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/accounts" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/classes/class_update.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/classes" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/parents/parent_list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/parents" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/reports/dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/reports" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/students/students_list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/admin/students" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/auth/change-password.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/auth" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/auth/login.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/auth" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/notifications/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/notifications" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/student/classes/detail.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/student/classes" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/tutor/classes/detail.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/tutor/classes" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/tutor/common/header.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/tutor/common" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/tutor/dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/tutor" />
+      </map>
+    </option>
+  </component>
+</project>
