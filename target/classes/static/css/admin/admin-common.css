@@ -1,0 +1,182 @@
+/* Admin Common Styles */
+
+/* Standard Font Weights */
+h1, h2, h3, h4, 
+.page-title h2, 
+.card-title, 
+.stat-value, 
+.widget-value, 
+.user-detail h4,
+.mini-stat-value,
+.modal-box h3,
+.section-header h3,
+.tutor-name,
+.day-chip,
+.pagination-info strong {
+    font-weight: 800 !important;
+}
+
+body, p, span, a, label, input, select, textarea,
+.stat-title,
+.info-label,
+.info-value,
+.th,
+.btn-primary,
+.btn-soft,
+.btn-dark,
+.btn-page,
+.role-badge,
+.status-badge,
+.status-pill,
+.name-main,
+.name-sub,
+.user-name,
+.brand-subtitle,
+.breadcrumb span,
+.tutor-major,
+.tutor-line span,
+.mini-stat-title,
+.small-link,
+.badge,
+.schedule-time,
+.pagination-info,
+.pagination-dots {
+    font-weight: 500 !important;
+}
+
+/* Common Components */
+.role-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.role-tutor { background: #e0f2fe; color: #0369a1; }
+.role-parent { background: #f3e8ff; color: #7e22ce; }
+.role-student { background: #ecfeff; color: #0891b2; }
+.role-admin { background: #f1f5f9; color: #475569; }
+
+.status-pill, .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+.status-pill.active, .status-approved, .payment-done, .dot-active { background: #dcfce7; color: #16a34a; }
+.status-pill.inactive, .status-cancelled, .payment-failed, .dot-blocked { background: #fee2e2; color: #dc2626; }
+.status-pill.pending, .payment-pending { background: #fef3c7; color: #d97706; }
+
+.action-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.action-btn:hover {
+    background: #f8fafc;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+.action-btn.danger:hover, .action-btn.delete:hover {
+    background: #fee2e2;
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: #fff;
+    border-top: 1px solid var(--border-color);
+}
+.btn-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #334155;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-page:hover:not(.active):not(.disabled) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: var(--primary);
+}
+.btn-page.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 87, 191, 0.2);
+}
+.btn-page.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Modals */
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 9999;
+    padding: 24px;
+    overflow-y: auto;
+}
+.modal-box {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 20px;
+    margin: 40px auto;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+}
+.modal-box h3 { margin: 0 0 16px; font-size: 20px; }
+.modal-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.modal-field label { display: block; font-size: 12px; margin-bottom: 6px; color: var(--text-muted); }
+.modal-field input, .modal-field select {
+    width: 100%;
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    padding: 0 12px;
+    outline: none;
+    background: #fff;
+}
+.modal-actions { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
+
+/* Table Utils */
+.table-row:hover { background-color: var(--bg-page); }
+.user-initials {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
