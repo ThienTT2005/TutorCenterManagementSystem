@@ -1,0 +1,24 @@
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+gen/
+
+### Maven ###
+target/
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Log files ###
+*.log
+
+### Hệ điều hành rác ###
+Thumbs.db
+.DS_Store
+
+.uploads/

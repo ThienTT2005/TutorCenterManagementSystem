@@ -596,6 +596,48 @@
             display: none;
         }
 
+        .save-avatar-btn {
+            position: absolute;
+            bottom: -44px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            min-height: 34px;
+            padding: 0 16px;
+            border-radius: 10px;
+            border: none;
+            background: var(--green);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(22, 163, 74, .28);
+            transition: .15s ease;
+            z-index: 10;
+        }
+
+        .save-avatar-btn:hover {
+            background: #15803d;
+        }
+
+        .alert-error {
+            background: var(--danger-light);
+            border: 1px solid #fca5a5;
+            color: var(--danger);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         @media (max-width: 1050px) {
             .profile-layout {
                 grid-template-columns: 1fr;
@@ -1129,6 +1171,13 @@
                     </c:otherwise>
                 </c:choose>
 
+                <c:if test="${not empty param.error}">
+                    <div class="alert-error">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <c:out value="${param.error}"/>
+                    </div>
+                </c:if>
+
                 <div class="profile-topbar">
                     <div class="page-title">
                         <h1>
@@ -1185,7 +1234,7 @@
                     <aside class="left-column">
 
                         <div class="profile-card">
-                            <div class="avatar-wrap">
+                            <div class="avatar-wrap" style="${isEdit and role != 'ADMIN' ? 'margin-bottom: 52px;' : ''}">
                                 <c:choose>
                                     <c:when test="${not empty displayAvatar}">
                                         <img src="${displayAvatar}"
@@ -1195,9 +1244,10 @@
                                              onerror="this.src='${pageContext.request.contextPath}/images/default-avatar.png'">
                                     </c:when>
                                     <c:otherwise>
-                                        <div class="avatar-placeholder">
-                                            <i class="fa-solid fa-user"></i>
-                                        </div>
+                                        <img src="${pageContext.request.contextPath}/images/default-avatar.png"
+                                             id="avatarPreview"
+                                             class="avatar-img"
+                                             alt="Avatar">
                                     </c:otherwise>
                                 </c:choose>
 
@@ -1217,7 +1267,7 @@
                                                    type="file"
                                                    name="file"
                                                    accept="image/jpeg,image/png,image/webp"
-                                                   onchange="uploadAvatarNow(this);">
+                                                   onchange="previewAvatar(this);">
 
                                             <button type="submit"
                                                     id="saveAvatarBtn"
@@ -1742,7 +1792,11 @@
 </main>
 
 <script>
-    function uploadAvatarNow(input) {
+    /**
+     * Chỉ preview ảnh khi chọn file — KHÔNG submit form.
+     * Người dùng phải bấm nút "Lưu ảnh" để thực sự lưu.
+     */
+    function previewAvatar(input) {
 
         const file = input.files && input.files[0];
 
@@ -1754,7 +1808,7 @@
             'image/webp'
         ];
 
-        const maxSize = 5 * 1024 * 1024;
+        const maxSize = 5 * 1024 * 1024; // 5 MB
 
         if (!allowedTypes.includes(file.type)) {
             alert('Chỉ cho phép tải ảnh JPG, PNG hoặc WEBP.');
@@ -1768,13 +1822,22 @@
             return;
         }
 
+        // Hiển thị preview ảnh mới chọn
         const preview = document.getElementById('avatarPreview');
-
         if (preview) {
-            preview.src = URL.createObjectURL(file);
+            const objectUrl = URL.createObjectURL(file);
+            preview.src = objectUrl;
+            // Giải phóng bộ nhớ sau khi ảnh đã load
+            preview.onload = function () {
+                URL.revokeObjectURL(objectUrl);
+            };
         }
 
-        document.getElementById('avatarUploadForm').submit();
+        // Hiện nút "Lưu ảnh" để người dùng xác nhận
+        const saveBtn = document.getElementById('saveAvatarBtn');
+        if (saveBtn) {
+            saveBtn.style.display = 'inline-flex';
+        }
     }
 </script>
 </body>

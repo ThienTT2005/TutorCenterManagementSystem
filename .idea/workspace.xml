@@ -5,7 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="57bfa127-6e18-47c5-8754-561d72b90a04" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69/storage_v2/_src_/schema/mysql.osA4Bg.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69/storage_v2/_src_/schema/sys.zb4BAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69/storage_v2/_src_/schema/tcms.VTw2AA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6d273113-b4c4-4cd6-bc72-5524b2a39a69/storage_v2/_src_/schema/tcms.VTw2AA.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/d3d951a9-1e3a-4556-8291-ff2d6a2b2e0f.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tcms/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tcms/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tcms/profile/controller/ProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tcms/profile/controller/ProfileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/tcms/profile/service/ProfileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/tcms/profile/service/ProfileServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/profile/view.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/profile/view.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/ServletInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/ServletInitializer.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/TestHash.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/TestHash.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/TutorCenterManagementSystemApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/TutorCenterManagementSystemApplication.class" afterDir="false" />
@@ -53,7 +67,6 @@
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/dto/TutorDashboardStats$TutorDashboardStatsBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/dto/TutorDashboardStats$TutorDashboardStatsBuilder.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/dto/TutorDashboardStats.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/dto/TutorDashboardStats.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/service/DashboardService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/service/DashboardService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/service/DashboardServiceImpl$1.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/service/DashboardServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/dashboard/service/DashboardServiceImpl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/exception/BadRequestException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/exception/BadRequestException.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/exception/GlobalExceptionHandler.class" afterDir="false" />
@@ -162,34 +175,25 @@
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/user/repository/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/user/repository/UserRepository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/user/service/AdminUserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/user/service/AdminUserService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/tcms/user/service/AdminUserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/tcms/user/service/AdminUserServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/2026-06-14T23-10-23_726.dumpstream" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.tcms.HashTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.tcms.TutorCenterManagementSystemApplicationTests.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.tcms.user.service.AdminUserServiceTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.tcms.HashTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.tcms.TutorCenterManagementSystemApplicationTests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.tcms.user.service.AdminUserServiceTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/tcms.war" beforeDir="false" afterPath="$PROJECT_DIR$/target/tcms.war" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/tcms.war.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/tcms.war.original" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/tcms/WEB-INF/classes/com/tcms/profile/controller/ProfileController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/tcms/WEB-INF/classes/com/tcms/profile/controller/ProfileController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/tcms/WEB-INF/views/admin/users/detail.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/target/tcms/WEB-INF/views/admin/users/detail.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/tcms/WEB-INF/views/profile/view.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/target/tcms/WEB-INF/views/profile/view.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/test-classes/com/tcms/HashTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/tcms/HashTest.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/test-classes/com/tcms/TutorCenterManagementSystemApplicationTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/tcms/TutorCenterManagementSystemApplicationTests.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/test-classes/com/tcms/user/service/AdminUserServiceTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/tcms/user/service/AdminUserServiceTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/044019ab-9d08-4dbd-8f22-b1bbea2db629_h2.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/06720ab8-0cca-49f4-8135-140b8fd5bb79_parents.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/14530e5b-9318-4a2f-b53f-d1c9028c78bd_h1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/25f030df-2f79-4a9d-88a1-1df6c7a10100_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/28a04dce-e308-4c31-90e2-00afd95e2044_h2.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/38b5af18-9734-42e0-8524-2d8eb1810a27_h1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/3976fb27-6ad8-4958-a649-4b433dc39018_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/41470ce2-0bd5-4d49-8e3e-8eb948cf855f_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/489c39f0-d390-4693-b271-9e34d8c48813_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/4aec9e2a-6140-4c0f-9e46-a3a8c404f2ae_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/55016d38-bcb0-4831-87de-785140630c37_h1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/63fa9842-3eb8-4d74-b93a-5a7e057a8bd0_1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/80f4848c-256c-4c12-852e-9fab879154bb_h2.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/87deb391-3e0d-43b8-823a-95ddae516af7_student.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/9250c1fa-988b-4c62-a391-29c05ae84b80_h1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/98dbc003-ef77-433e-82a6-c919c46fb3df_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/a95a1b3e-873f-49a1-a9a0-23db1737f72b_h3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/ccb21bb9-9377-471c-a136-f750bfed5ba3_3.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/cfcbef4c-0e2b-45e7-ac32-dc689174a70f_h1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/de28272c-839a-4354-b660-10196bdb65fb_1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/ebc99998-702f-4cd2-8b72-825d86a2f3f1_h2.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/f3e41b78-988e-42a6-ae37-77b10a18dfba_h1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/f53aceb0-2442-46a4-a3ac-1ab9f1b3c3b7_h4.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/ff6f3a55-a683-4c06-96a5-9dd6fbb500d0_h2.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uploads/fff77d5e-aa7f-4e99-8603-1e6d01c234b2_h1.jpg" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -199,7 +203,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="a2910dea-c706-47da-80bd-eb256f074d75" />
+        <option name="activeSessionId" value="5c01beee-1a4a-4351-9a8b-18f1d8996b0e" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -218,6 +222,14 @@
             <option name="modelValue" value="auto" />
             <option name="targetType" value="LOCAL" />
           </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="5c01beee-1a4a-4351-9a8b-18f1d8996b0e" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
         </option>
         <option name="type" value="PANEL" />
       </chat>
@@ -225,6 +237,7 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
+      <entry key="_D:/UYEN/TTCS/TutorCenterManagementSystem" value="3F8Yaf0inxS8tnwdux178J3TjgJ" />
       <entry key="_D:/Uyen/TTCS/TutorCenterManagementSystem" value="3F7h628v2NuVJTZixuiDxDNC4H5" />
     </persistenceIdMap>
   </component>
@@ -237,6 +250,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;uyengoc925&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ThienTT2005/TutorCenterManagementSystem.git&quot;,
+    &quot;accountId&quot;: &quot;71832496-e5cf-4f49-a2de-c958d8443604&quot;
+  }
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -352,15 +377,16 @@
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/UYEN/TTCS/TutorCenterManagementSystem",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.1150748",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.ignored.files",
+    "project.structure.side.proportion": "0.14827587",
+    "settings.editor.selected.configurable": "MavenSettings",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   },
@@ -370,11 +396,21 @@
     ]
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="TutorCenterManagementSystemApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="tcms" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.tcms.TutorCenterManagementSystemApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
       </set>
     </attachedChunks>
   </component>
@@ -389,10 +425,20 @@
       <workItem from="1781433431143" duration="280000" />
       <workItem from="1781433760913" duration="502000" />
       <workItem from="1781448625657" duration="4188000" />
+      <workItem from="1781458227900" duration="203000" />
+      <workItem from="1781458447258" duration="3273000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

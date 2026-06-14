@@ -25,19 +25,21 @@ public class ProfileServiceImpl implements ProfileService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
 
-    private static final String UPLOAD_DIR =
-            System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/";
 
     @Override
     public Object getProfile(Integer userId) {
         Tutor tutor = tutorRepository.findByUserUserId(userId).orElse(null);
-        if (tutor != null) return tutor;
+        if (tutor != null)
+            return tutor;
 
         Parent parent = parentRepository.findByUserUserId(userId).orElse(null);
-        if (parent != null) return parent;
+        if (parent != null)
+            return parent;
 
         Student student = studentRepository.findByUserUserId(userId).orElse(null);
-        if (student != null) return student;
+        if (student != null)
+            return student;
 
         return userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("Không tìm thấy người dùng"));
@@ -135,7 +137,8 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             File dir = new File(UPLOAD_DIR);
-            if (!dir.exists()) dir.mkdirs();
+            if (!dir.exists())
+                dir.mkdirs();
 
             String fileName = UUID.randomUUID() + "_" + originalName.replaceAll("\\s+", "_");
             File dest = new File(UPLOAD_DIR + fileName);
